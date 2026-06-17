@@ -1,11 +1,11 @@
 # task-lessons shell helpers. Source me at the end of a cron runner.
-#   . "$HOME/sha-systems/task-lessons/lib.sh"
+#   . "$HOME/systems/task-lessons/lib.sh"
 # Then capture an outcome:
 #   lessons_capture --skill bq-clickup-perf --exit "$RC" --duration "$DUR" \
 #                   --summary "..." --log "$LOG" --link memory/project_x
 # Never fails the calling job (all paths return 0).
 
-_TL_DIR="$HOME/sha-systems/task-lessons"
+_TL_DIR="$HOME/systems/task-lessons"
 # shellcheck source=/dev/null
 [ -f "$_TL_DIR/env.sh" ] && . "$_TL_DIR/env.sh"
 

@@ -2,4 +2,4 @@
 Description=task-lessons-synth (cluster lessons -> gated promotion proposals)
 [Service]
 Type=oneshot
-ExecStart=%h/sha-systems/task-lessons/run_lessons_synth.sh
+ExecStart=%h/systems/task-lessons/run_lessons_synth.sh

@@ -2,4 +2,4 @@
 Description=winners-refresh (migrated cron)
 [Service]
 Type=oneshot
-ExecStart=%h/sha-systems/winners-refresh/run_winners_refresh.sh
+ExecStart=%h/systems/winners-refresh/run_winners_refresh.sh

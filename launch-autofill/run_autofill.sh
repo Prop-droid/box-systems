@@ -9,7 +9,7 @@ set -uo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$HOME/.local/bin:$PATH"
 export TOKEN_FILE="$HOME/.config/clickup/pk"
 
-SCRIPT_DIR="/home/tomas/sha-systems/launch-autofill"
+SCRIPT_DIR="/home/tomas/systems/launch-autofill"
 LOG_DIR="$HOME/Library/Logs/launch-autofill"
 mkdir -p "$LOG_DIR"
 TS="$(date +%Y-%m-%d_%H%M%S)"
@@ -28,9 +28,9 @@ if python3 autofill.py; then RC=0; echo "=== done $TS ==="; else RC=$?; echo "FA
 DUR=$((SECONDS - START))
 
 # --- task-lessons capture (best-effort; never changes the job outcome) ---
-if [ -f "$HOME/sha-systems/task-lessons/lib.sh" ]; then
+if [ -f "$HOME/systems/task-lessons/lib.sh" ]; then
   # shellcheck source=/dev/null
-  . "$HOME/sha-systems/task-lessons/lib.sh"
+  . "$HOME/systems/task-lessons/lib.sh"
   lessons_capture --skill "launch-autofill" --exit "$RC" --duration "$DUR" \
     --log "$LOG" --link "memory/project_launch_autofill_agent" || true
 fi

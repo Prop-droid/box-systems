@@ -7,4 +7,4 @@ if [ -f "$HOME/.hermes/.env" ]; then
   GOOGLE_API_KEY=$(grep -E "^GOOGLE_API_KEY=" "$HOME/.hermes/.env" | cut -d= -f2-)
   export GEMINI_API_KEY GOOGLE_API_KEY
 fi
-export TASK_LESSONS_DIR="$HOME/sha-systems/task-lessons"
+export TASK_LESSONS_DIR="$HOME/systems/task-lessons"

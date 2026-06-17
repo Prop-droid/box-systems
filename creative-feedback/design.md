@@ -39,7 +39,7 @@ A slash command. Invoked by Tomas after a creative draft, carrying a verdict. No
 - **Output:** one appended JSONL record; a one-line confirmation to Tomas.
 
 ### Unit 2 — the ledger (storage)
-`~/sha-systems/creative-feedback/ledger.jsonl` — append-only, local (per the local-cron rule; never on Drive).
+`~/systems/creative-feedback/ledger.jsonl` — append-only, local (per the local-cron rule; never on Drive).
 
 Record schema (one JSON object per line):
 ```json
@@ -62,15 +62,15 @@ Record schema (one JSON object per line):
 - `promoted` flips to `true` when a pattern that includes this record has been promoted into canon, for dedup.
 
 ### Unit 3 — `/feedback-synth` (synthesis)
-On-demand slash command **and** a Monday cron (joins the existing Monday lineup: winners-refresh, sha-weekly-report). Runs via `claude` headless (stdin prompt) like the other `~/sha-systems` agents.
+On-demand slash command **and** a Monday cron (joins the existing Monday lineup: winners-refresh, sha-weekly-report). Runs via `claude` headless (stdin prompt) like the other `~/systems` agents.
 
-- **Input:** the ledger; a watermark file `~/sha-systems/creative-feedback/.watermark` (timestamp of last synthesis).
+- **Input:** the ledger; a watermark file `~/systems/creative-feedback/.watermark` (timestamp of last synthesis).
 - **Behavior:**
   1. Read ledger records newer than the watermark (plus any older un-promoted records for context).
   2. Cluster by `artifact_type + tag + edit-direction`.
   3. Flag a pattern as **stable** when it appears **≥3 times with a consistent direction** (threshold configurable in a small `config.json`).
   4. For each stable pattern, draft a proposed promotion rendered as a concrete diff against a target: either a new/updated `feedback_*` memory file, or a rule line in a script-skill file.
-  5. Write all proposals to `~/sha-systems/creative-feedback/proposals.md` (human-readable, each with: pattern summary, supporting record ids, the proposed diff, target file).
+  5. Write all proposals to `~/systems/creative-feedback/proposals.md` (human-readable, each with: pattern summary, supporting record ids, the proposed diff, target file).
   6. Update the watermark.
 - **Output:** `proposals.md` populated. **Never writes to canon.**
 - **Idempotency:** watermark advances; already-promoted patterns are skipped via the `promoted` flag and a promoted-patterns log.
@@ -81,7 +81,7 @@ Triggered when Tomas approves entries in `proposals.md` (e.g., `/feedback-promot
 - **Input:** approved proposal(s) from `proposals.md`.
 - **Behavior:**
   1. Apply the diff: write/update the target `feedback_*` memory file and add/refresh its one-line entry in `MEMORY.md`; or edit the target script-skill file.
-  2. Mark the supporting ledger records `promoted: true` and append the pattern to `~/sha-systems/creative-feedback/promoted.log`.
+  2. Mark the supporting ledger records `promoted: true` and append the pattern to `~/systems/creative-feedback/promoted.log`.
   3. Confirm what changed.
 - **Output:** updated canon (memory and/or skill file); ledger + promoted log updated.
 - **Safety:** nothing here runs without Tomas's explicit approval of the specific proposal.
@@ -110,7 +110,7 @@ ledger.jsonl  ──(weekly cron or on-demand)──▶  /feedback-synth
 
 ## Integration with existing systems
 
-- **Location:** `~/sha-systems/creative-feedback/` — matches the existing cron-agent layout; local, never Drive.
+- **Location:** `~/systems/creative-feedback/` — matches the existing cron-agent layout; local, never Drive.
 - **Cron:** synthesis added to the Monday lineup via launchd (same pattern as winners-refresh / sha-weekly-report); prompt piped to `claude` headless over stdin.
 - **Promotion target:** the existing `feedback_*` memories the creative skills already auto-read (`script_defaults` instructs "read before writing any ad copy"). No new read-path is introduced.
 - **Brand routing:** Shameless lessons route to Shameless `feedback_*` memories; other-brand lessons route to `dr-script`-general feedback memory.
@@ -132,7 +132,7 @@ ledger.jsonl  ──(weekly cron or on-demand)──▶  /feedback-synth
 
 ## Configuration
 
-`~/sha-systems/creative-feedback/config.json`:
+`~/systems/creative-feedback/config.json`:
 ```json
 { "stable_threshold": 3, "brands": ["shameless"], "default_brand": "shameless" }
 ```

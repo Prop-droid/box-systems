@@ -27,5 +27,5 @@ Edit a `.service`/`.timer` here, re-run `install.sh`. Idempotent.
 | task-lessons-synth | Tue 05:30 | task-lessons synthesis |
 | agents-monthly | 1st of month 06:00 | consolidation, token-audit |
 
-Prereqs: the suite is deployed at `~/sha-systems` and per-job credentials exist
+Prereqs: the suite is deployed at `~/systems` and per-job credentials exist
 outside the repo (`~/.config/clickup/pk`, `~/.config/gcloud/*.json`, `~/.hermes/.env`).

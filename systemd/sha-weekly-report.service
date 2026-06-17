@@ -2,4 +2,4 @@
 Description=sha-weekly-report (migrated cron)
 [Service]
 Type=oneshot
-ExecStart=%h/sha-systems/sha-weekly-report/run_report.sh
+ExecStart=%h/systems/sha-weekly-report/run_report.sh

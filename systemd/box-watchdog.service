@@ -2,4 +2,4 @@
 Description=box-watchdog
 [Service]
 Type=oneshot
-ExecStart=%h/sha-systems/watchdog/box-watchdog.sh
+ExecStart=%h/systems/watchdog/box-watchdog.sh

@@ -56,7 +56,7 @@ if [ "$age" -le 192 ]; then ok "ccc:research-reports" "newest deep-dive ${age}h 
 else warn "ccc:research-reports" "no new deep-dive report for ${age}h"; fi
 
 # Comments digest: weekly (Tue) AI digest the CCC /comments page serves
-CD="$HOME/sha-systems/comments-digest/out"
+CD="$HOME/systems/comments-digest/out"
 age=$(age_hours "$(newest_mtime_epoch "$CD"/digest-*.md)")
 if [ "$age" -le 216 ]; then ok "ccc:comments-digest" "newest digest ${age}h old"
 else warn "ccc:comments-digest" "no comments digest for ${age}h (cron dead or never ran)"; fi

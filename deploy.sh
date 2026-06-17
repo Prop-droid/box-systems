@@ -1,10 +1,10 @@
 #!/bin/bash
 # Redeploy cron scripts from their canonical home (Code Things/systems on Drive)
-# to local ~/sha-systems. launchd cannot exec scripts on Google Drive (TCC),
+# to local ~/systems. launchd cannot exec scripts on Google Drive (TCC),
 # so plists point here; edit the Drive copies, then run this.
 set -euo pipefail
 D="/home/tomas/brain/systems"
-L="$HOME/sha-systems"
+L="$HOME/systems"
 
 cp "$D/winners-refresh/run_winners_refresh.sh" "$L/winners-refresh/"
 cp -R "$D/sha-weekly-report/run_report.sh" "$D/sha-weekly-report/report_prompt.txt" "$D/sha-weekly-report/queries" "$L/sha-weekly-report/"

@@ -6,7 +6,7 @@
 set -uo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$HOME/.local/bin:$PATH"
 
-DIR="$HOME/sha-systems/creative-feedback"
+DIR="$HOME/systems/creative-feedback"
 LOG_DIR="$HOME/Library/Logs/creative-feedback"
 mkdir -p "$LOG_DIR"
 TS="$(date +%Y-%m-%d_%H%M%S)"

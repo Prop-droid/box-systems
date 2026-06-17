@@ -1,4 +1,4 @@
-# sha-systems: commit code/config/prompts only. Everything below is runtime
+# systems: commit code/config/prompts only. Everything below is runtime
 # data, logs, or business outputs that must not leave the box.
 
 # Logs & captured stderr

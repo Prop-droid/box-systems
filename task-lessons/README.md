@@ -19,7 +19,7 @@ its own past lessons (the Reflexion pattern).
 START=$SECONDS
 if python3 myjob.py; then RC=0; else RC=$?; fi
 DUR=$((SECONDS-START))
-. "$HOME/sha-systems/task-lessons/lib.sh"
+. "$HOME/systems/task-lessons/lib.sh"
 lessons_capture --skill "myjob" --exit "$RC" --duration "$DUR" \
   --log "$LOG" --link "memory/project_myjob" || true
 exit "$RC"
@@ -30,7 +30,7 @@ the takeaway; otherwise the failed-run log tail becomes the summary.
 
 ## Recall (in a claude-headless cron)
 ```bash
-LESSONS="$($HOME/sha-systems/task-lessons/recall.sh myjob 5)"
+LESSONS="$($HOME/systems/task-lessons/recall.sh myjob 5)"
 echo "$LESSONS
 
 $PROMPT" | claude -p ...

@@ -2,4 +2,4 @@
 Description=comments-digest (migrated cron)
 [Service]
 Type=oneshot
-ExecStart=%h/sha-systems/comments-digest/run_digest.sh
+ExecStart=%h/systems/comments-digest/run_digest.sh

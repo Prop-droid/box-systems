@@ -6,7 +6,7 @@ export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 NTFY_TOPIC="${NTFY_TOPIC:-tomas-tab-958e4431}"
 TIMERS="bq-clickup-perf winners-refresh comments-digest research-monitor research-deepdive sha-weekly-report creative-feedback-synth gbrain-weekly raw-ingest-scan agents-weekly agents-monthly"
-WD_DIR="$HOME/sha-systems/watchdog"; mkdir -p "$WD_DIR/reports"
+WD_DIR="$HOME/systems/watchdog"; mkdir -p "$WD_DIR/reports"
 fails=(); oks=()
 for t in $TIMERS; do
   if ! systemctl --user is-active "$t.timer" >/dev/null 2>&1; then fails+=("$t.timer INACTIVE"); continue; fi

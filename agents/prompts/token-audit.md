@@ -8,7 +8,7 @@ You are the monthly context/token audit agent. Measure what gets loaded into eve
 5. Skills inventory: count + total bytes of ~/.claude/skills (catalog-listed, not always loaded — note that distinction)
 
 ## Compare
-Previous report: newest file in /home/tomas/sha-systems/agents/reports/token-audit/ other than today's. Compute deltas per surface. If no previous report, this run is the baseline.
+Previous report: newest file in /home/tomas/systems/agents/reports/token-audit/ other than today's. Compute deltas per surface. If no previous report, this run is the baseline.
 
 ## Output (stdout = report, markdown)
 # Token Audit — <date>

@@ -10,7 +10,7 @@
 set -uo pipefail
 export PATH="/usr/local/bin:/usr/bin:/bin:$HOME/.local/bin:$HOME/.bun/bin:$PATH"
 
-DIR="$HOME/sha-systems/task-lessons"
+DIR="$HOME/systems/task-lessons"
 LOG_DIR="$DIR/logs"
 mkdir -p "$LOG_DIR"
 TS="$(date +%Y-%m-%d_%H%M%S)"

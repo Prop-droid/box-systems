@@ -2,4 +2,4 @@
 Description=creative-feedback-synth (migrated cron)
 [Service]
 Type=oneshot
-ExecStart=%h/sha-systems/creative-feedback/run_feedback_synth.sh
+ExecStart=%h/systems/creative-feedback/run_feedback_synth.sh

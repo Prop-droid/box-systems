@@ -8,7 +8,7 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$HOME/.local/bin:$PA
 export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/ejam-dwh-sa.json"
 export TOKEN_FILE="$HOME/.config/clickup/pk"
 
-SCRIPT_DIR="/home/tomas/sha-systems/bq-clickup-perf"
+SCRIPT_DIR="/home/tomas/systems/bq-clickup-perf"
 LOG_DIR="$HOME/Library/Logs/bq-clickup-perf"
 mkdir -p "$LOG_DIR"
 TS="$(date +%Y-%m-%d_%H%M%S)"
@@ -28,9 +28,9 @@ if python3 bq_to_clickup_perf.py; then RC=0; echo "=== done $TS ==="; else RC=$?
 DUR=$((SECONDS - START))
 
 # --- task-lessons capture (best-effort; never changes the job outcome) ---
-if [ -f "$HOME/sha-systems/task-lessons/lib.sh" ]; then
+if [ -f "$HOME/systems/task-lessons/lib.sh" ]; then
   # shellcheck source=/dev/null
-  . "$HOME/sha-systems/task-lessons/lib.sh"
+  . "$HOME/systems/task-lessons/lib.sh"
   lessons_capture --skill "bq-clickup-perf" --exit "$RC" --duration "$DUR" \
     --log "$LOG" --link "memory/project_bq_clickup_perf_writeback" || true
 fi

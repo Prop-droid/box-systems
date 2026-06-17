@@ -7,7 +7,7 @@
     <key>ProgramArguments</key>
     <array>
         <string>/bin/bash</string>
-        <string>/home/tomas/sha-systems/launch-autofill/run_autofill.sh</string>
+        <string>/home/tomas/systems/launch-autofill/run_autofill.sh</string>
     </array>
     <key>StartCalendarInterval</key>
     <dict>

@@ -2,4 +2,4 @@
 Description=agents-weekly (migrated cron)
 [Service]
 Type=oneshot
-ExecStart=%h/sha-systems/agents/run_agents.sh weekly
+ExecStart=%h/systems/agents/run_agents.sh weekly

@@ -2,4 +2,4 @@
 Description=gbrain-weekly (migrated cron)
 [Service]
 Type=oneshot
-ExecStart=%h/sha-systems/gbrain-weekly/run_gbrain_weekly.sh
+ExecStart=%h/systems/gbrain-weekly/run_gbrain_weekly.sh

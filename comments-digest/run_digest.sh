@@ -1,5 +1,5 @@
 #!/bin/bash
-# SHA weekly ad-comments digest -> ~/sha-systems/comments-digest/out/digest-YYYY-MM-DD.md
+# SHA weekly ad-comments digest -> ~/systems/comments-digest/out/digest-YYYY-MM-DD.md
 # Served by CCC at /api/comments/digest (COMMENTS_DIGEST_DIR in .env.local).
 # Runs Tuesdays 09:00 via com.tomas.comments-digest. Manual: bash run_digest.sh
 set -euo pipefail
