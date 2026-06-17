@@ -31,7 +31,7 @@ Clusters below threshold or mixed are NOT promoted; leave their records alone.
 
 ### Promotion targets
 - Creative pattern -> a `feedback_*` memory file. The memory directory is ALWAYS
-  exactly this absolute path: `/Users/tomas/.claude/projects/-Users-tomas/memory/`.
+  exactly this absolute path: `/home/tomas/.claude/projects/-home-tomas/memory/`.
   Shameless patterns route to a Shameless `feedback_*` file; other brands to a
   `dr-script`-general feedback file. (`target.type` = `memory`, `target.path` =
   the absolute file path.)

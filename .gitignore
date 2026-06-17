@@ -1,0 +1,35 @@
+# sha-systems: commit code/config/prompts only. Everything below is runtime
+# data, logs, or business outputs that must not leave the box.
+
+# Logs & captured stderr
+*.log
+*.err
+**/logs/
+_claude.err
+
+# Agent / cron report outputs (business data)
+agents/reports/
+watchdog/reports/
+watchdog/**/latest-status.json
+comments-digest/out/
+sha-weekly-report/out/
+
+# Feedback / task-lessons runtime state + generated proposals
+**/ledger.jsonl
+**/proposals.jsonl
+**/proposals.md
+**/.watermark
+
+# Launch-autofill runtime state / dumps (ClickUp + script data)
+launch-autofill/state.json
+launch-autofill/tht_plan.json
+launch-autofill/tht_*.json
+launch-autofill/download.txt
+
+# Caches
+__pycache__/
+*.pyc
+**/.firecrawl/
+
+# OS
+.DS_Store

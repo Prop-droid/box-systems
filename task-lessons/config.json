@@ -1,0 +1,8 @@
+{
+  "stable_threshold": 3,
+  "slug_prefix": "lessons",
+  "page_type": "feedback",
+  "base_tag": "task-lesson",
+  "valid_verdicts": ["success", "fixed", "failed"],
+  "write_page_on_success": false
+}

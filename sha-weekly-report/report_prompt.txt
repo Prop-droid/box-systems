@@ -1,0 +1,131 @@
+You are writing the Shameless Snacks weekly brand-health report from BigQuery data. Tomas (senior creative strategist) reads this every Monday morning. He wants the artifact, not a lecture.
+
+WEEK BEING REPORTED: {{LAST_FROM}} to {{LAST_TO}}
+COMPARISON 1 (WoW): prior week {{PRIOR_FROM}} to {{PRIOR_TO}}
+COMPARISON 2 (4-week rolling baseline avg): {{ROLLING_FROM}} to {{ROLLING_TO}}
+
+BRAND CANON (use to inform recommendations):
+- Stats per bag: 26g prebiotic fiber (incl. Allstars), 70 cal, 3g sugar, 3g net carbs
+- CTAs push the daily-fiber habit, never discount/urgency
+- Allowed language: "prebiotic fiber", "food noise", "pooping every day"
+- Offer ceiling: 46% sub-gated, advertorial only. Never on organic ads.
+- Editor codes: AYC (Aicha), FER (Fernando), JDC (Juan David Chaparro), ANA, IGN, LEO, AGU, PAO, KAR
+
+DATA:
+
+## Topline (last wk / prior wk / 4-wk avg)
+{{TOPLINE_TABLE}}
+
+## Channel breakdown (last wk)
+{{CHANNELS_TABLE}}
+
+## Top 15 spenders last wk
+{{TOP_SPEND_TABLE}}
+
+## Real winners (ROAS > 1.0, min $500 spend)
+{{TOP_ROAS_TABLE}}
+
+## Losers burning cash ($1K+ spend, ROAS < 0.5)
+{{LOSERS_TABLE}}
+
+## AI angle breakdown
+{{ANGLES_TABLE}}
+
+## Landing page performance (last wk; lp = short URL slug, url = full landing-page URL, both parsed from ad_name; lp_to_atc% = add-to-cart per LP view; atc_to_order% = orders per add-to-cart)
+{{LANDING_PAGES_TABLE}}
+
+## Funnel stages (last wk vs prior wk, step conversion rates)
+{{FUNNEL_TABLE}}
+
+## Per-creative funnel (top spenders: hook/CTR vs where they convert on the LP)
+{{CREATIVE_FUNNEL_TABLE}}
+
+## Hook & Hold (video attention, last wk, spend > $500)
+{{HOOK_HOLD_TABLE}}
+
+## Fatigue watch (last wk spend > $1K, CTR dropped WoW)
+{{FATIGUE_TABLE}}
+
+## Concept-level rollup (last wk, spend > $1K, ranked by contribution margin)
+{{CONCEPTS_TABLE}}
+
+WRITE the report in EXACTLY this structure (markdown, no preamble, no closing remarks):
+
+# Shameless Snacks Weekly Paid-Acquisition Report
+**Week:** {{LAST_FROM}} to {{LAST_TO}}
+**Source:** `ejam-dwh.production.creative_dashboard`
+**Scope:** first-order paid-acquisition only. Not full P&L, no subscription LTV.
+
+## TL;DR
+4-6 bullets. Lead with: spend, revenue, ROAS, cmROAS (break-even = 1.0), and contribution margin in dollars. Then WoW delta. Then 4-wk avg context. Then the single biggest action. Use verdict tags where relevant (KILL / ITERATE / WATCH / SCALE-BUDGET).
+
+## 1. Topline (WoW + 4-week baseline)
+Convert the topline data into a markdown table with columns: Metric / Last wk / Prior wk / 4-wk avg / WoW Delta. Include spend, revenue, COGS, orders, conversions, clicks, impressions, ROAS, margin, net_contrib, CPA. Compute the Delta% column yourself. Then add four computed economics rows using the topline numbers:
+- Contribution margin = revenue - COGS - spend (the actual dollars left after paying for goods AND acquiring the customer)
+- Margin % = contribution_margin / revenue * 100
+- cmROAS = (revenue - COGS) / spend (break-even point is 1.0 -- below 1.0 means the account is losing contribution margin even if first-order ROAS looks above 1)
+- Break-even ROAS = 1 / ((revenue - COGS) / revenue) (the minimum first-order ROAS needed to cover COGS, i.e. not lose money on goods; any ROAS below this burns cash on every order)
+After the table: lead with the economics verdict. Is the account above or below break-even ROAS? What is the margin gap to profitability? Then one short paragraph on trend (improving / decaying / stable) vs 4-wk baseline. IMPORTANT: throughout the rest of this report, judge winners and losers margin-first using cmROAS. First-order ROAS is secondary context only -- never use it as the primary verdict.
+
+## 2. Channel mix
+Markdown table from the channels data. Note if any channel is missing (e.g., 100% Facebook = flag whether Google/TikTok exist elsewhere).
+
+## 3. Top spenders (where the money went)
+Markdown table from top-15. Add a "Top-5 takeaways" sub-bullet list highlighting:
+- Total burn from top-3 vs their return
+- Any "Unmapped" sh_ref entries (broad audience tests not tied to ClickUp briefs)
+- Profitable lines in the top-15 that deserve more budget
+
+## 4. Real winners (ROAS > 1.0, $500+ spend)
+Markdown table. Then 3-5 bullets identifying recurring themes (Warehouse / UGC / specific designer codes / specific angles). Bold the highest-ROAS line.
+
+## 5. Losers burning cash ($1K+ spend, ROAS < 0.5)
+Markdown table. Compute combined "spend → return" waste at the bottom. Then 3 specific action callouts:
+1. Worst ROAS line: recommend kill
+2. Worst audience-level loser (Unmapped AUD_* entries): recommend audience pause
+3. Any pattern where a hook/angle is winning under one editor (AYC/PAO) but losing under another (JDC/FER): flag for creative cross-check
+
+## 6. By AI angle
+Markdown table. Then reads on:
+- Which angle has the best ROAS at non-trivial scale ($1K+ spend)
+- Which angle is being over-funded relative to its ROAS
+- % of spend on creatives WITHOUT an ai_angle tag (allocation blindness flag)
+
+## 7. Landing page performance
+Markdown table using the short LP slug as the LP column (columns: LP / Spend / ROAS / CTR% / CPC / LP views / LP-to-ATC% / ATC / ATC-to-order% / Orders / CPA). Directly under the table, add an "LP URLs" key: one bullet per LP slug mapping it to its full url (format: `slug: https://full/url`), pulled from the url column. Then:
+- Name the best-converting LP (highest LP-to-ATC% AND ATC-to-order% at $500+ spend) and the worst, by slug.
+- Call out any LP with strong traffic (high LP views / CTR) but weak LP-to-ATC%. The page isn't converting the clicks it's getting.
+- Then 3-5 LP recommendations, each naming a specific LP slug + a verb (SHIFT-SPEND-TO / FIX-CHECKOUT-ON / TEST-NEW-LP-FOR / RETIRE): shift budget toward the best ATC-to-order% LP, fix the LP leaking most between LP-view and ATC, test a new LP variant for an angle whose creatives convert poorly on the current page.
+- Caveat: an LP showing 0% LP-to-ATC with orders > 0 (e.g. a "shopify" direct-checkout slug) skips the add-to-cart event. Judge it on orders / ROAS, not on its ATC rate.
+
+## 8. Funnel analysis (where we drop customers)
+Markdown table from the funnel-stage data: Stage / Last wk / Prior wk, for Impressions, Clicks (with CTR%), LP views, Add-to-cart (with LP-view-to-ATC%), Orders (with ATC-to-order%). Then:
+- Identify the single biggest drop-off stage (the step losing the largest share of users) and quantify the leak.
+- For each step, say whether its conversion RATE improved or decayed WoW. Separate a VOLUME problem (fewer impressions/clicks) from a RATE problem (a step converting worse than before).
+- Diagnose upper-funnel vs lower-funnel: if CTR is healthy but LP-view-to-ATC or ATC-to-order is weak, the leak is the landing page / offer, not the creative.
+- Using the per-creative funnel data, flag 2-4 specific creatives that drive clicks (good CTR) but stall on the LP (low LP-to-ATC%). These are LP-CHANGE candidates. Name the SH creative, its CTR, its LP-to-ATC%, the LP it's on, and recommend testing it on a higher-converting LP.
+
+## 9. Hook & Hold (attention vs your own baseline)
+Build a markdown table from the hook_hold data: Concept / Hook Rate % / Hold Rate % / Spend. Then compute the account average hook rate and hold rate from the same table (sum of 3s views / sum of impressions across all rows shown). Flag which concepts are above vs below the account average hook rate -- for a single brand account, the own average is the right benchmark, not a generic industry number. Call out 2-3 specific concepts by SH-#### that stand out (high hook + low hold = strong open, weak close; low hook = the creative is not stopping the scroll; high hold = the message lands when they do watch).
+
+## 10. Fatigue watch (cascade)
+Build a markdown table from the fatigue data: Concept / Spend Last Wk / CTR Prior / CTR Last / CTR Change %. Then: identify the worst fatiguing creatives (biggest CTR drop on meaningful spend). Note that fatigue = spend held up but CTR declining -- the algorithm keeps buying but the audience has seen it. A 15%+ CTR drop on $1K+ spend is a refresh signal. A 25%+ drop is urgent. For the worst 2-3 cases, recommend: WATCH (flag, not yet critical), or ITERATE (build fresh variation on the same concept). Name specific SH-#### IDs.
+
+## 11. Concepts (not just ads)
+Build a markdown table from the concepts data: Concept / Spend / Revenue / ROAS / cmROAS / Margin % / Orders / Variations / Contrib Margin. Rank by contribution margin (already done in data). Then: identify which CONCEPTS are margin-positive (cmROAS > 1.0) vs margin-negative. Note how many variations each winning concept has -- a winner with only 1-2 variations is underexplored. Recommend which concepts to make more variations of (ITERATE) and which to stop funding (KILL). Name specific SH-#### IDs with their cmROAS and contrib margin.
+
+## 12. Recommendations for the upcoming days (this week)
+5-7 specific tactical actions for the next 1-7 days. Format each as a verdict tag followed by the action. Use EXACTLY these verdict tags: ITERATE (make more variations of a margin-positive concept), WATCH (fatiguing, refresh signal -- act within days), KILL (cmROAS well below 1.0 on meaningful spend -- stop funding now), SWITCH-LP (creative converts clicks but LP bleeds ATC), SCALE-BUDGET (cmROAS > 1.0 and underserved). Format: "ITERATE SH-#### (cmROAS X.X, margin +X%) -- [one-line rationale]". Each action MUST name a specific SH-#### or audience slug. Reference brand canon when relevant (26g fiber, daily-fiber CTA). No em-dashes or en-dashes -- use plain hyphens.
+
+## 13. Recommendations for upcoming weeks (next 2-3 weeks)
+3-5 strategic moves. Each MUST:
+- Reference a specific angle, persona, format, or pillar from the data
+- Suggest the test you would actually run (specific creators / hook patterns / LP variants)
+- Have a measurable thesis ("we believe X angle at Y persona will deliver cmROAS > Z because...")
+
+## 14. Data caveats
+3-5 bullets max. Standard caveats: paid-acquisition only, no LTV, channel coverage limits, tagging gaps. Also: add-to-cart isn't fired on direct-checkout LPs (e.g. the "shopify" slug) so their LP-to-ATC reads 0; LP views can exceed clicks (multi-source / refresh) so click-to-LP-view isn't a clean funnel step; LP slugs come from the URL in ad_name, so creatives with no URL fall into "(unmapped)". hook_rate and hold_rate are only computed for asset_type=VIDEO rows -- image ads show NULL.
+
+VOICE: senior creative-strategist. Direct, specific, performance-aware. No corporate filler. No em-dashes. Use contractions. Reference SH-#### IDs by name. Tables tight, paragraphs short.
+
+OUTPUT: just the markdown report, starting at "# Shameless Snacks". Nothing else.

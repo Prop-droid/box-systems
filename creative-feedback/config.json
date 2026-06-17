@@ -1,0 +1,5 @@
+{
+  "stable_threshold": 3,
+  "brands": ["shameless"],
+  "default_brand": "shameless"
+}
