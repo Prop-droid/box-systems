@@ -1,0 +1,6 @@
+[Unit]
+Description=BQ -> ClickUp perf writeback
+
+[Service]
+Type=oneshot
+ExecStart=%h/sha-systems/bq-clickup-perf/run_perf_writeback.sh

@@ -1,0 +1,5 @@
+[Unit]
+Description=research-monitor (migrated cron)
+[Service]
+Type=oneshot
+ExecStart=%h/sha-systems/research-agent/bin/monitor.sh

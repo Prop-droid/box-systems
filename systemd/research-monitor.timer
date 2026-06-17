@@ -1,0 +1,7 @@
+[Unit]
+Description=research-monitor timer
+[Timer]
+OnCalendar=*-*-* 01:45:00
+Persistent=true
+[Install]
+WantedBy=timers.target

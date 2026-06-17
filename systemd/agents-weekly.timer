@@ -1,0 +1,7 @@
+[Unit]
+Description=agents-weekly timer
+[Timer]
+OnCalendar=Sun *-*-* 05:30:00
+Persistent=true
+[Install]
+WantedBy=timers.target

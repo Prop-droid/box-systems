@@ -1,0 +1,7 @@
+[Unit]
+Description=creative-feedback-synth timer
+[Timer]
+OnCalendar=Tue *-*-* 05:00:00
+Persistent=true
+[Install]
+WantedBy=timers.target

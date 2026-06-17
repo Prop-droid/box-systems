@@ -1,0 +1,7 @@
+[Unit]
+Description=sha-weekly-report timer
+[Timer]
+OnCalendar=Mon *-*-* 04:45:00
+Persistent=true
+[Install]
+WantedBy=timers.target

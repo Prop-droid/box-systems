@@ -1,0 +1,5 @@
+[Unit]
+Description=agents-monthly (migrated cron)
+[Service]
+Type=oneshot
+ExecStart=%h/sha-systems/agents/run_agents.sh monthly
