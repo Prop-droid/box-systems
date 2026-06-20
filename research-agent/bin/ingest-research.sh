@@ -8,6 +8,7 @@
 # See ./README.md
 
 set -euo pipefail
+export RTK_HOOK_OFF=1  # opt this headless cron out of the rtk PreToolUse hook (interactive-only trial)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENT_DIR="$(dirname "$SCRIPT_DIR")"
