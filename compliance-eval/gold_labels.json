@@ -1,0 +1,12 @@
+{
+  "_doc": "Ground-truth labels for validating the scorer. 'hard' = the exact set of HARD rule_ids that SHOULD fire for this fixture. 'warn_includes' = WARN rule_ids that must appear (subset check). The scorer is trusted only when it reproduces these exactly (precision=recall=1.0 on HARD). Add fixtures here as edge cases are discovered in production.",
+  "clean_01.txt":             {"hard": [],                          "warn_includes": []},
+  "clean_02.txt":             {"hard": [],                          "warn_includes": []},
+  "tricky_allowed_01.txt":    {"hard": [],                          "warn_includes": [], "warn_excludes": ["blood_sugar_bare"]},
+  "violation_drugname_01.txt":{"hard": ["drug_name"],               "warn_includes": []},
+  "violation_cleanlabel_01.txt":{"hard": ["false_clean_label"],     "warn_includes": []},
+  "violation_fatburn_01.txt": {"hard": ["fat_burn"],               "warn_includes": []},
+  "violation_medical_01.txt": {"hard": ["medical_cure"],           "warn_includes": []},
+  "violation_multi_01.txt":   {"hard": ["drug_name", "glp1_equivalence", "fat_burn", "false_clean_label", "detox_cleanse", "weight_guarantee"], "warn_includes": []},
+  "warn_glp1_01.txt":         {"hard": [],                          "warn_includes": ["glp1_bare"]}
+}

@@ -1,0 +1,55 @@
+{
+  "_meta": {
+    "brand": "Shameless Snacks",
+    "policy_version": "2026-06-20",
+    "sources": [
+      "brain/wiki/shameless/brand/compliance-guardrails.md",
+      "brain/raw/brand-context/compliance_guide.md",
+      "memory/shameless_compliance_language.md (2026-06-09 overrides)"
+    ],
+    "note": "Severity HARD = definite violation (counts toward violation_rate). WARN = review-before-publish (does not fail the script but is reported). Patterns are case-insensitive regex, matched on word boundaries. Edit this file as policy evolves; the scorer reads it as data."
+  },
+
+  "hard": [
+    {"id": "drug_name", "why": "Named GLP-1 drug — FDA warning-letter zone", "patterns": ["\\bozempic\\b", "\\bwegovy\\b", "\\bzepbound\\b", "\\bmounjaro\\b", "\\bsemaglutide\\b", "\\btirzepatide\\b", "\\bmetformin\\b"]},
+    {"id": "glp1_equivalence", "why": "Drug-equivalence claim", "patterns": ["natural ozempic", "ozempic[- ]like", "glp-?1 alternative", "glp-?1 activation", "glp-?1 friendly", "replace your shot", "skip the injection", "works with (ozempic|wegovy|mounjaro)"]},
+    {"id": "fat_burn", "why": "Clinical/physiological fat claim", "patterns": ["\\bmelt(s|ing)? fat\\b", "\\bburn(s|ing)? fat\\b", "\\bfat[- ]burning\\b"]},
+    {"id": "false_clean_label", "why": "Formulation does not support it (Tomas 2026-06-08)", "patterns": ["no artificial colou?rs?", "no artificial flavou?rs?", "no artificial sweeteners?", "no added sugar", "all natural sweeteners?", "only natural ingredients?", "naturally flavou?red"]},
+    {"id": "medical_cure", "why": "Disease/medical claim (verb requires a disease object so the candy noun 'treats' does not false-flag)", "patterns": ["cures? (ibs|constipation|leaky gut|bloating|diabetes|disease|your gut)", "treats? (ibs|constipation|diabetes|disease|symptoms?)", "heals? (your )?(gut|stomach|digestion|leaky gut)", "reverses? (diabetes|disease|damage|aging)", "boosts? immunity", "fixes? (your )?(gut|digestion)"]},
+    {"id": "blood_sugar_claim", "why": "Diabetic/blood-sugar medical claim", "patterns": ["lowers? (blood sugar|cholesterol)", "won'?t spike (your )?blood sugar", "safe for diabetics?", "treats? diabetes"]},
+    {"id": "detox_cleanse", "why": "Remove entirely per substitution table", "patterns": ["\\bdetox\\w*", "\\bcleanse\\w*", "\\bcleansing\\b"]},
+    {"id": "weight_guarantee", "why": "Clinical/outcome-guarantee weight claim (narrative weight loss IS allowed — see allow list)", "patterns": ["guaranteed weight loss", "makes you lose weight", "lose \\d+ ?(lbs?|pounds?)", "shrink your waist"]},
+    {"id": "defamatory_competitor", "why": "Defamatory competitor claim", "patterns": ["better than smartsweets", "(smartsweets|smart sweets) (is|are) (full of )?junk", "don'?t buy smartsweets"]},
+    {"id": "acacia_overconsumption", "why": "Never tell a distressed customer to keep eating", "patterns": ["keep eating (them|the whole bag)", "eat more (of them|bags)"]}
+  ],
+
+  "warn": [
+    {"id": "glp1_bare", "why": "Bare GLP-1 mention — ride the audience by symptom, not the drug term", "patterns": ["\\bglp-?1\\b"]},
+    {"id": "blood_sugar_bare", "why": "Blood-sugar language needs the structure-function disclaimer", "patterns": ["\\bblood sugar\\b", "\\bglucose\\b", "\\binsulin\\b"]},
+    {"id": "digestive_distress", "why": "Symptom language OK colloquially but review medical framing", "patterns": ["\\blaxative\\b", "\\bdiarrhea\\b", "intestinal", "\\bnause"]},
+    {"id": "ketosis_claim", "why": "Use 'keto-friendly, 3g net carbs' instead", "patterns": ["stay in ketosis", "puts you in ketosis"]}
+  ],
+
+  "allow": {
+    "_why": "Permitted language that LOOKS risky but is explicitly approved. The scorer suppresses any HARD/WARN hit whose matched span is inside one of these phrases, preventing false flags on canon-approved copy.",
+    "patterns": [
+      "prebiotic fiber",
+      "food noise",
+      "pooping every day",
+      "i'?m regular( now)?",
+      "natural appetite suppressant",
+      "appetite suppressant",
+      "kills cravings",
+      "curbs cravings",
+      "keeps you full",
+      "feel full",
+      "plant-based, no gelatin",
+      "supports a healthy blood sugar response",
+      "supports digestive regularity",
+      "i'?ve been trying to lose weight",
+      "shedding pounds",
+      "jeans fit better",
+      "keto-friendly"
+    ]
+  }
+}

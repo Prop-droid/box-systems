@@ -1,0 +1,140 @@
+{
+  "mode": "generate",
+  "policy_version": "2026-06-20",
+  "summary": {
+    "items": 15,
+    "scored": 15,
+    "errors": 0,
+    "passed": 15,
+    "pass_rate": 1.0,
+    "violation_rate": 0.0,
+    "total_hard": 0,
+    "total_warn": 2
+  },
+  "results": [
+    {
+      "id": "p01",
+      "label": "p01 9pm cravings",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p02",
+      "label": "p02 fiber deficiency",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p03",
+      "label": "p03 food noise",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p04",
+      "label": "p04 regularity",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p05",
+      "label": "p05 GLP-1 companion",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p06",
+      "label": "p06 eat the whole bag",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p07",
+      "label": "p07 candy that loves you back",
+      "passed": true,
+      "hard": [],
+      "warn": [
+        "blood_sugar_bare"
+      ],
+      "hard_spans": []
+    },
+    {
+      "id": "p08",
+      "label": "p08 26g fiber stat shock",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p09",
+      "label": "p09 weight-loss narrative",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p10",
+      "label": "p10 bloating relief",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p11",
+      "label": "p11 SmartSweets switch",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p12",
+      "label": "p12 afternoon slump snack",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p13",
+      "label": "p13 keto-friendly",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p14",
+      "label": "p14 kids/family snack",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "p15",
+      "label": "p15 daily fiber habit",
+      "passed": true,
+      "hard": [],
+      "warn": [
+        "glp1_bare"
+      ],
+      "hard_spans": []
+    }
+  ]
+}

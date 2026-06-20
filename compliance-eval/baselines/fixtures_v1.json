@@ -1,0 +1,129 @@
+{
+  "mode": "fixtures",
+  "policy_version": "2026-06-20",
+  "summary": {
+    "items": 9,
+    "scored": 9,
+    "errors": 0,
+    "passed": 4,
+    "pass_rate": 0.444,
+    "violation_rate": 0.556,
+    "total_hard": 17,
+    "total_warn": 2
+  },
+  "results": [
+    {
+      "id": "clean_01",
+      "label": "clean_01.txt",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "clean_02",
+      "label": "clean_02.txt",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "tricky_allowed_01",
+      "label": "tricky_allowed_01.txt",
+      "passed": true,
+      "hard": [],
+      "warn": [],
+      "hard_spans": []
+    },
+    {
+      "id": "violation_cleanlabel_01",
+      "label": "violation_cleanlabel_01.txt",
+      "passed": false,
+      "hard": [
+        "false_clean_label"
+      ],
+      "warn": [],
+      "hard_spans": [
+        "no artificial colors",
+        "no artificial flavors",
+        "no added sugar"
+      ]
+    },
+    {
+      "id": "violation_drugname_01",
+      "label": "violation_drugname_01.txt",
+      "passed": false,
+      "hard": [
+        "drug_name"
+      ],
+      "warn": [],
+      "hard_spans": [
+        "Ozempic"
+      ]
+    },
+    {
+      "id": "violation_fatburn_01",
+      "label": "violation_fatburn_01.txt",
+      "passed": false,
+      "hard": [
+        "fat_burn"
+      ],
+      "warn": [],
+      "hard_spans": [
+        "melt fat",
+        "burns fat"
+      ]
+    },
+    {
+      "id": "violation_medical_01",
+      "label": "violation_medical_01.txt",
+      "passed": false,
+      "hard": [
+        "medical_cure"
+      ],
+      "warn": [],
+      "hard_spans": [
+        "cures constipation",
+        "treats IBS",
+        "heals your gut",
+        "boosts\nimmunity"
+      ]
+    },
+    {
+      "id": "violation_multi_01",
+      "label": "violation_multi_01.txt",
+      "passed": false,
+      "hard": [
+        "detox_cleanse",
+        "drug_name",
+        "false_clean_label",
+        "fat_burn",
+        "glp1_equivalence",
+        "weight_guarantee"
+      ],
+      "warn": [
+        "glp1_bare"
+      ],
+      "hard_spans": [
+        "Ozempic",
+        "natural Ozempic",
+        "GLP-1 friendly",
+        "melt fat",
+        "no added sugar",
+        "detoxes",
+        "Guaranteed weight loss"
+      ]
+    },
+    {
+      "id": "warn_glp1_01",
+      "label": "warn_glp1_01.txt",
+      "passed": true,
+      "hard": [],
+      "warn": [
+        "glp1_bare"
+      ],
+      "hard_spans": []
+    }
+  ]
+}
