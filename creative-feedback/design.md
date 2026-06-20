@@ -80,11 +80,20 @@ Triggered when Tomas approves entries in `proposals.md` (e.g., `/feedback-promot
 
 - **Input:** approved proposal(s) from `proposals.md`.
 - **Behavior:**
-  1. Apply the diff: write/update the target `feedback_*` memory file and add/refresh its one-line entry in `MEMORY.md`; or edit the target script-skill file.
-  2. Mark the supporting ledger records `promoted: true` and append the pattern to `~/systems/creative-feedback/promoted.log`.
-  3. Confirm what changed.
+  1. **Keep-best gate (required for any proposal that changes how a generation skill writes copy).**
+     Before applying, run `keep_best_gate.py --rule "<the proposed rule>"`. It re-generates scripts
+     with the rule injected and compares the compliance `violation_rate` against the stored reference
+     baseline (`~/systems/compliance-eval/baselines/`). **If the gate returns BLOCK (exit 2) — the rule
+     introduces a compliance regression — do NOT apply it; mark the proposal rejected with the gate
+     output.** This implements research priority #2: frequency (≥3×) is necessary but not sufficient;
+     promotion must also clear a hard, held-out metric, because ~49% of un-gated changes regress.
+     (The gate is a no-harm compliance guardrail, not a creative-quality oracle — that needs the
+     quality-eval, priority #4. A compliance-neutral rule passes and proceeds to human judgement.)
+  2. Apply the diff: write/update the target `feedback_*` memory file and add/refresh its one-line entry in `MEMORY.md`; or edit the target script-skill file.
+  3. Mark the supporting ledger records `promoted: true` and append the pattern to `~/systems/creative-feedback/promoted.log`.
+  4. Confirm what changed (include the gate verdict + before/after violation_rate).
 - **Output:** updated canon (memory and/or skill file); ledger + promoted log updated.
-- **Safety:** nothing here runs without Tomas's explicit approval of the specific proposal.
+- **Safety:** nothing here runs without Tomas's explicit approval of the specific proposal AND a passing keep-best gate for skill-rule changes.
 
 ## Data flow
 

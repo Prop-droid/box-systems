@@ -117,6 +117,7 @@ def gather_items(args, scorer):
         if args.limit:
             prompts = prompts[: args.limit]
         gen_cmd = args.gen_cmd or DEFAULT_GEN_CMD
+        rule = args.rule  # candidate feedback rule injected into every prompt (keep-best gate)
         save_dir = None
         if args.save_scripts:
             label = args.save or "adhoc"
@@ -125,7 +126,10 @@ def gather_items(args, scorer):
         items = []
         for pr in prompts:
             print(f"  generating {pr['id']} ({pr.get('angle','')})...", file=sys.stderr)
-            text, err = generate(pr["prompt"], gen_cmd)
+            prompt_text = pr["prompt"]
+            if rule:
+                prompt_text += f"\n\nAlso apply this guidance: {rule}"
+            text, err = generate(prompt_text, gen_cmd)
             if save_dir and text:
                 (save_dir / f"{pr['id']}.txt").write_text(text)
             items.append({"id": pr["id"], "label": f"{pr['id']} {pr.get('angle','')}",
@@ -168,6 +172,7 @@ def main():
     ap.add_argument("--limit", type=int)
     ap.add_argument("--save-scripts", action="store_true")
     ap.add_argument("--gen-cmd")
+    ap.add_argument("--rule", help="candidate feedback rule injected into every prompt (keep-best gate)")
     args = ap.parse_args()
 
     scorer = Scorer()
