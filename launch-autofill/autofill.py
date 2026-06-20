@@ -237,7 +237,7 @@ BRAND CANON (hard rules):
 - No disease/treatment/weight-loss claims. Allowed: prebiotic fiber, food noise, pooping every day.
 - Use marketing flavor names (OMG Peach, Wassup Watermelon, Super Sour Blue Raspberry, Green Apple Blast, Red Raspberry Sour Scouts).
 
-TASK NAME: {name}
+{lessons}TASK NAME: {name}
 TASK KIND: {kind}
 NAME TOKEN GUIDE: SHA_YYYY_S##_<PRODUCT>_<ANGLE>_<VARIANT>_<TESTTYPE>_Tom_<EDITOR>. PRODUCT: OG=original bag, AS/AllStars=All Stars, CC=Candy Carnival, SVP=Super Variety.
 
@@ -288,6 +288,26 @@ def run_claude(prompt):
         return None
 
 
+# ---- task-lessons recall (Reflexion priming) -------------------------------
+
+RECALL_SH = os.path.expanduser("~/systems/task-lessons/recall.sh")
+
+
+def get_recall(skill, n=5):
+    """Best-effort: pull past lessons for this skill to prime the LLM (the
+    Reflexion step). Never raises; returns '' on any failure or if no lessons
+    exist yet. Fetched once per run, not per task."""
+    try:
+        if not os.path.exists(RECALL_SH):
+            return ""
+        out = subprocess.run([RECALL_SH, skill, str(n)],
+                             capture_output=True, text=True, timeout=30)
+        return out.stdout.strip()
+    except Exception as e:
+        print(f"  recall skipped: {e}")
+        return ""
+
+
 # ---- state / ping ----------------------------------------------------------
 
 def load_state():
@@ -328,6 +348,14 @@ def main():
     tasks = fetch_tasks()
     print(f"{len(tasks)} tasks in scope")
     filled, pinged, skipped, llm_calls = 0, 0, 0, 0
+
+    # Prime with lessons from prior runs (Reflexion). Fetched once per run.
+    _recall = get_recall("launch-autofill")
+    lessons_section = (
+        f"PAST LESSONS (from prior autofill runs, apply these):\n{_recall}\n\n"
+        if _recall else "")
+    if _recall:
+        print(f"  recall: injected {_recall.count(chr(10)) } lesson line(s)")
 
     for t in tasks:
         cid = t.get("custom_id") or t["id"]
@@ -397,6 +425,7 @@ def main():
         if llm_keys:
             llm_calls += 1
             ans = run_claude(PROMPT_TMPL.format(
+                lessons=lessons_section,
                 name=t["name"], kind=kind, context=context[:6000] or "(empty)",
                 lp_fiber=LP_MAP["fiber"], lp_glp1=LP_MAP["glp1"], lp_swap=LP_MAP["swap"],
                 pages="\n".join("- " + p for p in FB_PAGES),
