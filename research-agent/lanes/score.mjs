@@ -55,7 +55,7 @@ export function assembleLane(canonLane, matchedAds, bq, demand, prior) {
   const lane = { competitorValidation: validation, ourCoverage }
   const evidence = matchedAds
     .slice().sort((a, b) => (b.variantCount || 0) - (a.variantCount || 0)).slice(0, 5)
-    .map(a => ({ brand: a.brand, title: a.title || a.body.slice(0, 80), url: a.adLibraryUrl, variants: a.variantCount || 0 }))
+    .map(a => ({ brand: a.brand, title: a.title || (a.body || '').slice(0, 80), url: a.adLibraryUrl, variants: a.variantCount || 0 }))
   return {
     id: canonLane.id, label: canonLane.label, status: canonLane.status || 'watching',
     classification: classify(lane, mom),
