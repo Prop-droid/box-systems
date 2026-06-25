@@ -1,0 +1,98 @@
+[
+  {
+    "id": "9pm-cravings",
+    "label": "9pm cravings / nighttime snacking",
+    "description": "Late-evening craving moment; eat the whole bag without guilt",
+    "aliases": ["9pm", "night", "craving", "evening", "midnight snack"],
+    "personas": ["late-night snacker"],
+    "status": "scaling"
+  },
+  {
+    "id": "glp1-fiber-gap",
+    "label": "GLP-1 fiber gap",
+    "description": "Appetite-suppressed eaters need fiber-dense bites; consequence not medication",
+    "aliases": ["glp", "ozempic", "appetite", "fiber gap", "every bite"],
+    "personas": ["GLP-1 user"],
+    "status": "watching"
+  },
+  {
+    "id": "gut-health-regularity",
+    "label": "Gut health / regularity",
+    "description": "Prebiotic fiber, digestion, pooping daily",
+    "aliases": ["gut", "digest", "prebiotic", "regular", "poop", "bloat"],
+    "personas": ["gut-health seeker"],
+    "status": "watching"
+  },
+  {
+    "id": "keto-low-net-carb",
+    "label": "Keto / low net carb",
+    "description": "3g net carbs, keto-friendly mechanism reveal",
+    "aliases": ["keto", "net carb", "low carb", "sugar alcohol"],
+    "personas": ["keto dieter"],
+    "status": "watching"
+  },
+  {
+    "id": "food-noise",
+    "label": "Food noise",
+    "description": "Quieting constant food thoughts",
+    "aliases": ["food noise", "cravings all day", "obsess"],
+    "personas": [],
+    "status": "watching"
+  },
+  {
+    "id": "kids-will-eat-it",
+    "label": "Kids will actually eat it",
+    "description": "Parent permission; healthy candy kids accept",
+    "aliases": ["kids", "my son", "my daughter", "parent", "picky"],
+    "personas": ["parent"],
+    "status": "watching"
+  },
+  {
+    "id": "sugar-free-no-junk",
+    "label": "Sugar-free without the junk",
+    "description": "No artificial sweeteners/colors framing (compliance-safe)",
+    "aliases": ["sugar free", "no sugar", "3g sugar", "clean"],
+    "personas": [],
+    "status": "watching"
+  },
+  {
+    "id": "fiber-deficit",
+    "label": "Fiber deficit / daily fiber",
+    "description": "Most people miss daily fiber; 26g per bag",
+    "aliases": ["fiber", "26g", "daily fiber", "deficit"],
+    "personas": [],
+    "status": "scaling"
+  },
+  {
+    "id": "comparison-vs-competitor",
+    "label": "Comparison vs competitor",
+    "description": "Concession-then-pivot, unnamed competitor, more-than-double fiber",
+    "aliases": ["vs", "compare", "other brands", "more than", "unlike"],
+    "personas": [],
+    "status": "watching"
+  },
+  {
+    "id": "candy-without-guilt",
+    "label": "Candy without guilt",
+    "description": "Permission to enjoy candy; taste-led",
+    "aliases": ["guilt", "treat", "candy", "dessert", "sweet tooth"],
+    "personas": [],
+    "status": "watching"
+  },
+  {
+    "id": "weight-journey-cravings",
+    "label": "Weight journey cravings",
+    "description": "Weight-loss journey as setting; product solves the craving sub-problem",
+    "aliases": ["weight", "lose", "journey", "on track", "slim"],
+    "personas": ["weight-loss"],
+    "status": "watching"
+  },
+  {
+    "id": "high-protein-fiber",
+    "label": "Protein + fiber combo",
+    "description": "Satiety from protein and fiber together",
+    "aliases": ["protein", "satiety", "full", "filling"],
+    "personas": [],
+    "status": "watching"
+  }
+]
