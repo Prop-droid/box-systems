@@ -1,7 +1,7 @@
 [Unit]
-Description=research-deepdive timer
+Description=research lanes engine timer
 [Timer]
-OnCalendar=*-*-* 01,03,05:00:00
+OnCalendar=*-*-* 01:00:00
 Persistent=true
 [Install]
 WantedBy=timers.target

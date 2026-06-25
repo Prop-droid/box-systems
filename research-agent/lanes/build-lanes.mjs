@@ -12,7 +12,7 @@ const ATRIA_DIR = process.env.ATRIA_DIR
 const CANON = process.env.LANES_CANON
 const OUT = process.env.LANES_OUT
 const BQ_TABLE = process.env.BQ_TABLE
-const BRAND = process.env.BRAND || 'SHA'
+const BRAND = (process.env.BRAND || 'SHA').replace(/'/g, '')
 const SEED = new URL('./canon.seed.json', import.meta.url)
 
 function newestAtria() {
