@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { validationScore, classify, momentum, medianRunDays, assembleLane } from './score.mjs'
+import { validationScore, classify, momentum, medianRunDays, assembleLane, classifyLanes } from './score.mjs'
 
 test('validationScore strong needs >=3 advertisers AND >=15 variants', () => {
   assert.equal(validationScore({ advertisers: 3, variants: 15 }), 'strong')
@@ -64,6 +64,42 @@ test('assembleLane produces the full Lane contract object', () => {
   for (const key of ['id', 'label', 'status', 'classification', 'competitorValidation', 'ourCoverage', 'demand', 'momentum', 'evidence', 'suggestedBrief', 'updatedAt']) {
     assert.ok(key in lane, `missing contract key: ${key}`)
   }
+})
+
+test('classifyLanes is RELATIVE: top-third covered => proven-ours, bottom-third+down => fading, mid => watching, uncovered-strong => gap', () => {
+  const mk = (id, { covered = false, cmRoas = null, score = 'weak', momentum = 'flat' } = {}) => ({
+    id,
+    competitorValidation: { score },
+    ourCoverage: { covered, cmRoas },
+    momentum,
+  })
+  // covered cmRoas spread [0.2, 0.4, 0.6] + one uncovered-but-strong lane
+  const lanes = [
+    mk('low', { covered: true, cmRoas: 0.2, momentum: 'down' }), // bottom + down => fading
+    mk('mid', { covered: true, cmRoas: 0.4 }),                   // mid => watching
+    mk('high', { covered: true, cmRoas: 0.6 }),                  // top => proven-ours
+    mk('absent', { covered: false, cmRoas: null, score: 'strong' }), // uncovered strong => gap
+  ]
+  const out = classifyLanes(lanes)
+  const by = Object.fromEntries(out.map(l => [l.id, l.classification]))
+  // cov sorted = [0.2, 0.4, 0.6]; topThird = at(2/3) = cov[2] = 0.6; botThird = at(1/3) = cov[1] = 0.4
+  assert.equal(by.high, 'proven-ours')
+  assert.equal(by.low, 'fading')
+  assert.equal(by.mid, 'watching')
+  assert.equal(by.absent, 'gap')
+})
+
+test('classifyLanes bottom-third stays watching when momentum is not down', () => {
+  const mk = (id, cmRoas, momentum) => ({
+    id,
+    competitorValidation: { score: 'weak' },
+    ourCoverage: { covered: true, cmRoas },
+    momentum,
+  })
+  const out = classifyLanes([mk('a', 0.2, 'flat'), mk('b', 0.5, 'flat'), mk('c', 0.9, 'flat')])
+  const by = Object.fromEntries(out.map(l => [l.id, l.classification]))
+  assert.equal(by.a, 'watching') // bottom-third but momentum flat => not fading
+  assert.equal(by.c, 'proven-ours')
 })
 
 test('assembleLane evidence mapping is null-safe when an ad lacks title and body', () => {

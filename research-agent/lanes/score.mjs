@@ -65,3 +65,31 @@ export function assembleLane(canonLane, matchedAds, bq, demand, prior) {
     updatedAt: new Date().toISOString().slice(0, 10),
   }
 }
+
+// Final classification is RELATIVE to our own lanes (absolute cmROAS is
+// unreliable: first-order revenue only, no LTV). Top-third cmROAS among
+// covered lanes = proven-ours; bottom-third + momentum down = fading;
+// gap = strong competitor validation but we are absent.
+export function classifyLanes(lanes) {
+  const cov = lanes
+    .filter(l => l.ourCoverage.covered && l.ourCoverage.cmRoas != null)
+    .map(l => l.ourCoverage.cmRoas)
+    .sort((a, b) => a - b)
+  const at = p => (cov.length ? cov[Math.min(cov.length - 1, Math.floor(p * cov.length))] : null)
+  const topThird = at(2 / 3)   // cmRoas >= this => top third
+  const botThird = at(1 / 3)   // cmRoas <  this => bottom third
+  return lanes.map(l => ({ ...l, classification: classifyOne(l, topThird, botThird) }))
+}
+
+function classifyOne(l, topThird, botThird) {
+  const strong = l.competitorValidation.score === 'strong'
+  const { covered, cmRoas } = l.ourCoverage
+  if (!covered || cmRoas == null) {
+    if (strong) return 'gap'
+    if (l.momentum === 'up') return 'emerging'
+    return 'watching'
+  }
+  if (topThird != null && cmRoas >= topThird) return 'proven-ours'
+  if (botThird != null && cmRoas < botThird && l.momentum === 'down') return 'fading'
+  return 'watching'
+}

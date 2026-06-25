@@ -3,7 +3,7 @@ import { promises as fs } from 'fs'
 import { readdirSync, readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 import { execFileSync } from 'child_process'
-import { assembleLane } from './score.mjs'
+import { assembleLane, classifyLanes } from './score.mjs'
 import { tagAds, proposeLanes } from './tag.mjs'
 
 const DRY = process.argv.includes('--dry-run')
@@ -146,9 +146,11 @@ async function main() {
     }
   }
 
-  const lanes = canon.map(c =>
+  let lanes = canon.map(c =>
     assembleLane(c, byLane[c.id] || [], bqCoverage(c), demandFor(c, themes), prior[c.id] || null),
   )
+  // Final classification is RELATIVE across our covered lanes (see classifyLanes).
+  lanes = classifyLanes(lanes)
 
   const unmatched = recent.filter(a => adLaneRaw[a.id] === 'unmatched')
   const proposed = await proposeLanes(unmatched, KEY)
