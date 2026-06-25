@@ -1,5 +1,5 @@
 [Unit]
-Description=research-deepdive (migrated cron)
+Description=Research lanes engine
 [Service]
 Type=oneshot
-ExecStart=%h/systems/research-agent/bin/deepdive.sh
+ExecStart=%h/systems/research-agent/bin/run-lanes.sh
