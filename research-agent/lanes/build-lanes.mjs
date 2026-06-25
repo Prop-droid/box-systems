@@ -12,6 +12,7 @@ const ATRIA_DIR = process.env.ATRIA_DIR
 const CANON = process.env.LANES_CANON
 const OUT = process.env.LANES_OUT
 const BQ_TABLE = process.env.BQ_TABLE
+const BRAND = process.env.BRAND || 'SHA'
 const SEED = new URL('./canon.seed.json', import.meta.url)
 
 function newestAtria() {
@@ -65,8 +66,9 @@ function bqCoverage(canonLane) {
   const sql =
     `SELECT ROUND(SUM(spend),0) spend, ROUND(SAFE_DIVIDE(SUM(revenue)-SUM(cogs),SUM(spend)),2) cmRoas` +
     ` FROM \`${BQ_TABLE}\`` +
-    ` WHERE dt >= DATE_SUB(CURRENT_DATE(), INTERVAL 90 DAY)` +
-    ` AND REGEXP_CONTAINS(LOWER(IFNULL(ai_angle,'')), r'(${rx.toLowerCase()})')`
+    ` WHERE brand='${BRAND}'` +
+    ` AND dt >= DATE_SUB(CURRENT_DATE(), INTERVAL 90 DAY)` +
+    ` AND REGEXP_CONTAINS(LOWER(CONCAT(IFNULL(ai_headline,''),' ',IFNULL(ai_first_sentence,''),' ',IFNULL(headline,''),' ',IFNULL(description,''),' ',IFNULL(adset_name,''))), r'(${rx.toLowerCase()})')`
   try {
     const out = execFileSync('bq', ['query', '--use_legacy_sql=false', '--format=json', sql], {
       encoding: 'utf-8',
