@@ -41,10 +41,12 @@ run_query() {
 }
 for q in "$SCRIPT_DIR/queries/"*.sql; do run_query "$q"; done
 
-# Need actual customer comments to digest
+# Need actual customer comments to digest. No-data is NOT a job failure (exit 0):
+# the upstream BQ comments feed can legitimately be empty/dead (e.g. dead since 2026-06-22,
+# data-team issue) and a nonzero exit here parks the unit in 'failed', polluting the watchdog.
 if ! grep -q "|" "$WORK/01_comments.txt" 2>/dev/null; then
-  echo "FAIL: no comments returned for $FROM..$TO — skipping digest"
-  exit 3
+  echo "WARN: no comments returned for $FROM..$TO — skipping digest (upstream facebook_dashboard_comments feed empty; check with data team if this persists)"
+  exit 0
 fi
 
 # Assemble prompt
