@@ -1,26 +1,32 @@
 {
   "_meta": {
     "brand": "Shameless Snacks",
-    "policy_version": "2026-06-20",
+    "policy_version": "2026-07-03",
     "sources": [
       "brain/wiki/shameless/brand/compliance-guardrails.md",
       "brain/raw/brand-context/compliance_guide.md",
-      "memory/shameless_compliance_language.md (2026-06-09 overrides)"
+      "memory/shameless_compliance_language.md (2026-06-09 overrides)",
+      "2026-06-30 bans: 'appetite suppressant', 'real fruit', 'made in USA'/US-manufacturing, 'dye free', 'natural flavors'/'no artificial dyes'",
+      "2026-07-02 (Tomas): core bags use sucralose + erythritol, NOT allulose — any allulose claim is false"
     ],
-    "note": "Severity HARD = definite violation (counts toward violation_rate). WARN = review-before-publish (does not fail the script but is reported). Patterns are case-insensitive regex, matched on word boundaries. Edit this file as policy evolves; the scorer reads it as data."
+    "note": "Severity HARD = definite violation (counts toward violation_rate). WARN = review-before-publish (does not fail the script but is reported). Patterns are case-insensitive regex, matched on word boundaries. Edit this file as policy evolves; the scorer reads it as data. 2026-07-03: appetite suppressant moved from allow-list to HARD ban; added real_fruit, made_in_usa (exception 'packed in the US'), false_ingredient_allulose, and dye-free/natural-flavors/no-artificial-dyes to false_clean_label. '70-90 calories' remains ALLOWED (some bags are 90 cal)."
   },
 
   "hard": [
     {"id": "drug_name", "why": "Named GLP-1 drug — FDA warning-letter zone", "patterns": ["\\bozempic\\b", "\\bwegovy\\b", "\\bzepbound\\b", "\\bmounjaro\\b", "\\bsemaglutide\\b", "\\btirzepatide\\b", "\\bmetformin\\b"]},
     {"id": "glp1_equivalence", "why": "Drug-equivalence claim", "patterns": ["natural ozempic", "ozempic[- ]like", "glp-?1 alternative", "glp-?1 activation", "glp-?1 friendly", "replace your shot", "skip the injection", "works with (ozempic|wegovy|mounjaro)"]},
     {"id": "fat_burn", "why": "Clinical/physiological fat claim", "patterns": ["\\bmelt(s|ing)? fat\\b", "\\bburn(s|ing)? fat\\b", "\\bfat[- ]burning\\b"]},
-    {"id": "false_clean_label", "why": "Formulation does not support it (Tomas 2026-06-08)", "patterns": ["no artificial colou?rs?", "no artificial flavou?rs?", "no artificial sweeteners?", "no added sugar", "all natural sweeteners?", "only natural ingredients?", "naturally flavou?red"]},
+    {"id": "false_clean_label", "why": "Formulation does not support it (Tomas 2026-06-08; dye-free/natural-flavors/no-artificial-dyes banned 2026-06-30)", "patterns": ["no artificial colou?rs?", "no artificial flavou?rs?", "no artificial dyes?", "no artificial sweeteners?", "no added sugar", "all natural sweeteners?", "only natural ingredients?", "naturally flavou?red", "natural flavou?rs?", "dye[-\\s]+free"]},
     {"id": "medical_cure", "why": "Disease/medical claim (verb requires a disease object so the candy noun 'treats' does not false-flag)", "patterns": ["cures? (ibs|constipation|leaky gut|bloating|diabetes|disease|your gut)", "treats? (ibs|constipation|diabetes|disease|symptoms?)", "heals? (your )?(gut|stomach|digestion|leaky gut)", "reverses? (diabetes|disease|damage|aging)", "boosts? immunity", "fixes? (your )?(gut|digestion)"]},
     {"id": "blood_sugar_claim", "why": "Diabetic/blood-sugar medical claim", "patterns": ["lowers? (blood sugar|cholesterol)", "won'?t spike (your )?blood sugar", "safe for diabetics?", "treats? diabetes"]},
     {"id": "detox_cleanse", "why": "Remove entirely per substitution table", "patterns": ["\\bdetox\\w*", "\\bcleanse\\w*", "\\bcleansing\\b"]},
     {"id": "weight_guarantee", "why": "Clinical/outcome-guarantee weight claim (narrative weight loss IS allowed — see allow list)", "patterns": ["guaranteed weight loss", "makes you lose weight", "lose \\d+ ?(lbs?|pounds?)", "shrink your waist"]},
     {"id": "defamatory_competitor", "why": "Defamatory competitor claim", "patterns": ["better than smartsweets", "(smartsweets|smart sweets) (is|are) (full of )?junk", "don'?t buy smartsweets"]},
-    {"id": "acacia_overconsumption", "why": "Never tell a distressed customer to keep eating", "patterns": ["keep eating (them|the whole bag)", "eat more (of them|bags)"]}
+    {"id": "acacia_overconsumption", "why": "Never tell a distressed customer to keep eating", "patterns": ["keep eating (them|the whole bag)", "eat more (of them|bags)"]},
+    {"id": "appetite_suppressant", "why": "Drug-effect appetite-suppressant claim (banned 2026-06-30; moved off allow-list)", "patterns": ["appetite suppressant"]},
+    {"id": "real_fruit", "why": "No real fruit in the formulation (banned 2026-06-30)", "patterns": ["real fruit"]},
+    {"id": "made_in_usa", "why": "Unsubstantiated US-manufacturing claim (banned 2026-06-30; exception: 'packed in the US')", "patterns": ["made in (the )?usa?\\b", "made in america", "manufactured in (the )?usa?\\b", "american[-\\s]made", "\\bus[-\\s]made\\b"]},
+    {"id": "false_ingredient_allulose", "why": "Core bags use sucralose + erythritol, not allulose (Tomas 2026-07-02) — allulose claim is false", "patterns": ["\\ballulose\\b"]}
   ],
 
   "warn": [
@@ -37,8 +43,7 @@
       "food noise",
       "pooping every day",
       "i'?m regular( now)?",
-      "natural appetite suppressant",
-      "appetite suppressant",
+      "packed in the us",
       "kills cravings",
       "curbs cravings",
       "keeps you full",
