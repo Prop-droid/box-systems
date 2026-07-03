@@ -1,0 +1,29 @@
+# LiteLLM proxy — DRY standup 2026-06-20. Meters/budgets API-KEY traffic only
+# (Hermes -> Anthropic API / Gemini / OpenRouter). Claude Code on this box uses
+# an OAuth subscription, NOT an API key, so it is intentionally NOT routed here.
+# Model strings below need confirming against Hermes's actual routing before any
+# cutover (see project_hermes_model_routing). No traffic is redirected yet.
+model_list:
+  - model_name: claude-sonnet-4-6
+    litellm_params:
+      model: anthropic/claude-sonnet-4-6
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: claude-opus-4-8
+    litellm_params:
+      model: anthropic/claude-opus-4-8
+      api_key: os.environ/ANTHROPIC_API_KEY
+  - model_name: gemini-pro
+    litellm_params:
+      model: gemini/gemini-2.5-pro
+      api_key: os.environ/GEMINI_API_KEY
+  - model_name: openrouter-passthrough
+    litellm_params:
+      model: openrouter/*
+      api_key: os.environ/OPENROUTER_API_KEY
+
+litellm_settings:
+  drop_params: true
+  num_retries: 2
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
