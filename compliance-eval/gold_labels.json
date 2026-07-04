@@ -10,6 +10,8 @@
   "violation_madeusa_01.txt": {"hard": ["made_in_usa"],             "warn_includes": []},
   "violation_allulose_01.txt":{"hard": ["false_ingredient_allulose"],"warn_includes": []},
   "violation_dyefree_01.txt": {"hard": ["false_clean_label"],       "warn_includes": []},
+  "violation_naturalcolor_01.txt":{"hard": ["false_clean_label"],   "warn_includes": []},
+  "violation_offer_01.txt":   {"hard": [],                          "warn_includes": ["offer_claim"]},
   "violation_cleanlabel_01.txt":{"hard": ["false_clean_label"],     "warn_includes": []},
   "violation_fatburn_01.txt": {"hard": ["fat_burn"],               "warn_includes": []},
   "violation_medical_01.txt": {"hard": ["medical_cure"],           "warn_includes": []},
