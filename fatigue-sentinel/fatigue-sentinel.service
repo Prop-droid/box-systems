@@ -1,0 +1,6 @@
+[Unit]
+Description=Creative fatigue sentinel (BQ decay watch -> ntfy)
+
+[Service]
+Type=oneshot
+ExecStart=%h/systems/fatigue-sentinel/run_sentinel.sh

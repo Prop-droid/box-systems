@@ -1,0 +1,13 @@
+[Unit]
+Description=Weekly Atria followed-brands swipe pull (Mon 07:30, before the weekly-report crons read anything)
+# STAGED by fable-window task 15 (2026-07-04). Not installed/enabled by default.
+
+[Timer]
+# Monday 07:30 local. Early morning = outside peak interactive hours and the
+# exhausted-session window (usage resets ~19:40 EEST), and ahead of any weekly
+# report crons that consume the swipe output later in the day.
+OnCalendar=Mon *-*-* 07:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

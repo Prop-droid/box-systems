@@ -1,0 +1,9 @@
+[Unit]
+Description=atria-weekly (Atria followed-brands competitor swipe pull + strategist NEW-ads diff)
+# STAGED by fable-window task 15 (2026-07-04). Not installed/enabled by default.
+
+[Service]
+Type=oneshot
+ExecStart=%h/systems/atria-weekly/run_atria_weekly.sh
+# Weekly followed-brands pull is heavier than the daily gr-ns monitor; allow room.
+TimeoutStartSec=1200

@@ -1,0 +1,7 @@
+# tokens per 5h window; calibrated below from observed history, override manually anytime
+TOKEN_LIMIT=auto
+THRESHOLD=90
+DAY_START=8
+DAY_END=23
+NTFY_TAB=https://ntfy.sh/tomas-tab-958e4431
+NTFY_PHONE=https://ntfy.sh/tomas-usage-guard-7c31
