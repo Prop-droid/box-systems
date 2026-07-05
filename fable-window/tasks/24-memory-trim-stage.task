@@ -1,0 +1,5 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Take ~/fable-window/artifacts/context-audit.md (task 07) and stage its recommendations: produce full replacement files in artifacts/ for the top-5 trim targets (e.g. MEMORY.md.trimmed, CLAUDE.md.box.trimmed, specific skill descriptions) preserving every load-bearing fact. Each with a CHANGES block and estimated tokens saved. Do NOT apply anything - these are for Tomas review. If context-audit.md already drafted replacements, refine and complete them rather than restarting. Ledger per RULES.

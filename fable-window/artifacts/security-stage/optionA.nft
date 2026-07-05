@@ -1,0 +1,65 @@
+#!/usr/sbin/nft -f
+#
+# Option A: DEFAULT-DROP LAN firewall for tomas-agent-box.
+# (This is the task-spec ruleset. A lower-blast-radius alternative that keeps
+#  policy accept and only drops the app ports lives in
+#  optionA-variant-targeted-drop.nft — see README.md for the tradeoff.)
+#
+# Everything inbound is dropped unless explicitly allowed below. The tailnet
+# keeps FULL access (iifname tailscale0 accept). On the physical LAN only the
+# flows the sweep found legitimate stay open: SSH, NoMachine, Syncthing, mDNS,
+# DHCP renew, and the tablet -> tablet-dash:8765 flow. CCC:3000, md-server:8092,
+# camofox:9377, visionclaw-shim:8643 — and any FUTURE 0.0.0.0 service — are
+# closed on the LAN with no config edit or service restart.
+#
+# Design: a SEPARATE `inet fw` table at priority -10 runs BEFORE Tailscale's
+# iptables-nft `ip filter` table (priority 0), which is marked "do not touch".
+# We never edit that table. A `drop` verdict here is final, so this default-drop
+# chain genuinely restricts even though the iptables INPUT policy is `accept`.
+#
+# Facts baked in (verified 2026-07-04):
+#   box LAN ip      192.168.0.107  (enp0s31f6)
+#   box tailnet ip  100.107.26.69  (tailscale0)
+#   tablet LAN ip   192.168.0.160  (Lenovo P11 Pro, NOT on tailnet -> LAN only)
+#
+# adb note: the box is the adb *client* to the tablet (box -> 192.168.0.160:5555),
+# so return traffic is covered by `ct state established,related` — no inbound
+# rule is needed for adb.
+#
+# Idempotent: add-then-delete flushes any prior copy before redefining.
+
+add table inet fw
+delete table inet fw
+
+table inet fw {
+	chain input {
+		type filter hook input priority -10; policy drop;
+
+		# --- always trusted ---
+		iifname "lo" accept
+		iifname "tailscale0" accept
+		ct state established,related accept
+		ct state invalid drop
+		meta l4proto { icmp, icmpv6 } accept
+
+		# --- DHCP client lease renewal (broadcast replies aren't always conntracked) ---
+		udp sport 67 udp dport 68 accept
+
+		# --- legitimate LAN services ---
+		tcp dport 22 accept                                   # SSH (key auth; see passphrase plan)
+		tcp dport 4030 accept                                 # NoMachine
+		tcp dport 22000 accept                                # Syncthing sync
+		udp dport { 4030, 5353, 22000, 21027, 41641 } accept  # NoMachine, mDNS, Syncthing (sync+discovery), tailscale
+
+		# --- tablet-dash: allow ONLY the tablet, not the whole LAN ---
+		ip saddr 192.168.0.160 tcp dport 8765 accept
+
+		# Everything else (CCC:3000, md-server:8092, camofox:9377,
+		# visionclaw-shim:8643, 8765 from any other host, and anything new)
+		# falls through to `policy drop`.
+	}
+}
+
+# --- Optional hardening (leave commented unless you only ever SSH over tailnet) ---
+# To restrict SSH to the tailnet, delete `tcp dport 22 accept` above
+# (tailscale0 is already fully accepted).

@@ -1,0 +1,16 @@
+[Unit]
+Description=Markdown browser for ~/brain (read-only, Tailnet-only)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/systems/md-server
+Environment=MD_ROOT=%h/brain
+Environment=MD_HOST=100.107.26.69
+Environment=MD_PORT=8092
+ExecStart=%h/.local/bin/uv run %h/systems/md-server/server.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

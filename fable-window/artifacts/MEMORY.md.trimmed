@@ -1,0 +1,152 @@
+<!-- Memory index. One line per memory: - [Title](file.md) - trigger + decisive hook. Detail lives in the files; keep hooks short. -->
+
+## Working style
+- [Off Happy, uses Claude app](feedback_off_happy_use_claude_app.md) - remote via Claude app; box runs plain claude
+- [Linux beginner = step-by-step](feedback_linux_beginner_stepwise.md) - one action at a time, explain each prompt
+- [Agent Box brain sync](project_agentbox_brain_sync.md) - box ~/brain canonical; Mac ~/AgentBoxBrain = Syncthing mirror
+- [Launch claude from ~/brain](feedback_box_launch_claude_from_brain.md) - cwd must be ~/brain for Code Things; use brain alias
+- [Memory architecture split](feedback_memory_architecture.md) - auto-memory = in-context; GBrain = deep recall; don't triple-query
+- [Claude = orchestrator, Hermes = fixer](feedback_claude_orchestrator_hermes_fixer.md) - Claude primary; Hermes only when Claude can't
+- [Browser = URL handoff](feedback_browser_url_handoff.md) - work headlessly, verify server-side, hand ONE tappable URL; never puppeteer
+- [Recall = search transcripts + ClickUp](feedback_recall_search_before_answering.md) - spans ALL sessions; grep today's *.jsonl + verify ClickUp
+
+## Shameless - brand canon & copy rules
+- [Shameless brand canon](shameless_brand_canon.md) - 26g fiber/70 cal/3g sugar/3g net carbs; 46% sub ceiling; canon-beats-brief
+- [Variety pack flavors](project_shameless_variety_pack_flavors.md) - Berry Blast/Tropical/All-Stars/Super Sour; shape->flavor molds
+- [Variety pack ingredients](project_shameless_variety_pack_ingredients.md) - polydextrose + soluble corn fiber + sucralose; not allulose
+- [Compliance language](shameless_compliance_language.md) - allowed: prebiotic fiber, food noise, pooping daily; banned: natural flavors, dye-free
+- [CTA = daily fiber driver](feedback_shameless_cta_daily_fiber.md) - push daily-fiber habit, not offers/discounts/urgency
+- [Brief trim defaults](feedback_shameless_brief_defaults.md) - drop timestamps/checklists/voice-rules/objections/offer/LP/compliance unless asked
+- [Marketing flavor names](feedback_use_marketing_flavor_names.md) - branded flavor names in copy, not Amazon descriptors
+- [LP slugs != LP names](project_shameless_lp_naming.md) - "FrontrowMD" slug = internally "Fiber First"; don't propagate slug
+- [External tool stack](project_shameless_external_toolstack.md) - Atria + internal video-gen; Foreplay/Arcads/Creatify/HeyGen/Motion redundant
+- [Steph Joplin winner pattern](project_steph_joplin_winner_pattern.md) - weight performance over structure on WL-creator briefs
+- [Winner patterns 2026H1](feedback_winner_patterns_2026H1.md) - 14 canon shapes from 334 winners; retros 43%, offer-wrapper mandatory; check every brief
+
+## Copy & script craft (all brands)
+- [Script defaults](script_defaults.md) - 5 hooks then script, internal-only critique, Micro-Scripts lens; read before any copy
+- [Ask muse before brief](feedback_ask_muse_before_brief.md) - before any SHA brief/script, ask if there's a muse/source first
+- [Creative output = plaintext](feedback_creative_output_plaintext.md) - scripts/briefs as prose/markdown, never triple-backtick fences
+- [No em dashes](feedback_no_em_dashes.md) - never em/en dashes in copy
+- [Shameless script Doc template](project_shameless_script_template.md) - approved scripts -> canonical SHA Doc (2-table, sprint-numbered)
+- [B-roll clip duration](feedback_broll_clip_duration.md) - B-roll defaults 4s; hero/narrative stays 6s
+- [Read visuals, don't guess](feedback_read_visuals_dont_guess.md) - Read the actual image/PDF/frame; never infer from filename
+- [Giancarlo confession-first ads](project_giancarlo_confession_first_active.md) - live founder-ad thread; "9pm cravings" canonical hook
+
+## ClickUp & brief creation
+- [Video iteration task system](project_clickup_video_iteration_system.md) - 10-type taxonomy; step two = templates
+- [clickup-task-creator skill](project_clickup_task_creator_skill.md) - invoke before drafting tasks; canonical execution layer
+- [ClickUp Connection manual](project_clickup_connection.md) - Step-0 discipline + cached hierarchy IDs + field UUIDs before any brief
+- [ClickUp = Tomas list ONLY](feedback_clickup_tomas_list_only.md) - scope to Tomas | Creative Strategist (901110066469); never team-wide unless asked
+- [Descriptions = no strategist notes](feedback_brief_description_no_strategist_notes.md) - output/instructions/copy only; no ROAS/spend/rationale
+- [Parallel briefs differentiate](feedback_parallel_brief_differentiation.md) - N parallel briefs = distinct sub-angles, not clones (unless "duplicates")
+- [Always ask which LP](feedback_ask_landing_page.md) - never auto-pick the LP; ask per brief
+- [Image Responsible = Designer team](feedback_image_task_responsible_designer.md) - Responsible = Designer team GROUP GUID (userid rejected); verify after write
+- [WL task playbook](project_sha_wl_task_playbook.md) - whitelisting deliverable build steps + custom-field gotchas
+- [SHA angle-canon + naming](feedback_sha_task_angle_canon_naming.md) - angle names canon; name needs script-name token; OUTPUT = "10 videos"
+- [Hooks = one variation each](feedback_sha_hooks_one_variation_each.md) - one cut per hook (5 hooks = 5 cuts); never "pick one"
+- [Aicha workflow](project_aicha_workflow.md) - Aicha creates sibling tasks, NOT subtasks
+- [Task Creation task type](feedback_clickup_task_creation_tasks.md) - Aicha(image)/Ana(video) fan out child tasks; plain directive format
+- [Launch-details fill](project_sha_launch_details_fill.md) - "launch details" = 4 FB fields on approved video; no competitor names in paid
+- [Launch task defaults](feedback_launch_task_defaults.md) - assignee Alejandra + priority high + 8h est (video AND image)
+- [Image-test task convention](project_sha_image_test_task_convention.md) - name = SHA_yr_S##_angle_format_concept_ImageTest_Tom; embed ref image inline
+- [THT duplicate parent tasks](feedback_tht_duplicate_as_parent_tasks.md) - THT duplicates = standalone list tasks, not subtasks; strip bracket clutter
+- [Image-brief format menu](feedback_image_brief_format_menu.md) - 16-family static taxonomy per brief; image = 60-80% of perf
+- [Variety-pack launch tasks](project_sha_variety_pack_launch_tasks.md) - S25 batch SH-16419-16430; LP trw-gifts-it2-vp; 26g fiber on VP label-unverified
+- [Copy Research task type](project_sha_copy_research_task_type.md) - lean SH-16607-style ideation handoff (Ayca/Ana); BQ comment-mining; visuals = suggestions
+- [ClickUp list collapse](clickup-markdown-ordered-list-collapse.md) - numbered/lettered lists collapse on re-save; use bullets, verify after update
+- [ClickUp REST API fallback](reference_clickup_rest_api_fallback.md) - MCP hides attachments; pk_ token on disk; capture ![]() before overwriting
+
+## Data, BigQuery, systems & crons
+- [System maintenance loops](project_system_maintenance_loops.md) - watchdog + agent cron suite in ~/systems; scripts local; headless via stdin
+- [Ejam BigQuery](reference_ejam_bigquery.md) - creative_dashboard + facebook_dashboard_comments; replaces Meta API
+- [creative_dashboard schema](reference_ejam_bq_creative_dashboard_schema.md) - full funnel + asset links + hook/hold metrics; SA scoped to this table
+- [ClickUp winners archive](reference_clickup_winners_archive.md) - winners.jsonl (327 parents + 665 subs), query via jq; don't re-pull for analytics
+- [BQ->ClickUp perf writeback](project_bq_clickup_perf_writeback.md) - daily cron writes ROAS/spend/orders onto active list tasks
+- [Launch-autofill agent](project_launch_autofill_agent.md) - daily field autofill on 5 statuses; team-endpoint 30d fetch; em-dash lint
+- [winners.jsonl refresh cron](project_winners_refresh_cron.md) - Mon cron keeps the winner archive current
+- [SHA weekly report cron](project_sha_weekly_report_cron.md) - Mon cron builds brand-health weekly; check before rebuilding manually
+- [Iteration suggestions drop](project_iteration_suggestions_drop.md) - box timer Tue+Thu 10:00 -> Tomas Pod chat; self-disables 2026-07-17
+- [Raw folder auto-ingest](project_raw_ingest_schedule.md) - daily /ingest-scan on Code Things
+- [Creative Command Center](project_creative_command_center.md) - local Next.js creative dashboard (designing)
+- [CCC Research Lanes](project_ccc_research_lanes.md) - shipped on feat/research-lanes (unmerged); brief-creation parked; iteration-brief next
+- [Creative tagging pivot](project_creative_tagging_pivot.md) - open-vocab schema; demographic_nativeness = hard internal-only firewall
+- [Creative feedback loop](project_creative_feedback_loop.md) - /feedback logs ship/edit/kill -> promotes >=3x patterns; Mon cron
+- [task-lessons loop](project_task_lessons_loop.md) - generalizes creative loop to any cron/agent; capture->gbrain, recall->prime
+- [compliance-eval harness](project_compliance_eval_harness.md) - eval-gate for shameless-script in ~/systems/compliance-eval; scorer + regression diff
+- [wiki-performance-sync skill](project_wiki_performance_sync_skill.md) - BQ ROAS-truth drafts wiki canon updates, human-in-loop
+- [Atria integration](project_atria_integration.md) - atria skill pulls followed-brand ads -> swipe JSONL; replaces Apify scrape
+- [Competitor swipe index](project_2026-06_competitor_swipe_index.md) - Gruns/Oats/Seed scrape; Seed needs view_all_page_id= + post-filter
+- [Research agent (external-only)](project_research_agent.md) - autonomous creative-strategy researcher; EXTERNAL sources only, never wiki
+- [earlyoom OOM guard](project_earlyoom_oom_guard.md) - replaces memguard; /etc/default/earlyoom; 16Gi swap
+- [LiteLLM proxy](project_litellm_proxy.md) - metering gateway 127.0.0.1:4000 (DRY); meters Hermes API-key calls, NOT Claude OAuth-sub
+- [2026-04 creative strategy research](project_creative_strategy_tactics_2026_research.md) - 7 deep dives, canonical 2026 reference; older wiki may conflict
+
+## Side projects
+- [Shameless team KB plugin](project_shameless_team_kb_plugin.md) - TWO-TIER: shameless-kb (team-safe) + shameless-kb-restricted (financials); v1.2.0
+- [Gaming box -> Nobara](project_gaming_box_nobara.md) - LIVE nobara-pc (ssh nobara/100.78.176.92); Nobara 43 GNOME; GTX 1060 FIXED (nvidia 580.142 pin)
+- [Steam Deck save sync](project_steam_deck_save_sync.md) - Deck<->Nobara; Steam-Cloud-only, Ludusavi+Syncthing PARKED; gotchas inside
+- [Claude Code on Pixel 7 Pro](project_claude_on_pixel_termux.md) - Termux->proot-Debian; /sdcard auto-bound; adb-drive gotchas
+- [Hermes-on-glasses (VisionClaw)](project_glasses_hermes_visionclaw.md) - Ray-Ban Meta: fork VisionClaw, keep Gemini Live, swap OpenClaw->Hermes
+- [VisionClaw Android build](project_visionclaw_android_build.md) - fork builds+installs on Pixel 7 Pro; build cmds, SDK setup, icon-scaffold fix
+
+## Personal infra & repos (private GitHub)
+- [Two GitHub accounts](project_github_two_accounts.md) - work tomas-ejam (default) + private Prop-droid (SSH github-personal); ~/personal/ = private
+- [KARIMO trial](project_karimo_trial.md) - CCC Research Action Queue on karimo-trial branch; planning strong but agents ship "green" defects
+
+## Tooling, workspace & infra
+- [Agent box Perplexity MCP](project_agentbox_perplexity_mcp.md) - real Chrome + Xvfb :99 + keychain unseal; token ~30d; re-patch ~/.perplexity-mcp
+- [Agentic OS project](project_agentic_os.md) - virtual agent org ON Hermes + Claude Code (NOT LangGraph); doc ~/agentic-os/DESIGN.md
+- [skill-seekers CLI](reference_skill_seekers.md) - docs/repos/PDFs -> Claude skills; uv tool py3.12; trim before installing
+- [Scrapling (MCP-wired)](reference_scrapling.md) - Python stealth-scraping via uv tool py3.12; not an Apify/Firecrawl replacement
+- [Camofox stealth browser](project_camofox_setup.md) - Camoufox on :9377, wired to Hermes via CAMOFOX_URL; scraping fallback
+- [Default code directory](user_default_code_dir.md) - Code Things on Google Drive; Mac + Windows paths
+- [Code Things is git-tracked](project_code_things_git_tracked.md) - text-only git repo since 2026-06-09; commit baseline before bulk reorgs
+- [gws CLI setup](project_gws_setup.md) - authed to WORK account; call gws directly, not the skill's Python wrapper
+- [gws sheets append gotcha](reference_gws_sheets_append_blankrow.md) - +append clobbers rows after mid-table blank; read first, use values.update
+- [md-server / reading .md](project_md_server.md) - glow (terminal), md-server :8092 over Tailscale, Obsidian on Mac via Syncthing
+- ["Save to Google Drive" = work](feedback_save_to_gdrive_means_work_account.md) - work-account Doc via Drive MCP, not personal Code Things Drive
+- [Be specific about folder paths](feedback_specific_folder_paths.md) - disambiguate local ~/... vs Drive "Code Things/..."
+- [New folders = additive only](feedback_additive_new_folders.md) - don't overwrite copied-in files; add distinctly-named new ones
+- [Code Things = Shameless-only](project_code_things_shameless_only.md) - no health/fitness/diet in wiki; suggest a separate workspace
+- [Drive file ID via xattr](reference_drive_xattr_file_id.md) - get personal-Drive file ID via xattr when Drive MCP can't reach it
+- [Skill symlink sync](project_skill_symlink_sync.md) - Hermes curator orphans ~/.claude/skills weekly; com.tomas.skill-sync self-heals; suspect FIRST
+- [Memory compiler installed](project_memory_compiler.md) - conversation->daily->KB pipeline ~/.tools/claude-memory-compiler; hooks live (box + Nobara)
+- [Unified memory via Syncthing](project_unified_memory_syncthing.md) - memory dir synced box+Nobara+Mac (folder claude-memory); conflict recipe inside
+- [GBrain setup (live)](project_gbrain_setup.md) - Garry Tan's agent-memory MCP, Gemini embeddings @1536d; ~/.bun/bin PATH fix; not yet migrated
+- [/schedule is remote-only](feedback_schedule_skill_remote_only.md) - crons needing local creds/Drive use launchd + bash + claude CLI
+- [Tablet dashboard](project_tablet_dashboard.md) - Lenovo P11 Pro adb-controllable; accounts merged in Calendar; ntfy tomas-tab-958e4431
+- [Tablet battery saver](project_tablet_battery_saver.md) - P11 Pro OLED: dark + dim + overnight screen-off cron; ROOT CAUSE = 0.25A weak charger
+- [Tablet dashboard data](project_tablet_dash_data.md) - Fully Kiosk + tablet-dash:8765; stale = expired personal Google token; Mac-catcher re-auth
+- [Agent box -> tablet control](project_agentbox_tablet_control.md) - LIVE: box drives P11 Pro over adb tcpip:5555 via android-mcp; systemd watchdog
+- [Fleet-control skill](reference_fleet_control_skill.md) - manual for reaching Mac+box+Nobara+phone+tablet+Deck; invoke before any cross-device access
+- [Box remote access via Tailscale](reference_box_tailscale_remote_access.md) - away from home use tomas-agent-box/100.107.26.69; .local times out
+- [Tailscale SSH re-auth prompt](project_tailscale_ssh_reauth_prompt.md) - PARKED fix: ACL "ssh" check->accept to stop constant Mac->box auth prompts
+- [Box NoMachine remote desktop](project_box_nomachine_remote_desktop.md) - GUI to box GNOME from Mac; NoMachine port 4030 (not 4000=litellm) over Tailscale
+- [Persistent session + phone](project_box_persistent_session_phone_access.md) - cl = tmux persistent session; reconnect from Pixel via Termius key pixel-box
+- [Box -> Mac SSH](project_box_to_mac_ssh.md) - ssh mac (->192.168.0.120, key id_ed25519_mac); Mac Remote Login on; caveat Mac-sleep
+- [Agent box Claude memory load](project_agentbox_claude_memory.md) - box auto-loads MEMORY.md via SessionStart hook + CLAUDE.md; synced with Mac
+- [Agent box Mac-ism sweep](project_agentbox_macism_sweep.md) - 2026-06-17 fixed migrated scripts: Code Things->~/brain, BSD->GNU, launchd->systemd
+- [Agent box gbrain on Postgres](project_agentbox_gbrain_postgres.md) - box gbrain on local Postgres+pgvector (Claude+Hermes share); 1805 pages; Gemini WORK key
+
+## Research, models & workflow discipline
+- [Fable window -> durable artifacts](project_fable_window.md) - Fable 5 dies Jul 7; box ~/fable-window overnight queue -> skills/evals/canon; morning = REPORT.md
+- [Hermes model routing](project_hermes_model_routing.md) - Codex gpt-5.5 primary, Gemini-3.1-pro fallback, Gemini-3.5-flash worker; key ~/.hermes/.env
+- [Hermes Discord on box](project_hermes_discord_on_box.md) - moved Mac->box 2026-07-04; DISCORD_BOT_TOKEN presence = the only toggle
+- [Hermes gateway channels](project_hermes_gateway_channels.md) - WhatsApp disabled 2026-07-02; toggle = WHATSAPP_ENABLED in ~/.hermes/.env, NOT config.yaml
+- [Research = Perplexity AND web](feedback_search_via_perplexity.md) - run both in parallel and merge; Perplexity ~25-33% silent miss rate
+- [Marketing research = wiki-first](feedback_marketing_research_wiki_first.md) - for DR/copy/script research, read Code Things wiki before public web
+- [No internal LLMs for daily tasks](feedback_no_internal_llms_for_daily.md) - don't proactively spawn Perplexity/subagents for routine work
+- [Subagent model routing](feedback_subagent_model_routing.md) - fetch/scrape/search -> Sonnet/Haiku; keep Opus on main synthesis thread
+- [Claude Code model selection](reference_claude_code_model_selection.md) - hooks CANNOT set main model; routing = cron --model + subagent frontmatter; PARKED
+- [Local LLM = worker tier only](feedback_local_llm_hermes_assessment.md) - not viable as orchestrator on consumer hardware
+- [Amazon scraping by data shape](feedback_amazon_apify_first.md) - curl for HTML/video URLs, Apify for structured JSON, browser-harness for logged-in
+- [Browser harness recovery](reference_browser_harness_recovery.md) - "harness" = ~/.tools/browser-harness/SKILL.md, NOT chrome MCP; fall back Apify/Firecrawl
+- [Hermes-on-Claude goal](project_hermes_on_claude_goal.md) - Agent-SDK-bills-to-Max path blocked; confirm policy state before proposing as cap fix
+- [Council = short and clever](feedback_council_short_clever.md) - compress Chairman synthesis to one screen of one-liners
+- [Confidence check before chains](feedback_confidence_check_before_chains.md) - autonomy != always-execute; try dumbest thing first, ask if unsure
+- [Define verification target](feedback_define_verification_target.md) - name expected output + verify command so the agent self-loops
+- [Keep responses short](feedback_short_responses.md) - lead with the artifact, skip preambles; one phone screen unless asked
+- [Claude fails -> try Hermes](feedback_claude_fail_try_hermes.md) - route around via Hermes before giving up; helper ~/systems/lib/hermes_fallback.sh
+- [Box Claude = native install](reference_box_claude_native_install.md) - box runs ~/.local/bin/claude (native); if won't update, claude install not sudo npm
+- [Box Claude env additions](reference_box_claude_env_additions.md) - Mac-parity: local MCPs android/apify/gbrain/scrapling; 5 plugins; memory-compiler box-local

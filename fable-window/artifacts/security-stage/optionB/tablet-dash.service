@@ -1,0 +1,18 @@
+[Unit]
+Description=tablet-dash (dashboard server :8765)
+After=network-online.target
+[Service]
+Type=simple
+WorkingDirectory=%h/tablet-assistant
+Environment=PATH=/usr/bin:/usr/local/bin:%h/.local/bin
+# WARNING: 127.0.0.1 CLOSES the dashboard to the tablet (192.168.0.160), which
+# reaches it over the LAN and is NOT on the tailnet. If you want Option B here,
+# either (a) enrol the tablet on Tailscale and set this to 100.107.26.69, or
+# (b) prefer Option A, whose firewall keeps 8765 open ONLY to the tablet.
+# Left at 127.0.0.1 as the secure default; change deliberately.
+Environment=TABLET_DASH_HOST=127.0.0.1
+ExecStart=%h/tablet-assistant/venv/bin/python server.py
+Restart=on-failure
+RestartSec=10
+[Install]
+WantedBy=default.target

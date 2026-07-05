@@ -1,0 +1,16 @@
+[Unit]
+Description=camofox stealth browser server
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/camofox-browser
+Environment=PATH=/usr/bin:/usr/local/bin:%h/.local/bin
+Environment=CAMOFOX_PORT=9377
+Environment=CAMOFOX_HOST=127.0.0.1
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

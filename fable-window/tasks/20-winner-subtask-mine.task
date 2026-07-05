@@ -1,0 +1,7 @@
+MODEL: claude-fable-5
+CWD: ~/brain
+
+Read ~/fable-window/RULES.md and obey it (esp. rules 7-8).
+Deepen the winner canon (~/fable-window/artifacts/feedback_winner_patterns_2026H1.md, already promoted to memory).
+Inputs: (1) the 650 winner SUBTASKS in winners.jsonl (variant-level: which hook/image variant won or got abandoned per parent) - mine win/abandon ratios per angle and format; (2) a FRESH read-only BigQuery pull from creative_dashboard (last 60d spend/ROAS by angle and format - find the SA creds the existing ~/systems crons use) to reweight patterns 2, 3, 6 with current data instead of the 2026-06-02 wiki snapshot.
+Output: ~/fable-window/artifacts/winner_patterns_v2.md - the full updated canon file (same frontmatter shape, additive evidence, note what changed vs v1 and why) + artifacts/winner-mine.SOURCES.md. Do NOT touch the live memory file. Ledger per RULES.

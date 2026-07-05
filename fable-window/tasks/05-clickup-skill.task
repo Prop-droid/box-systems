@@ -1,0 +1,7 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Read the resolved ~/.claude/skills/clickup-task-creator/SKILL.md plus memory files: project_clickup_connection.md, feedback_clickup_task_creation_tasks.md, feedback_sha_task_angle_canon_naming.md, feedback_image_task_responsible_designer.md, clickup-markdown-ordered-list-collapse.md, project_aicha_workflow.md, feedback_launch_task_defaults.md (all under ~/.claude/projects/-home-tomas/memory/).
+Produce: ~/fable-window/artifacts/clickup-task-creator.SKILL.md - upgraded rewrite folding every gotcha above into the skill itself (so future sessions do not need memory recall to avoid them), including: Task Creation tasks must say IMAGE vs VIDEO correctly per assignee (Ayca=image, Ana=video, 2026-07-02 lesson: a whole batch shipped saying video when image was meant); numbered-list collapse; Designer-team GROUP GUID for image Responsible; launch-task defaults; verify-after-write discipline.
+Plus a CHANGES section. Update the ledger per RULES.

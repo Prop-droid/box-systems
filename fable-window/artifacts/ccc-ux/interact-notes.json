@@ -1,0 +1,38 @@
+[
+  {
+    "today-warm-load-ms-1": 2250
+  },
+  {
+    "today-warm-load-ms-2": 4307
+  },
+  {
+    "today-warm-load-ms-3": 1395
+  },
+  {
+    "digest-kill-clickable-element": null
+  },
+  {
+    "iterate-next-after-click-url": "http://localhost:3000/performance?tab=today"
+  },
+  {
+    "kill-after-click-url": "http://localhost:3000/performance?tab=today"
+  },
+  {
+    "generate-brief-modal": "no trigger button found on queue tab"
+  },
+  {
+    "brief-this-lane-button-count": 0
+  },
+  {
+    "view-evidence-href": "/research?mode=swipe&lane=sugar-free-no-junk"
+  },
+  {
+    "view-evidence-url": "http://localhost:3000/research?mode=swipe&lane=sugar-free-no-junk"
+  },
+  {
+    "editor-deeplink-load-ms": 2798
+  },
+  {
+    "adapt-confirm-visible": 1
+  }
+]

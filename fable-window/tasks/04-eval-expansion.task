@@ -1,0 +1,7 @@
+MODEL: claude-fable-5
+CWD: ~/systems/compliance-eval
+
+Read ~/fable-window/RULES.md and obey it.
+Study this eval harness: README.md, run_eval.py, policy.json, prompts.jsonl, gold_labels.json, gold/, baselines/.
+Produce in ~/fable-window/artifacts/: (1) compliance-eval.new_cases.jsonl - 20 NEW hard eval cases in the exact prompts.jsonl schema, covering edge zones: implied health claims, borderline "you" framing, kids-adjacent scenes, GLP-1/drug adjacency, price claims, VP-flavor claims vs core-SKU claims; (2) compliance-eval.new_gold.json - graded gold labels for them in the harness format with one-line rationales; (3) compliance-eval.HOWTO.md - exact commands to merge and run these against the current shameless-script skill and against artifacts/shameless-script.SKILL.md from task 01 (if present).
+If the schema is ambiguous, match the existing files byte-shape exactly. Do not modify the live harness. Update the ledger per RULES.

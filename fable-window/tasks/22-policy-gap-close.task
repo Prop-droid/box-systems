@@ -1,0 +1,6 @@
+MODEL: claude-opus-4-8
+CWD: ~/systems/compliance-eval
+
+Read ~/fable-window/RULES.md and obey it (rule 8 grants live-edit here; git baseline first, commit after).
+Close the remaining policy_gap: task 04 marked 12 of 20 new cases as invisible to the scorer; 07b patched some patterns already (commit 73da066). Read artifacts/compliance-eval.HOWTO.md step 6 proposed additions + the new_cases policy_gap markers, and ship the rest: policy.json patterns + MATCHING gold fixtures + gold_labels entries so test_scorer.py stays precision=recall=1.0 and every remaining greppable bait becomes scorer-visible. Note which baits are fundamentally ungreppable (semantic-only) in the summary instead of forcing bad regexes.
+Output: live commit + ~/fable-window/artifacts/policy-gap-close.SUMMARY.md with before/after coverage counts. Ledger per RULES.

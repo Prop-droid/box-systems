@@ -1,0 +1,5 @@
+MODEL: claude-sonnet-5
+CWD: ~
+
+Read ~/fable-window/RULES.md (rule 9 grants box skill-frontmatter edits for THIS task).
+Apply the 15 trimmed skill descriptions from ~/fable-window/artifacts/skill-descriptions.trimmed.md to the BOX skills: for each, back up SKILL.md to SKILL.md.bak-2026-07-05, replace ONLY the description: field in frontmatter, verify YAML still parses (python yaml or regex check) and the name: field is untouched. Skip any skill whose live description has drifted from what the trim doc expected (note it). Do NOT touch Mac. Output artifacts/skill-desc-apply.SUMMARY.md: applied/skipped table + the exact list for the Mac session to mirror. Ledger per RULES.

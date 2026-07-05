@@ -1,0 +1,5 @@
+MODEL: claude-sonnet-5
+CWD: ~
+
+Read ~/fable-window/RULES.md.
+Verify night-4: wiki fixes actually in the wiki files (grep spot-checks vs the sweep doc), roadmap + lessons + 3 hermes SKILL.md artifacts (frontmatter, no placeholders, no em dashes in copy-facing text), Option B binds (ss -tlnp shows no LAN binds for the 3 services; tailnet curl 200s), both cron timers listed (or atria BLOCKED.md exists), box skill descriptions parse, launch-autofill dry-run log exists. Fix trivial mechanical issues in artifacts only. Output artifacts/VERIFY-night4.md pass/fail table. Ledger per RULES.

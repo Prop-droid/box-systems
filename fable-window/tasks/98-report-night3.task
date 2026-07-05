@@ -1,0 +1,5 @@
+MODEL: claude-sonnet-5
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Night-3 report: read the ledger entries and VERIFY-night3.md and logs/2*.done exit codes; write ~/fable-window/REPORT-night3.md: exec summary, what passed/failed, apply checklist (Mac + box, risk-ordered, backup commands), open questions. Tight, one screen. Also append a 3-line night-3 summary to the bottom of ~/fable-window/REPORT.md.

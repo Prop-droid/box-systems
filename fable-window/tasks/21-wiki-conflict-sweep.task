@@ -1,0 +1,6 @@
+MODEL: claude-fable-5
+CWD: ~/brain
+
+Read ~/fable-window/RULES.md and obey it.
+Canon-conflict sweep of the wiki: find every claim in ~/brain/wiki (and docs/) that contradicts current canon memories in ~/.claude/projects/-home-tomas/memory/: sucralose+erythritol not allulose, 26g every SKU (no 29g), 70-90 cal allowed, appetite-suppressant BANNED, real fruit / made-in-USA / dye-free / naturally-flavored bans, 46% offer ceiling (never 58%), MARS guardrails, sub-gated offer language.
+Output: ~/fable-window/artifacts/wiki-conflict-sweep.md - a diff-ready fix list: file path, line quote, what is wrong, exact replacement text, grouped by severity (compliance-dangerous first, stale-stat second, tone third). Do NOT edit the wiki. Ledger per RULES.

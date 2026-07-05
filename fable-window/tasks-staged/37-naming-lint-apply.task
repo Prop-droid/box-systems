@@ -1,0 +1,5 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md (rule 9 grants the launch-autofill replacement for THIS task).
+Apply task-13's artifact: the naming/field lint extension of the launch-autofill agent. Follow the artifact's own install notes (find them in artifacts/ from task 13 and its ledger entry). Back up the live script, install the replacement, then execute ONE live dry-run (its dry-run flag; zero writes to ClickUp) and confirm output sanity. If the dry-run errors, roll back and diagnose in the summary instead of forcing it. Output artifacts/naming-lint-apply.SUMMARY.md. Ledger per RULES.

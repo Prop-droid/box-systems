@@ -1,0 +1,8 @@
+MODEL: claude-fable-5
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Opportunity scan: given everything this box already knows and runs, what is the highest-leverage automation NOT yet built? This is the inverse of a waste audit (07 already did waste) - hunt for missing leverage, not trim.
+Inputs: ~/.claude/projects/-home-tomas/memory/MEMORY.md plus the individual memory files it indexes (read the ones describing workflows, pain, and repeated manual work); ls + READMEs of ~/systems/*; systemctl --user list-units --type=service,timer; ~/.claude/skills/ directory names; the KB index if present.
+Method: reconstruct Tomas's actual weekly loop (creative strategist for Shameless: briefs, scripts, launches, performance review, compliance, research) and find the steps that are still manual, error-prone, or done in chat every week. For each candidate, score leverage = (hours saved per week x error reduction) / build effort on the EXISTING stack (BQ, ClickUp MCP, winners.jsonl, gbrain, Hermes, cron suite, CCC).
+Output: ~/fable-window/artifacts/opportunity-scan.md - top 5 opportunities, each with: the manual pain it removes (cite the memory/cron evidence), a concrete build sketch reusing existing components (name the exact scripts/skills/tables to wire together), effort estimate, and the single riskiest assumption. Then a shortlist of 5 more in one line each. Be opinionated: rank 1 must be the one you would build first and say why it beats rank 2. Do not build anything. Update the ledger per RULES.

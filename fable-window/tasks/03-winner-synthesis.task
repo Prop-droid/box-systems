@@ -1,0 +1,9 @@
+MODEL: claude-fable-5
+CWD: ~/brain
+
+Read ~/fable-window/RULES.md and obey it.
+Goal: distill durable winner patterns for Shameless creative.
+Inputs, in priority order: (1) winners archive - locate with: find ~ -maxdepth 5 -name "winners.jsonl" 2>/dev/null | head -3 ; (2) wiki winner/performance pages under ~/brain (grep for "mb - winner", ROAS, winner analyses in projects/ and docs/); (3) memory files feedback_* and project_* mentioning winner patterns.
+Produce: ~/fable-window/artifacts/feedback_winner_patterns_2026H1.md - a memory-format canon file (frontmatter: name, description, metadata.type: feedback) with the 10-15 strongest recurring patterns (angle x format x hook mechanics), each with evidence count and a one-line "how to apply". Compact: one screen per section max.
+Also produce artifacts/winner-synthesis.SOURCES.md listing exactly what data you used and what was missing.
+Update the ledger per RULES.

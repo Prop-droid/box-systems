@@ -1,0 +1,9 @@
+MODEL: claude-opus-4-8
+CWD: ~/brain
+
+Read ~/fable-window/RULES.md and obey it.
+Goal: turn the Atria competitor-ad pull into a weekly cron. First read ~/brain/.claude/skills/atria/SKILL.md and the memory files project_atria_integration.md and project_2026-06_competitor_swipe_index.md.
+Step 1 - AUTH PROBE: attempt one real Atria pull for the followed brands now, exactly as the skill prescribes. If auth is dead (expired token/session), STOP the build: write ~/fable-window/artifacts/atria-weekly.BLOCKED.md stating exactly what credential is needed and how Tomas refreshes it, ledger-note it, and end the task. Do not thrash fallback chains.
+Step 2 - if the pull works: append results to the existing swipe JSONL (find its current path from the skill/memory; additive only, keep a dated backup copy of the pre-run file in ~/fable-window/artifacts/), and write a diff summary of NEW ads since the last snapshot (brand, format, hook/first line if available) to ~/fable-window/artifacts/atria-weekly.diff.md.
+Step 3 - deliver the cron as staging artifacts in ~/systems/atria-weekly/ (new dir, additive): run_atria_weekly.sh invoking headless claude from ~/brain with a tight bounded prompt (reuse the stdin headless pattern documented in project_system_maintenance_loops.md), plus systemd service+timer files (Mon 07:30, before the weekly report crons read anything) - staged, NOT enabled.
+Update the ledger per RULES.

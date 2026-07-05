@@ -1,0 +1,16 @@
+[Unit]
+Description=creative-command-center (Next.js dashboard)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/creative-command-center
+Environment=PATH=/usr/bin:/usr/local/bin:%h/.local/bin
+Environment=PORT=3000
+Environment=HOSTNAME=127.0.0.1
+ExecStart=/usr/bin/npm run dev
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

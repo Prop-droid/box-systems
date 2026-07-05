@@ -1,0 +1,5 @@
+MODEL: claude-opus-4-8
+CWD: ~/brain
+
+Read ~/fable-window/RULES.md (rule 9 grants live wiki edits for THIS task).
+Apply the fix list in ~/fable-window/artifacts/wiki-conflict-sweep.md: the 12 compliance-dangerous and 5 stale-stat findings ONLY (skip the 3 tone findings). Process: git add -A && git commit -m "baseline before canon-conflict fixes" first; apply each replacement exactly as specified in the sweep doc; verify each edit landed (grep the new text); git commit after with a summary message. If a finding's context has changed since the sweep (file moved/edited), re-locate or skip and note it. Output artifacts/wiki-fix-apply.SUMMARY.md: per-finding applied/skipped table. Ledger per RULES.

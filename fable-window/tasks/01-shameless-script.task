@@ -1,0 +1,9 @@
+MODEL: claude-fable-5
+CWD: ~/brain
+
+Read ~/fable-window/RULES.md and obey it.
+You are upgrading the skill at ~/.claude/skills/shameless-script/SKILL.md (read the resolved file; it may be a symlink).
+Context to load first: ~/brain/CLAUDE.md, the Shameless brand canon + compliance memories in ~/.claude/projects/-home-tomas/memory/ (shameless_brand_canon.md, shameless_compliance_language.md, script_defaults.md, feedback_* files about scripts/hooks), and ~/systems/compliance-eval/policy.json + gold examples.
+Produce: ~/fable-window/artifacts/shameless-script.SKILL.md - a full rewritten SKILL.md that (1) sharpens the internal senior-strategist critique into an explicit ordered checklist with kill-criteria, (2) bakes in the compliance allowed/banned language as a hard gate, (3) adds a failure-modes section from real past mistakes you find in memory/feedback files, (4) keeps the canonical output shape (5 numbered hooks, blank line, one continuous prose script) untouched, (5) is NOT longer than 1.5x the original.
+Then self-test: write one sample script with the new skill rules applied, run it mentally against the compliance policy, include it in artifacts/shameless-script.selftest.md with a pass/fail table.
+Update the ledger per RULES.

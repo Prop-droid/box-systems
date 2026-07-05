@@ -1,0 +1,14 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Goal: A/B the LIVE shameless-script skill against the task-01 candidate (~/fable-window/artifacts/shameless-script.SKILL.md) on the 20 new hard eval cases. Tomas authorized the token spend for the generation runs (2026-07-02).
+Follow ~/fable-window/artifacts/compliance-eval.HOWTO.md exactly:
+(1) Build the working copy (never touch ~/systems/compliance-eval live - but NOTE: task 07b may have already patched the live policy.json tonight; use whatever is live NOW as the scorer baseline and record its git hash in your report).
+(2) Run the 20 new cases against the LIVE skill (default gen-cmd path).
+(3) Run the same 20 against the task-01 candidate via the gen_candidate.sh wrapper from the HOWTO.
+(4) Score both runs with the harness scorer AND the HOWTO step-6 policy-gap grep sweep.
+(5) Produce ~/fable-window/artifacts/eval-ab.RESULTS.md: per-case table (case id, bait, live skill pass/fail, candidate pass/fail), totals, which baits each skill took, and a verdict line: is the task-01 rewrite measurably safer, equal, or worse? Include any cases where BOTH failed (those are the skill-gap priorities for night 2).
+Generation model note: use the default claude binary model for generations (do not force fable) to keep the A/B representative of everyday Opus usage.
+Budget guard: sequential runs, max 300s per generation per the HOWTO; if total wall time approaches 55 minutes, stop cleanly, score what you have, and note the cutoff in RESULTS.
+Update the ledger per RULES.

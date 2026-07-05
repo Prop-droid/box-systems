@@ -1,0 +1,8 @@
+MODEL: claude-fable-5
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+For each of these skills that exists under ~/.claude/skills/ (resolve symlinks): dr-script, email-copy, landing-page-copy, micro-scripts.
+Produce for each: ~/fable-window/artifacts/<skill>.SKILL.md - upgraded rewrite with (1) a sharper internal critique pass (ordered checklist, kill-criteria, concrete quality bar), (2) a failure-modes section, (3) tighter trigger description so it fires correctly, (4) same output contract as the original, (5) no length bloat beyond 1.5x.
+Also produce artifacts/copy-craft.CHANGES.md summarizing per-skill diffs in bullets.
+Skip any skill not present; note skips in the ledger. Update the ledger per RULES.

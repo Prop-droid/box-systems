@@ -1,0 +1,9 @@
+MODEL: claude-fable-5
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Extract 3 deterministic playbooks from what actually recurs in memory + the fable-window ledger + ~/brain wiki process notes:
+(1) SHA image-test batch playbook: from angle idea to N ClickUp image-test tasks (naming, fields, Ayca vs designers routing, Task Creation IMAGE vs VIDEO wording, verify-after-write).
+(2) SHA launch-fill playbook: approved video/image to launch task (4 FB fields, Alejandra + high + 8h, no competitor names).
+(3) Overnight-harness playbook: how to run a fable-window-style artifact queue (driver v2 semantics, limit-retry, headless discipline, verify pass, apply checklist) so this infrastructure is reusable after July 7.
+Each as artifacts/playbook_<name>.md: numbered steps, exact commands/field IDs where known, kill-criteria for when NOT to use it. Ledger per RULES.

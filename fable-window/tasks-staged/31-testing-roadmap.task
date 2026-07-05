@@ -1,0 +1,5 @@
+MODEL: claude-fable-5
+CWD: ~/brain
+
+Read ~/fable-window/RULES.md.
+Produce the S27+ testing roadmap: an angle x format priority matrix for the next 4 sprints, built from (1) the promoted winner canon v2 (~/fable-window/artifacts/winner_patterns_v2.md), (2) a FRESH read-only BQ pull (last 30d spend/ROAS by angle+format, plus fatigue signals: declining ROAS on high-spend creatives), (3) the latest weekly report in the wiki, (4) the wiki angle canon. For each recommended lane: angle, format family, retro-vs-new, evidence (pattern # + ROAS band), suggested test volume per sprint, and the specific winner to iterate from (SH- id where known). Cap at 12 lanes, ranked. End with a "do NOT test" list (proven losers with evidence). Output artifacts/roadmap_S27plus.md, plaintext, no em dashes, briefable as-is. Ledger per RULES.

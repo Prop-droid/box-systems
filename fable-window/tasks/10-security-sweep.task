@@ -1,0 +1,12 @@
+MODEL: claude-fable-5
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Deep security sweep of this box (defensive audit of my own infrastructure, read-only: inspect, never exploit, never change configs or perms).
+Scope, in priority order:
+(1) Secrets exposure: inventory plaintext creds (~/.config/clickup/pk, ~/.config/gcloud/*.json, ~/.gbrain/.pgurl, ~/.hermes/.env, anything found via grep for API keys/tokens under ~/systems ~/agentic-bots ~/creative-command-center). Check file permissions on each. CRITICAL: ~/systems is a git repo pushed to GitHub (Prop-droid/box-systems) - scan the full git history (git log -p, git grep on all revs) for committed tokens/keys; do the same for any other repo under ~ with a remote.
+(2) Prompt-injection surface: every cron/systemd-timer job that runs claude -p with --dangerously-skip-permissions - what untrusted external input (ClickUp descriptions, FB comments, scraped web, email) flows into those prompts, and what could a malicious payload make the agent do with the creds it holds. Rank each job.
+(3) Network exposure: ss -tlnp for listening ports, which bind 0.0.0.0 vs 127.0.0.1 vs tailscale IP, tailscale status; flag anything reachable beyond localhost/tailnet without auth (CCC :3000, md-server :8092, camofox :9377, tablet-dash :8765, litellm :4000, NoMachine :4030, gbrain Postgres, hermes gateway).
+(4) Service/unit hygiene: systemd --user units in ~/systems/systemd - env leakage, ExecStart pulling remote code, watchdogs restarting things with stale creds.
+(5) SSH surface: authorized_keys, sshd config, keys on disk without passphrases that grant access to Mac/Nobara/phone.
+Output: ~/fable-window/artifacts/security-sweep.md - findings ranked CRITICAL/HIGH/MED/LOW, each with: what, where (path:line), realistic attack story on THIS box (not generic CVE talk), and the exact fix command(s) ready to paste. Top section: the 5 fixes worth doing this week. Do not apply any fix. Update the ledger per RULES.

@@ -1,0 +1,7 @@
+MODEL: claude-opus-4-8
+CWD: ~/systems/launch-autofill
+
+Read ~/fable-window/RULES.md and obey it.
+Extend the existing lint in autofill.py (it already flags em dashes on active-list tasks) into a full convention lint for the SHA Creative Strategist list. Read autofill.py and SETUP.md first to reuse its ClickUp fetch, list scoping, and state handling exactly.
+New checks per task: (1) name matches the SHA naming canon (SHA_yr_S##_angle_format_script-name tokens; angle must be a canon angle name - source the canon list from ~/.claude/projects/-home-tomas/memory/feedback_sha_task_angle_canon_naming.md and any wiki canon it points to); (2) required custom fields non-empty for the task's type and status (reuse the field UUID map already in the script); (3) launch tasks: assignee Alejandra, priority high, 8h estimate (per feedback_launch_task_defaults.md); (4) numbered-list collapse risk: description contains markdown ordered lists (flag only).
+Lint is REPORT-ONLY: never auto-fix, output a compact violations table. Deliver per RULES as artifacts: ~/fable-window/artifacts/autofill.py.replacement (full file) + autofill.CHANGES.md, plus a dry-run: execute the new lint logic read-only against the live list (network reads are fine, zero writes to ClickUp) and save the resulting violations table to ~/fable-window/artifacts/naming-lint.dryrun.md so the diff can be judged on real output. Update the ledger per RULES.

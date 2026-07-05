@@ -1,0 +1,5 @@
+MODEL: claude-sonnet-5
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Verify night-3 artifacts only (winner_patterns_v2, wiki-conflict-sweep, policy-gap-close summary + live scorer state, playbook_*, memory-trim staged files, security-stage/): frontmatter validity where applicable, JSON/nft syntax checks, no unresolved placeholders, policy scorer actually at 1.0/1.0 (run test_scorer.py), staged files internally consistent (apply+rollback both present). Fix trivial mechanical issues in artifacts only; flag substantive ones. Output artifacts/VERIFY-night3.md. Ledger per RULES.

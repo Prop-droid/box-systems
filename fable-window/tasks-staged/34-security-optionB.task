@@ -1,0 +1,5 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md (rule 9 grants live apply for THIS task).
+Apply security-stage Option B per ~/fable-window/artifacts/security-stage/README.md: rebind md-server, CCC dev, camofox (NOT tablet-dash) to localhost/tailnet-only using the staged patches. Back up each target file first. After each service: restart it and VERIFY (curl from box on 127.0.0.1 AND the tailscale IP 100.107.26.69 = reachable; confirm the LAN 192.168.0.107 bind is gone via ss -tlnp). If any service fails its check, roll that one back and note it. Output artifacts/security-optionB.APPLIED.md with per-service before/after bind table. Ledger per RULES.

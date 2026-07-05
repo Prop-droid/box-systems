@@ -1,0 +1,27 @@
+# Camofox bind patch (Option B)
+#
+# server.js is a ~6100-line vendored file, so per RULES rule 6 this is delivered
+# as a surgical patch, not a full-file copy. The app hardcodes `app.listen(PORT)`
+# (binds 0.0.0.0). This one-line change makes it honour CAMOFOX_HOST (default
+# 127.0.0.1), which the replacement camofox.service sets. Hermes reaches camofox
+# locally via CAMOFOX_URL, so 127.0.0.1 is sufficient.
+#
+# Apply with:  cd ~/camofox-browser && git apply /path/to/camofox.server.js.patch
+# (or edit line 6070 by hand as shown below).
+#
+# --- BEFORE (server.js:6070) ---
+#   const server = app.listen(PORT, async () => {
+# --- AFTER ---
+#   const server = app.listen(PORT, process.env.CAMOFOX_HOST || '127.0.0.1', async () => {
+
+--- a/server.js
++++ b/server.js
+@@ -6067,7 +6067,7 @@
+ // --- Sentry Express error handler (after all routes, before app.listen) ---
+ setupSentryErrorHandler(app);
+
+-const server = app.listen(PORT, async () => {
++const server = app.listen(PORT, process.env.CAMOFOX_HOST || '127.0.0.1', async () => {
+   startMemoryReporter();
+   refreshActiveTabsGauge();
+   refreshTabLockQueueDepth();

@@ -1,0 +1,15 @@
+MODEL: claude-fable-5
+CWD: ~/creative-command-center
+
+Read ~/fable-window/RULES.md and obey it.
+Persona-driven UX pass over the Creative Command Center running on this box.
+Setup: confirm the app answers on http://localhost:3000 (curl -s -o /dev/null -w "%{http_code}"). If down, systemctl --user start creative-command-center and wait for it. Note which git branch is checked out (feat/research-lanes may be live) and state it in the report.
+Drive it with a real browser, first tool that works: playwright/patchright if present in this repo or installed (npx playwright --version), else headless chromium, else Camofox on :9377. Take screenshots of each major screen to ~/fable-window/artifacts/ccc-ux/.
+Walk the app as 5 personas, each with a goal, and narrate where they stumble:
+(1) Tomas at 7am on the Mac: "what happened overnight and what needs my decision today" - is the answer above the fold in under 10 seconds?
+(2) Tomas on the phone via Tailscale: does anything break or become unreadable at 390px width?
+(3) An editor sent a link to one brief: can they find their brief and only their brief without training?
+(4) A data skeptic: pick 3 displayed numbers (ROAS, spend, counts) and trace whether the UI says where they come from and how fresh they are; flag any number with no freshness/source cue.
+(5) A first-time user with zero context: is there any empty-state, loading-state, or error-state that dead-ends them?
+Also do one pass of the research lanes / opportunity feed if present: is the path from signal card to created brief actually walkable end to end, and where does it lie or stall?
+Output: ~/fable-window/artifacts/ccc-ux-pass.md - friction findings ranked by (how often Tomas hits it x severity), each with screen, screenshot filename, what the persona expected, what happened, and a concrete fix (component/file path if you can locate it in app/). End with the 3 fixes that most improve daily use. Read-only toward the repo: no code changes. Update the ledger per RULES.

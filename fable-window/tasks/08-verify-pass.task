@@ -1,0 +1,11 @@
+MODEL: claude-sonnet-5
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Verification pass over everything in ~/fable-window/artifacts/:
+(1) Every *.SKILL.md: valid YAML frontmatter with name + description, name matches intended dir, description under 1024 chars, no em dashes anywhere, no unresolved placeholders like TODO/TKTK/<...>.
+(2) compliance-eval.new_cases.jsonl: every line parses as JSON and matches the field set of ~/systems/compliance-eval/prompts.jsonl; new_gold.json parses and covers every new case id.
+(3) feedback_winner_patterns_2026H1.md: valid memory frontmatter (name/description/metadata.type).
+(4) Check task 06 actually installed ~/.claude/skills/system-control/SKILL.md.
+Fix trivial mechanical problems in artifacts/ files directly (frontmatter syntax, JSON commas); flag substantive issues without rewriting content.
+Produce ~/fable-window/artifacts/VERIFY.md with a pass/fail table per artifact. Update the ledger per RULES.

@@ -1,0 +1,7 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Audit always-loaded context cost: ~/.claude/CLAUDE.md, ~/.claude/projects/-home-tomas/memory/MEMORY.md, and the description frontmatter of every skill under ~/.claude/skills/ (resolved).
+Produce: ~/fable-window/artifacts/context-audit.md with (1) rough token estimate per surface (chars/4 is fine), (2) top-10 trim opportunities ranked by tokens-saved x low-risk, (3) for the top 5: drafted replacement text ready to paste, preserving all load-bearing facts, (4) any skill descriptions that are so long or vague they hurt trigger accuracy, with rewrites.
+Do not apply anything. Update the ledger per RULES.

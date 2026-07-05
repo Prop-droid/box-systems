@@ -1,0 +1,7 @@
+MODEL: claude-sonnet-5
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Assemble the morning report: read ~/fable-window/artifacts/_ledger.md, VERIFY.md, all logs/*.done exit codes (and tail any log with nonzero exit).
+Write ~/fable-window/REPORT.md: (1) one-screen executive summary - what got produced, what passed verification, what failed or is missing; (2) APPLY CHECKLIST - exact commands for the Mac session to mirror/install each artifact (scp from tomas@100.107.26.69, target paths on Mac), ordered by risk (new installs first, replacements last, each with its live-file backup command); (3) open questions for Tomas.
+Keep it tight. This file is the deliverable.

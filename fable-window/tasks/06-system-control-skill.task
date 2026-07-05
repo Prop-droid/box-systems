@@ -1,0 +1,8 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Create a NEW skill: system-control. Sources: ~/.claude/skills/fleet-control/SKILL.md if present on this box (else use ~/fable-window/artifacts/ inputs you can find), plus general macOS/Linux knowledge.
+Scope of the skill: practical control of Tomas's machines from a Claude session - (1) macOS: open new Terminal/iTerm2 windows and tabs and run commands in them via osascript, activate/quit apps, window placement, clipboard, notifications, caffeinate; prefer macos-mcp Snapshot->element when available; (2) Linux box: tmux session management patterns (new detached sessions, send-keys, capture-pane), systemd user units, background jobs that survive disconnect; (3) safety rails: never kill sessions you did not create, one-command-at-a-time over ssh->adb, no pkill -f self-match trap.
+Install it as a REAL directory: ~/.claude/skills/system-control/SKILL.md (this skill does not exist yet - verify first; if it exists, write to artifacts only). Also copy the final file to ~/fable-window/artifacts/system-control.SKILL.md for the Mac mirror.
+Frontmatter description must make it fire on: "open a new terminal", "run this in another window", "control my mac", "keep this running after I disconnect". Update the ledger per RULES.

@@ -1,0 +1,5 @@
+MODEL: claude-sonnet-5
+CWD: ~
+
+Read ~/fable-window/RULES.md.
+Night-4 report: ledger + VERIFY-night4 + 3x.done exits -> ~/fable-window/REPORT-night4.md: exec summary, what is now LIVE vs artifact-only, Mac mirror checklist (hermes skills + skill descriptions), open questions, and a short "last Fable night (Jul 6) candidates" list based on what remains. Append 3-line summary to REPORT.md.

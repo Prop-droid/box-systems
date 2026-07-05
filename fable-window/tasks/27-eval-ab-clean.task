@@ -1,0 +1,11 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it (esp. rule 7: fully synchronous, no background waits).
+Clean A/B of the shameless-script skill: the NEW skill is now INSTALLED live (both machines, backup at SKILL.md.bak-2026-07-04); the OLD skill is at ~/.claude/skills/shameless-script/SKILL.md.bak-2026-07-04. This inverts the earlier setup: default gen = new skill; wrapper injects the OLD one.
+Method (fix all three flaws from eval-ab.RESULTS.md):
+(1) Working copy per HOWTO. Amend every prompt with: "Output ONLY the deliverable itself. No preamble, no notes, no compliance commentary - any non-deliverable text is a failure."
+(2) gen commands must include --dangerously-skip-permissions so memory canon reads work for both sides.
+(3) Run ALL 20 cases for BOTH sides, sequentially, synchronously: save new_20260704 (default gen) and old_20260704 (wrapper with the .bak skill inlined). Delete stale run dirs first so resume semantics cannot split coverage.
+(4) Score both with the harness + gold + the HOWTO step-6 grep (on deliverable text only), then write ~/fable-window/artifacts/eval-ab-clean.RESULTS.md: per-case table, totals, baits taken by each, verdict (new better/equal/worse), and rollback advice if worse.
+Budget guard: 40 generations; if wall time nears 55 min, finish the side in progress, score what exists, note cutoff. Ledger per RULES.

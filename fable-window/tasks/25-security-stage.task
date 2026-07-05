@@ -1,0 +1,8 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+Stage BOTH remediation options from artifacts/security-sweep.md so Tomas picks one and applies with a single command:
+Option A: nftables default-drop LAN ruleset for the box (allow tailnet + established + the specific LAN flows the sweep found legitimate, e.g. adb to tablet, Syncthing).
+Option B: rebind configs - md-server, CCC dev, camofox, tablet-dash catcher et al bound to 127.0.0.1/tailscale IP only, as edited unit/config file replacements.
+Output to artifacts/security-stage/: optionA.nft + apply/rollback commands, optionB/<service> replacement files + apply/rollback commands, README.md comparing blast radius. Also a 10-line passphrase plan for the unencrypted SSH keys (which to encrypt, agent setup, what breaks). NOTHING applied, no systemd changes. Ledger per RULES.

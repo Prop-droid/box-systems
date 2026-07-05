@@ -1,0 +1,58 @@
+#!/usr/sbin/nft -f
+#
+# Option A: default-accept-with-targeted-LAN-drop for tomas-agent-box.
+# Closes the unauthenticated HTTP services (CCC:3000, md-server:8092,
+# camofox:9377, visionclaw-shim:8643, tablet-dash:8765) to the home LAN
+# while keeping loopback, the tailnet, established return traffic, and the
+# specific LAN flows the sweep found legitimate (SSH, Syncthing, NoMachine,
+# mDNS, and the tablet->tablet-dash flow) working.
+#
+# Design: a separate `inet fw` table at priority -10 runs BEFORE Tailscale's
+# own `ip filter`/`ip6 filter` tables (priority 0). Only sensitive app ports
+# are dropped; everything else keeps `policy accept`, so nothing that works
+# today (SSH, syncthing, NoMachine, DNS, outbound adb-to-tablet return
+# traffic) is affected. Accepted packets fall through to Tailscale's tables,
+# which also policy-accept, so tailnet behaviour is unchanged.
+#
+# Facts baked in (verified 2026-07-04):
+#   box LAN ip      192.168.0.107  (enp0s31f6)
+#   box tailnet ip  100.107.26.69  (tailscale0)
+#   tablet LAN ip   192.168.0.160  (Lenovo P11 Pro, NOT on tailnet -> LAN only)
+#
+# adb note: the box is the adb *client* to the tablet (box -> 192.168.0.160:5555),
+# so return traffic is covered by `ct state established,related` — no inbound
+# rule is needed for adb.
+#
+# Idempotent: add-then-delete flushes any prior copy before redefining.
+
+add table inet fw
+delete table inet fw
+
+table inet fw {
+	chain input {
+		type filter hook input priority -10; policy accept;
+
+		# --- always trusted ---
+		iifname "lo" accept
+		iifname "tailscale0" accept
+		ct state established,related accept
+
+		# --- legitimate LAN services (keep open on the physical LAN) ---
+		tcp dport 22 accept                                   # SSH (key auth; see passphrase plan)
+		tcp dport 22000 accept                                # Syncthing sync
+		tcp dport 4030 accept                                 # NoMachine
+		udp dport { 4030, 5353, 22000, 21027, 41641 } accept  # NoMachine, mDNS, Syncthing (sync+discovery), tailscale
+
+		# --- tablet-dash: allow ONLY the tablet, not the whole LAN ---
+		ip saddr 192.168.0.160 tcp dport 8765 accept
+
+		# --- drop the unauthenticated app services on everything else (i.e. the LAN) ---
+		tcp dport { 3000, 8092, 8765, 9377, 8643 } drop
+
+		# everything else: policy accept (unchanged behaviour)
+	}
+}
+
+# --- Optional hardening (leave commented unless you only ever SSH over tailnet) ---
+# To restrict SSH to the tailnet, add BEFORE the `tcp dport 22 accept` line above:
+#   tcp dport 22 iifname != "tailscale0" drop

@@ -1,0 +1,5 @@
+MODEL: claude-fable-5
+CWD: ~
+
+Read ~/fable-window/RULES.md.
+Upgrade the Hermes orchestration skills the same way the copy skills were upgraded (kill-criteria, failure modes, tight triggers). Read the resolved ~/.claude/skills/hermes-routing-policy and ~/.claude/skills/delegate-to-claude and ~/.claude/skills/claude-heavy-lifting (symlinks into ~/.hermes/skills). Produce artifacts/<name>.SKILL.md rewrites (3 files) + artifacts/hermes-upgrade.CHANGES.md. Fold in: the usage-guard reality (Hermes on API keys does NOT draw the Claude sub cap; Claude-sub work should check the 5h window state at ~/.claude/usage-window.json before heavy delegation), CLARIFICATION_REQUIRED protocol, verify-target handoffs. Do NOT install (Hermes reads these live; morning apply). Ledger per RULES.

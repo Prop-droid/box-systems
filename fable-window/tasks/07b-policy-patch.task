@@ -1,0 +1,11 @@
+MODEL: claude-opus-4-8
+CWD: ~/systems/compliance-eval
+
+Read ~/fable-window/RULES.md. EXCEPTION GRANT: unlike other tasks, you ARE authorized to modify this live eval harness (Tomas approved 2026-07-02). Karpathy rule 3 still applies: commit a git baseline FIRST (cd ~/systems && git add -A && git commit -m "baseline before compliance policy patch") and commit your changes after.
+Authorized changes, confirmed by Tomas 2026-07-02:
+(1) REMOVE "appetite suppressant" from the policy.json allow-list - the term is BANNED (2026-06-30). Update the gold fixture that depends on it (tricky_allowed_01 or similar) and gold_labels.json so the suite stays coherent: the fixture should now expect a FLAG, or be replaced with a genuinely-allowed tricky case.
+(2) ADD ban patterns for the 2026-06-30 bans missing from policy.json: "real fruit", "made in usa" / US-manufacturing claims (allowed exception: "packed in the US"), "dye free"/"dye-free", "naturally flavored"/"natural flavors", "no artificial dyes/colors/flavors".
+(3) ADD sweetener-claim guard: any copy claiming allulose is WRONG - core bags use sucralose + erythritol (Tomas 2026-07-02). "no artificial sweeteners" stays banned.
+(4) Do NOT ban "70-90 calories" - it is allowed (some bags have 90).
+Then VERIFY: run the harness (see README.md / run_eval.py) against the gold set; iterate until it passes clean. Bump the policy version/date field if one exists.
+Write a summary of edits + eval output to ~/fable-window/artifacts/policy-patch.SUMMARY.md and update the ledger.

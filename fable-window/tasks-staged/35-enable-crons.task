@@ -1,0 +1,5 @@
+MODEL: claude-sonnet-5
+CWD: ~
+
+Read ~/fable-window/RULES.md (rule 9 grants timer enablement for THIS task).
+Enable the two staged crons per their READMEs: ~/systems/fatigue-sentinel/ and ~/systems/atria-weekly/. Install+enable their systemd user units/timers, run each service once NOW, verify: fatigue-sentinel produces its report/ntfy without error; atria-weekly does its auth probe (if the Atria token is dead, leave its timer DISABLED and write BLOCKED.md as designed). Output artifacts/crons-enabled.SUMMARY.md with timer list + first-run results. Ledger per RULES.

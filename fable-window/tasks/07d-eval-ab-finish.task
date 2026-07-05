@@ -1,0 +1,14 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md and obey it.
+HEADLESS DISCIPLINE (the reason this task exists): you are a one-shot headless run. Everything must complete SYNCHRONOUSLY inside your own process before you stop responding. NEVER spawn background jobs to "wait for later", never say you will wait for a notification - there are none. A prior agent (07c) made exactly that mistake.
+Goal: FINISH the A/B eval it started.
+State when you begin: working copy at ~/fable-window/eval-work/compliance-eval; a live-skill generation run was launched 2026-07-03 09:08 as run label live_20260703 (process may be finished or still running).
+Steps:
+(1) Check for a running run_eval.py process (pgrep -af run_eval). If still running, poll every 60s IN YOUR OWN SHELL (sleep loop) until it exits, up to 40 minutes; if it exceeds that, kill it and note how many outputs exist.
+(2) Inspect the live run outputs (runs/live_20260703 or wherever --save put them). If incomplete, re-run generation for ONLY the missing case ids, synchronously.
+(3) Run the CANDIDATE generation (task-01 skill at ~/fable-window/artifacts/shameless-script.SKILL.md) per compliance-eval.HOWTO.md gen_candidate.sh wrapper, synchronously, save label candidate_20260703.
+(4) Score BOTH runs with the scorer + the HOWTO policy-gap grep sweep. NOTE: 07b patched policy.json last night (new rules for allulose/real fruit/made-usa/appetite) - record the policy git hash you scored with.
+(5) Write ~/fable-window/artifacts/eval-ab.RESULTS.md: per-case table (id, bait, live pass/fail, candidate pass/fail), totals, baits taken by each, both-failed cases flagged as night-2 priorities, and a one-line verdict: candidate safer / equal / worse.
+Budget guard: if total wall time approaches 55 minutes, stop cleanly, score what exists, mark the cutoff. Update the ledger per RULES.
