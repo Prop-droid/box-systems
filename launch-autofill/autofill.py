@@ -18,9 +18,23 @@ Context sources:
 Value generation is delegated to `claude -p` (headless) with brand canon +
 voice rules embedded in the prompt. Never overwrites a non-empty field.
 
+CONVENTION LINT (report-only, added 2026-07-03):
+  A separate read-only mode that never writes to ClickUp. Runs the full SHA
+  Creative Strategist convention lint over the same in-scope task set and
+  prints a compact violations table. Checks per task:
+    1. name       — SHA naming canon (SHA_yr_S##_..._Tom tokens; angle token
+                     must resolve to a canon angle name)
+    2. req-fields — required custom fields non-empty for the task's type+status
+    3. defaults   — launch tasks: assignee Alejandra, priority high, type-correct
+                    time estimate (8h video / 3h image, per launch-task-defaults)
+    4. list       — description contains a markdown ordered list (collapse risk)
+    +  em-dash    — em/en dash present in an existing copy field (brand rule)
+  Enable with AUTOFILL_LINT=1 or `--lint`. Pure reads, zero writes.
+
 Env:
     TOKEN_FILE          ClickUp pk token file (default ~/.config/clickup/pk)
     AUTOFILL_DRY_RUN=1  compute + print planned writes/pings, write nothing
+    AUTOFILL_LINT=1     report-only convention lint (reads only, no writes)
     AUTOFILL_MODEL      claude model alias for headless calls (default sonnet)
     AUTOFILL_LOOKBACK_DAYS  only fetch tasks updated in the last N days (default 30)
 """
@@ -41,6 +55,7 @@ TEAM_ID = "9011638245"
 TOKEN_FILE = os.path.expanduser(os.environ.get("TOKEN_FILE", "~/.config/clickup/pk"))
 TOKEN = open(TOKEN_FILE).read().strip()
 DRY_RUN = os.environ.get("AUTOFILL_DRY_RUN") == "1"
+LINT_ONLY = os.environ.get("AUTOFILL_LINT") == "1" or "--lint" in sys.argv
 MODEL = os.environ.get("AUTOFILL_MODEL", "sonnet")
 MAX_LLM_CALLS = int(os.environ.get("AUTOFILL_MAX_LLM", "30"))  # per-run cap
 LOOKBACK_DAYS = int(os.environ.get("AUTOFILL_LOOKBACK_DAYS", "30"))
@@ -308,6 +323,270 @@ def get_recall(skill, n=5):
         return ""
 
 
+# ============================================================================
+# CONVENTION LINT (report-only) — added 2026-07-03
+# ----------------------------------------------------------------------------
+# Reuses fetch_tasks(), field_value(), classify(), lp_on_hold() and the F UUID
+# map above. Reads only; NEVER posts to ClickUp. Enable with AUTOFILL_LINT=1
+# or `--lint`. See module docstring for the check list.
+# ============================================================================
+
+# Launch-task defaults (feedback_launch_task_defaults.md, 2026-06-26):
+# assignee Alejandra + priority high on EVERY launch task; time estimate is
+# type-aware: video/CTV = 8h (480 min), image-test = 3h (180 min). The task
+# brief said "8h estimate"; the cited memory refines that to type-aware, so
+# the lint checks the type-correct value (documented in autofill.CHANGES.md).
+ALEJANDRA_ID = 114210317
+EST_MS = {"video": 8 * 3600 * 1000, "image": 3 * 3600 * 1000}  # 8h / 3h
+
+# Canon angle vocabulary. Grounded in the wiki angle canon
+# (brain/wiki/shameless/creative-strategy/creative-angles.md — the 15 canonical
+# positioning angles) plus the short-token aliases and recurring live tokens
+# that map onto those angles. Matched EXACTLY (normalized: lowercased,
+# non-alnum stripped, trailing digits dropped) against the angle-slot token, so
+# an invented variant like "DailyFiber" fails while the canon token "Fiber"
+# passes. Report-only + review-severity: an unrecognized token is surfaced for
+# a human to confirm-and-add or rename, not auto-failed. Extend this set as new
+# canon angles are ratified.
+CANON_ANGLES = {
+    # 1 Fiber-First
+    "fiber", "fiberfirst", "26g", "fiberpacked",
+    # 2 Convenience / Ease
+    "convenience", "ease", "onthego",
+    # 3 Snack Replacement / Swap
+    "swap", "snackswap", "smartsweetsswap", "snackreplacement", "candyswap",
+    # 4 Digestive Health
+    "guthealth", "gut", "digestive", "poop", "poophook", "regularity",
+    "goodbacteria", "bacteria",
+    # 5 Guilt-Free Indulgence
+    "guiltfree", "indulgence", "eatthebag", "wholebag",
+    # 6 GLP-1 Alternative
+    "glp", "glp1",
+    # 7 Weight Management  8 Macro Shock
+    "weight", "weightmanagement", "beachbody", "lowcal", "macro", "macroshock",
+    # 9 Snack Replacement math / Taste / Texture skeptic
+    "taste", "texture", "skeptic", "flavor", "flavors", "newflavors",
+    "sweetsour", "sweetvssour", "supersour", "tropical", "tropicalparadise",
+    "sourlovers", "sourscale",
+    # 10 Diet Rebellion
+    "dietrebellion", "rebellion",
+    # 11 Appetite Control / Cravings (craving-control via fiber)
+    "cravings", "craving", "appetite", "satiety", "fullness", "foodnoise",
+    "slowdown", "nightshift", "confess", "confession",
+    # 12 Blood Sugar / Energy
+    "bloodsugar", "energy", "keto", "ketomath",
+    # 13 Founder Story
+    "founder",
+    # 14 Scarcity / FOMO
+    "scarcity", "fomo", "gifts", "newdrop", "stockup", "subreassurance",
+    "goodbye", "offer", "haul", "fourpacklaunch", "nowonline", "online",
+    "newonline", "exclusive",
+    # 15 Occupational Personas / ICP-led
+    "persona", "menopause", "over40", "nurse", "trucker", "office",
+    # Novel/observed canon hooks (creative-angles.md "Novel Hooks" + Q1 perf)
+    "qvc", "warehouse", "amazon", "comparison", "socialproof", "proof",
+    "specificity", "spec", "features", "benefits", "product", "problem",
+    "features-benefits",
+}
+# 'dailyfiber' is deliberately NOT canon (memory: rejected in favour of 'Fiber').
+
+# Non-launch task families that legitimately do NOT follow the SHA creative
+# naming canon (research/brief/admin tasks). Classified out of the naming +
+# launch-default checks; still counted, still checked for ordered-list/em-dash.
+BRIEF_NAME_RE = re.compile(
+    r"(?i)(copy research|task creation|creators? brief|retro task|task ideas"
+    r"|ai things|landing page|card edit|cta card)")
+
+EMDASH_RE = re.compile(r"[—–]")            # — or –
+ORDERED_LIST_RE = re.compile(r"(?m)^\s{0,3}\d{1,2}[.)]\s+\S")  # markdown ol
+
+
+def _norm(tok):
+    """lowercase, strip non-alnum, drop trailing digits (variant suffixes)."""
+    t = re.sub(r"[^a-z0-9]", "", tok.lower())
+    return re.sub(r"\d+$", "", t) or t
+
+
+def angle_is_canon(tok):
+    """True if the angle-slot token resolves to a canon angle. The whole token
+    is matched, and so is each hyphen / camelCase component — so a compound
+    script-name token like 'Fiber-Spec-Board2' or 'Do-The-Fiber-Math1' passes
+    on its 'Fiber'/'Spec' component, while a single invented token like
+    'DailyFiber' (no canon component) is still flagged."""
+    parts = re.split(r"[-]", tok)                      # hyphen parts
+    parts += re.findall(r"[A-Z]?[a-z]+|[A-Z]+(?![a-z])|\d+", tok)  # camelCase
+    parts.append(tok)
+    return any(_norm(p) in CANON_ANGLES for p in parts if p)
+
+
+def task_class(name):
+    """launch | brief | freeform. Only 'launch' tasks get naming + default checks."""
+    if re.match(r"(?i)^SHA[_ ]", name):
+        return "launch"
+    if BRIEF_NAME_RE.search(name):
+        return "brief"
+    return "freeform"
+
+
+def name_violations(name):
+    """Structural + angle-canon checks for a SHA_ launch name. Returns a list
+    of (severity, detail).
+
+    Angle policy: token order on this list is not reliable enough to isolate
+    the angle SLOT (Duo-/BRPK-/WL-/pack-launch names all shuffle it), so the
+    check verifies a canon angle is PRESENT anywhere in the name rather than
+    policing its position. This confirms the name carries recognized angle
+    vocabulary; it does not catch a canon angle sitting in the wrong slot, nor
+    an invented compound that reuses a canon word (e.g. 'DailyFiber' passes on
+    its 'Fiber' component). WL (whitelisting / creator-usage) tasks carry no
+    angle token by convention and are exempt. Tightening to exact-slot
+    enforcement would require standardizing the name format first."""
+    out = []
+    toks = re.split(r"[_ ]+", name.strip())
+    if not re.match(r"(?i)^SHA$", toks[0]):
+        return [("fail", "name does not start with SHA_")]
+    if len(toks) < 2 or not re.match(r"^20\d{2}$", toks[1]):
+        out.append(("fail", "missing 4-digit year token"))
+    if len(toks) < 3 or not re.match(r"(?i)^S\d{1,2}$", toks[2]):
+        out.append(("fail", "missing S## sprint token"))
+    if not re.search(r"(?i)(^|[_ ])tom([_ ]|$)", name):
+        out.append(("warn", "missing _Tom_ owner token"))
+    if re.search(r"(?i)(^|[_ ])WL([_ ]|$)", name):
+        return out                                   # WL: no angle by convention
+    if not any(angle_is_canon(t) for t in toks[3:]):
+        out.append(("warn", "no canon angle token in name (review)"))
+    return out
+
+
+def required_fields(task, kind):
+    """Which fields must be non-empty for this task's type + status.
+    Taxonomy always; launch copy once the task reaches a ready-to-launch tier."""
+    status = task.get("status", {}).get("status", "").lower()
+    req = ["brand", "product", "deliv_type", "responsible"]           # taxonomy
+    if status in ("cs review", "approved", "sent to mb"):             # launch copy
+        req += ["fb_page", "headline", "text"]
+        if not lp_on_hold(task["name"]):
+            req.append("lp")
+        # script_link is NOT required: video scripts legitimately live in the
+        # description or inline (see project_launch_autofill_agent.md), so
+        # requiring the field here produced false positives.
+    return req
+
+
+def default_violations(task, kind):
+    """Launch-task defaults: assignee Alejandra, priority high, type-correct est."""
+    out = []
+    ids = [a.get("id") for a in task.get("assignees", [])]
+    if ALEJANDRA_ID not in ids:
+        out.append("assignee != Alejandra")
+    pr = (task.get("priority") or {}).get("priority")
+    if pr != "high":
+        out.append(f"priority={pr or 'none'} (want high)")
+    want = EST_MS[kind]
+    est = task.get("time_estimate")
+    if est != want:
+        got = f"{est//3600000}h" if est else "none"
+        out.append(f"estimate={got} (want {want//3600000}h)")
+    return out
+
+
+def emdash_fields(task):
+    """Copy-facing fields carrying an em/en dash (brand rule). Scoped to the
+    fields that actually ship to Facebook (headline, text) + the task name.
+    Description is deliberately excluded: it holds internal brief scaffolding
+    (the 🟥/🟦/🟧 template) whose dashes are formatting, not ad copy, and
+    scanning it drowned the real headline/text hits in noise."""
+    hits = []
+    for label, val in (("name", task.get("name")),
+                       ("headline", field_value(task, F["headline"])),
+                       ("text", field_value(task, F["text"]))):
+        if isinstance(val, str) and EMDASH_RE.search(val):
+            hits.append(label)
+    return hits
+
+
+def lint_task(task):
+    """Return list of violation dicts for one task. Report-only."""
+    name = task["name"]
+    cid = task.get("custom_id") or task["id"]
+    kind = classify(task)
+    status = task.get("status", {}).get("status", "").lower()
+    cls = task_class(name)
+    V = []
+
+    def add(check, sev, detail):
+        V.append({"task": cid, "kind": kind, "status": status,
+                  "check": check, "sev": sev, "detail": detail, "name": name})
+
+    # (1) naming canon + (2) req fields + (3) defaults — launch tasks only
+    if cls == "launch":
+        for sev, detail in name_violations(name):
+            add("name", sev, detail)
+        missing = [k for k in required_fields(task, kind)
+                   if field_value(task, F[k]) is None]
+        if missing:
+            add("req-fields", "fail", "empty: " + ", ".join(missing))
+        dv = default_violations(task, kind)
+        if dv:
+            add("defaults", "warn", "; ".join(dv))
+    elif cls == "freeform":
+        add("name", "warn", "non-SHA name, not a recognized brief family (review)")
+
+    # (4) ordered-list collapse risk — every task with a description
+    desc = task.get("description") or task.get("text_content") or ""
+    if ORDERED_LIST_RE.search(desc):
+        add("list", "warn", "markdown ordered list in description (collapse risk)")
+
+    # (+) em/en dash in an existing copy field — every task (brand rule)
+    ed = emdash_fields(task)
+    if ed:
+        add("em-dash", "warn", "em/en dash in: " + ", ".join(ed))
+
+    return V
+
+
+def _table(rows):
+    """Compact fixed-width table string from violation dicts."""
+    if not rows:
+        return "(no violations)\n"
+    cols = [("task", 9), ("kind", 5), ("status", 11), ("check", 10),
+            ("sev", 4), ("detail", 60)]
+    head = "  ".join(h.ljust(w) for h, w in cols)
+    line = "  ".join("-" * w for _, w in cols)
+    body = []
+    for r in rows:
+        body.append("  ".join(str(r[h])[:w].ljust(w) for h, w in cols))
+    return head + "\n" + line + "\n" + "\n".join(body) + "\n"
+
+
+def run_lint():
+    """Report-only convention lint over the in-scope task set. Zero writes."""
+    tasks = fetch_tasks()
+    all_v = []
+    classes = {"launch": 0, "brief": 0, "freeform": 0}
+    for t in tasks:
+        classes[task_class(t["name"])] += 1
+        all_v.extend(lint_task(t))
+
+    # sort: severity (fail first), then check, then task
+    sev_rank = {"fail": 0, "warn": 1}
+    all_v.sort(key=lambda r: (sev_rank.get(r["sev"], 9), r["check"], r["task"]))
+
+    from collections import Counter
+    by_check = Counter(r["check"] for r in all_v)
+    fails = sum(1 for r in all_v if r["sev"] == "fail")
+
+    print(f"CONVENTION LINT — {len(tasks)} tasks in scope "
+          f"(launch {classes['launch']}, brief {classes['brief']}, "
+          f"freeform {classes['freeform']})")
+    print(f"{len(all_v)} violations ({fails} fail, {len(all_v) - fails} warn) "
+          f"across {len(set(r['task'] for r in all_v))} tasks")
+    print("by check: " + ", ".join(f"{k}={v}" for k, v in by_check.most_common()))
+    print()
+    print(_table(all_v))
+    return all_v
+
+
 # ---- state / ping ----------------------------------------------------------
 
 def load_state():
@@ -474,4 +753,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if LINT_ONLY:
+        run_lint()
+    else:
+        main()
