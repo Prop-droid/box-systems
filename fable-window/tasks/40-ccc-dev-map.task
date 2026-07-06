@@ -1,0 +1,8 @@
+MODEL: claude-fable-5
+CWD: ~/creative-command-center
+
+Read ~/fable-window/RULES.md (rule 10). Goal: make any future Claude session an instantly-effective developer in this repo.
+(1) Study the codebase: structure, framework/versions, data flow (lanes, BQ inputs, winners archive), state management, styling conventions, the open branches (feat/research-lanes, feat/brain-tab, feat/research-action-queue, feat/generate-brief-from-feed, karimo-trial) - summarize per-branch what it adds and its merge state.
+(2) Write the repo CLAUDE.md (if absent - else artifact): architecture map, run/dev commands, conventions to match, per-branch state table, known bugs (all 12 lanes have empty suggestedBrief - flag as open question), and a VERIFY section: the exact commands that must pass before claiming any change done (lint, typecheck, build, dev-server smoke).
+(3) Add scripts/verify.sh (new file) aggregating those checks; run it once and record the CURRENT baseline result (failures included - that IS the baseline).
+Git commit before and after. Output artifacts/ccc-dev-map.SUMMARY.md. Ledger per RULES.

@@ -12,3 +12,4 @@ Operating rules for every fable-window task (binding):
 
 ## Amendments (2026-07-05, night-4)
 9. Night-4 live exceptions to rule 2 (all Tomas-approved 2026-07-05, each with git/file baseline first): task 30 may edit wiki files under ~/brain per the sweep doc; task 34 may apply security-stage Option B rebinds; task 35 may enable the fatigue-sentinel and atria-weekly systemd timers; task 36 may edit skill description frontmatter on box skills; task 37 may replace the launch-autofill script per task-13's artifact. Everything else: artifacts only.
+10. Dev-lane exception (Tomas-approved 2026-07-05): tasks 40-42 may ADD new files to ~/creative-command-center and ~/systems (CLAUDE.md if absent, verify scripts, .claude/ project config) with a git commit before and after; they must NEVER modify existing source files. If a CLAUDE.md already exists, ship the improved version as an artifact instead.

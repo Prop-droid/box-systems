@@ -1,0 +1,5 @@
+MODEL: claude-fable-5
+CWD: ~/brain
+
+Read ~/fable-window/RULES.md. Close the declared gap from tasks 03/20: winner VISUALS were never analyzed.
+From winners.jsonl take the top ~30 static/image winners by spend that have attachment_urls. Download a sample (curl, skip auth-walled ones gracefully), READ the actual images, and extract the visual pattern canon: layout families, headline placement/size, color fields, product framing, text density, badge usage - what the winning statics LOOK like, with counts. Output artifacts/feedback_visual_winner_canon.md (memory format, type: feedback, one screen per pattern, evidence counts) + artifacts/visual-canon.SOURCES.md (which images read, which skipped and why). No em dashes. Ledger per RULES.

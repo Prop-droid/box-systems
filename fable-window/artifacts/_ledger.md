@@ -351,3 +351,341 @@ second-stage LLM-judge in run_eval.py — not built here.
   purpose of the delete instruction (no split coverage) is satisfied since NEW is complete. Only
   20 generations spent this session; 852s gen wall time; well under budget and the 55 min guard.
 - **Open questions:** none. Prior task-98 open item "re-queue task 27" is now closed.
+
+---
+
+## Task 30 — Apply wiki canon-conflict fixes (Tier 1 + Tier 2)
+- **Ran:** 2026-07-05. Applied the sweep's 12 compliance-dangerous (Tier 1: 1.1–1.12) + 5 stale-stat (Tier 2: 2.1–2.5) findings live to `~/brain`; skipped the 3 tone findings (3.1–3.3) per instruction. Authorized by RULES rule 9 (night-4 live exception for task 30).
+- **Produced:**
+  - Live edits to 16 wiki/docs files under `~/brain` (see summary table). 26/26 verification greps PASS; all 16 files confirmed modified, zero collateral.
+  - `artifacts/wiki-fix-apply.SUMMARY.md` — per-finding applied/skipped table + deviations.
+  - `artifacts/wiki-fix-baseline/` (16-file pre-edit snapshot) + `wiki-fix-baseline.sha256`; `artifacts/wiki-fix-postedit/` (post-edit snapshot). These are the rollback set.
+- **Baseline deviation:** `~/brain` is NOT a git repo, so the instructed `git add/commit` baseline was replaced with file-level snapshots before + after (RULES rule 6 graceful degrade). No `git init` on the canonical root (heavy raw/ assets).
+- **Open questions:** (1) out-of-wiki `shameless-static-copywriter/knowledge/` pack likely still whitelists appetite-suppressant + 70-only rule — audit separately. (2) `raw/brand-context/compliance_guide.md` (immutable) may still carry the 2026-04-15 appetite permission the guardrails page defers to. (3) `~/systems/compliance-eval/policy.json` appetite-suppressant whitelist (patch queued 2026-07-02, out of scope). Did not touch wiki/index.md or wiki/log.md (in-place edits only; sweep flags log as append-only).
+
+---
+
+## Task: S27+ testing roadmap (2026-07-05)
+- **Task:** produce the S27 to S30 angle x format priority matrix from (1) winner canon v2, (2) a fresh
+  read-only BQ pull (30d angle x format spend/ROAS + fatigue half-splits), (3) the latest weekly report,
+  (4) the wiki angle canon. 12 ranked lanes with evidence, volumes, and SH- iterate-from ids, plus a
+  do-not-test list.
+- **Produced:** `~/fable-window/artifacts/roadmap_S27plus.md` (133 lines, plaintext, grep-verified zero
+  em/en dashes). Read-only BQ queries run 2026-07-05 against `ejam-dwh.production.creative_dashboard`
+  (brand SHA, dt 2026-06-05 to 2026-07-04): angle x asset_type 30d, per-concept H1/H2 ROAS+CTR fatigue
+  split (spend > $3k), recent-15d angle trend, top ads > $1.2k by ROAS. No writes to BQ, wiki, canon,
+  or memory.
+- **Key fresh findings baked in:** Scarcity statics 1.20 on $43.5k; USP statics accelerating 0.74 to
+  1.11 half-over-half; SH-13107 fading 1.72 to 1.18 on rising spend (lane 1 urgent refresh); SH-16180
+  $51.7k at 0.81 with only 4 variants (lane 3 hook retro); SH-9428 spend DOUBLED to $19.4k/half at 0.77
+  after the 06-22 KILL call (do-not-test #2); SH-15711 declined 0.65 to 0.51, overruling the weekly
+  report's fund recommendation (do-not-test #7); SH-16360 new $22k spender at 0.75 flagged.
+- **Inputs used:** winner_patterns_v2.md (P1-P14 + variant keep-rate economics), weekly report
+  2026-06-22 (latest on disk; no 2026-07 report exists yet), creative-angles.md (2026-04-16, angle
+  tiers + Q1 ranking + toxic combos + untested hooks).
+- **Open questions:** (1) sprint capacity assumed ~25 to 30 variants/sprint; if real brief throughput
+  is lower, cut lanes from the bottom of the matrix, never lanes 1 to 5. (2) Lane 8's Not-Metamucil
+  execution needs the Metamucil sugar figure substantiated from current packaging before any ad runs
+  (canon compliance note). (3) SH-9428 is still live and scaling despite the standing KILL call; that
+  is an ops action, not a testing lane, and needs a human decision.
+
+---
+## Meta-distill: fable-window lessons canon (2026-07-05)
+- **Task:** meta-distill the whole window (RULES.md + amendments, _ledger.md, REPORT.md, REPORT-night3.md, eval-ab.RESULTS.md, eval-ab-clean.RESULTS.md, VERIFY.md, VERIFY-night3.md) into transferable canon for authoring future skills/evals/automation with Opus. Artifacts only (RULES #2).
+- **Produced:** `~/fable-window/artifacts/feedback_fable_window_lessons.md` - memory-file format (type: feedback), 9 lessons, each with Why + How to apply + evidence citation from this window: (1) canon baked into skills beats runtime memory reads (A/B: 20/20 vs 19/20 gold, 2 vs 7 warns, 0 vs 3 baits), (2) kill-criteria checklists over vibe critique, (3) eval-gate before ship with layered scoring (regex scorer alone could not separate the skills), (4) pin the output contract in eval prompts (anti-preamble amendment killed the false positives), (5) headless one-shot discipline (07c/07d failure -> RULES rule 7), (6) deterministic scripts for waiting/retry, agents only for judgment, (7) independent verify pass catches mechanical rot (4/7 SKILL.md YAML bug), (8) additive staging + baseline before every live write, (9) write rule scope explicitly (the em-dash saga as the counterexample).
+- **Verify:** zero em/en dashes (grep -P), frontmatter plain-scalar check passes (no `word: word` bug from VERIFY.md), 9 Why/How pairs confirmed programmatically.
+- **Open questions:**
+  1. Promote path: file is named/shaped for direct install into the memory dir (box+Mac via Syncthing) as `feedback_fable_window_lessons.md` + one MEMORY.md index line; not done per RULES #2.
+  2. Night-4 tasks 34-42 had no ledger entries at distill time; if they surface new lessons (live-apply of security/skill-description/autofill work), append a lesson 10 rather than rewriting.
+  3. Lesson 9 implies a concrete fix: amend RULES #5 itself with an include/exclude scope list before the next overnight window.
+
+---
+## Hermes orchestration skill upgrade (2026-07-05)
+- **Task:** upgrade the 3 Hermes orchestration skills (hermes-routing-policy, delegate-to-claude,
+  claude-heavy-lifting) in the copy-craft style: kill-criteria checklists, failure-modes sections,
+  tight triggers with negative routing. Fold in the usage-guard reality (Hermes on Codex/Gemini does
+  NOT draw the Claude sub cap; check ~/.claude/usage-window.json + PAUSE_CLAUDE_BG before delegation),
+  CLARIFICATION_REQUIRED in all three, and mandatory verify-target handoffs. Artifacts only; Hermes
+  reads ~/.hermes/skills live, morning apply.
+- **Produced:** artifacts/hermes-routing-policy.SKILL.md (9.9K, was 6.3K), delegate-to-claude.SKILL.md
+  (11.9K, was 11.4K), claude-heavy-lifting.SKILL.md (7.6K, was 7.6K, repositioned from routing-duplicate
+  to heavy-run sizing profile), hermes-upgrade.CHANGES.md. All v2.0.0. Verified: zero em/en dashes,
+  frontmatter plain-scalar clean, gate/verify/clarification tokens present in all three, KILL
+  checklists in place.
+- **Load-bearing corrections to the originals:** hardcoded "resets at 00:30" replaced with block_end
+  reads; "weekly cap" replaced with the 5h window; claude-sonnet-4-6 pin updated to claude-sonnet-5;
+  Ollama tier corrected to box reality (not installed; Hermes cheap tier = Gemini 3.5 Flash per
+  config.yaml); ~/.hermes/scripts/ helpers (claude_delegate.py etc.) verified ABSENT on the box and
+  marked "if present" with inline fallback.
+- **Open questions:** (1) helper scripts: port from Mac or accept inline commands as the box contract;
+  (2) gate thresholds 70/80/90 + 15-min staleness are judgment calls, tune via usage_pct_at_launch
+  telemetry; (3) enforcement is prompt-level only; hard option = route Hermes delegations through the
+  PAUSE-aware /opt/agentbox/bin/claude-max wrapper; (4) ._AppleDouble litter in the skill dirs,
+  deletable at install.
+
+## task 34 — security-stage Option B (live rebind: md-server, CCC, camofox)
+- Applied Option B rebinds live per RULES rule 9. Backed up all in-scope targets to ~/security-stage-backup-20260705-232053/ first.
+- md-server: PASS -> now 100.107.26.69:8092 (tailnet-only), was 0.0.0.0. Tailscale 200, LAN gone.
+- camofox: PASS -> now 127.0.0.1:9377 (localhost), was *:9377. /health 200, browser pre-warmed, LAN gone. server.js:6070 patched via git apply + unit CAMOFOX_HOST=127.0.0.1.
+- CCC: FAILED its check (next dev on Next 14.2.35 ignores HOSTNAME env; stayed *:3000). Rolled back to original state per instructions.
+- tablet-dash: intentionally SKIPPED (out of scope; Option A is the right tool there).
+- Produced: artifacts/security-optionB.APPLIED.md (per-service before/after bind table + CCC root cause + rollback).
+- Open questions: CCC still LAN-exposed on 3000 — fix is `next dev -H 127.0.0.1` in package.json dev script, OR fold CCC into Option A firewall drop. Recommend Option A for both CCC and tablet-dash.
+
+## task 36 — apply trimmed skill descriptions to box skills
+- Applied Option: box live edit per RULES rule 9 (task 36 exception). Applied all 15 trimmed
+  descriptions from artifacts/skill-descriptions.trimmed.md (= Opportunities 1+2+4: 8 mega
+  descriptions + 1 firecrawl umbrella + 6 more long descriptions). Section 4's routing-accuracy
+  fixes (maintain, claude-code, creative-ideation, humanizer) were intentionally NOT applied —
+  out of scope for "the 15."
+- Skipped for drift: none. All 15 live descriptions' char counts matched the doc's stated
+  "CURRENT chars" before editing.
+- Backed up every touched SKILL.md to SKILL.md.bak-2026-07-05 before editing, per rule 9.
+- Self-inflicted bug during the run: first apply script mis-reconstructed plain/literal-style
+  frontmatter, inserting one spurious blank line before the closing `---` in 10 of the 15 files
+  (folded-style ones were unaffected). Caught via line-count diff, fixed with a byte-precise
+  single-line removal. While re-verifying, an accidental module import re-executed the buggy
+  first script as a side effect, re-corrupting those same 10 files and clobbering 11 of the 15
+  `.bak-2026-07-05` originals with post-edit content. Deleted both transient scripts to prevent
+  recurrence; recovered true original text for 11/15 skills from this conversation's own earlier
+  grep/diff output plus one byte-length-verified external copy (~/.hermes/skills/openclaw-imports/
+  for the two firecrawl* skills); rebuilt those 11 backups to true pristine state. Could not
+  recover true original for 4 skills (dr-script, landing-page-copy, email-copy, micro-scripts) —
+  no other copy existed and their full original text was never printed earlier in-session. Their
+  LIVE files are verified correct (never actually hit by the whitespace bug); only their .bak
+  files are not true rollback points. Flagged as the one known gap.
+- Final state: 15/15 live SKILL.md files verified correct (name: unchanged, description: matches
+  trim doc exactly, body byte-identical, no structural bug). 11/15 backups are true pristine
+  originals; 4/15 backups (dr-script, landing-page-copy, email-copy, micro-scripts) hold
+  post-edit content instead of true originals — noted, not blocking.
+- Produced: artifacts/skill-desc-apply.SUMMARY.md (applied/skipped table, verification method,
+  full incident writeup, and the exact 15-skill list for the Mac session to mirror).
+- Open questions: (1) Mac mirror pass still needs to be run manually per the summary's list;
+  (2) recommend the Mac session verify byte-count of its own backups before overwriting, to avoid
+  the same reconstruction-bug class; (3) the 4 skills with non-pristine backups have zero practical
+  risk right now (live content is correct) but a true "undo the whole task" rollback for those 4
+  would need to be done by hand from the trim doc's implied "old text was X chars" if ever needed.
+
+---
+
+## naming-lint apply — install launch-autofill lint replacement (task 37, 2026-07-05)
+- Task: apply task-13's artifact live per Rule 9 — back up the live launch-autofill script, install the naming/field-lint replacement, run ONE report-only dry-run (zero ClickUp writes), confirm output sanity, roll back on error. Install target: `~/systems/launch-autofill/autofill.py`.
+- Pre-check: diffed live (477L) vs `autofill.py.replacement` (759L) — strictly additive. Only removed line = bare `main()` in `__main__`, replaced with `if LINT_ONLY: run_lint() else: main()`. New content = lint docstring + `LINT_ONLY` flag + lint block (L326-589). Write path byte-identical. `py_compile` OK.
+- Done:
+  - Backup: `~/fable-window/artifacts/autofill.py.live-backup-20260705` (sha `05a5bddf…20a2`, == live at backup time).
+  - Installed replacement over live `autofill.py` (sha `ff6a8cdb…9020`, == artifact).
+  - Dry-run `AUTOFILL_LINT=1 python3 autofill.py`: exit 0, empty stderr, 261 tasks in scope, 297 violations (54 fail/243 warn) across 209 tasks; by check defaults=205 req-fields=54 name=20 em-dash=13 list=5. Consistent with task-13 baseline (309/214) minus tasks aged out of the moved 30d window. Variety-pack Product gap (SH-16419–16430) present as expected.
+  - Write-safety: grep of lint path (L326-589) for POST/PUT/comment = 0 matches; run_lint issues only GETs. Zero ClickUp writes. Only live mutation = the authorized script replacement.
+  - Summary: `~/fable-window/artifacts/naming-lint-apply.SUMMARY.md`.
+- No rollback needed (dry-run clean). Rollback recipe in summary if ever required.
+- Open questions: (1) confirm task-13's setup-doc substitution (no SETUP.md existed); (2) lint is opt-in/manual only — not wired to any schedule; (3) angle-check tightening still gated on name-format standardization.
+
+---
+
+## Task - VERIFY-night4 (verification pass, 2026-07-05, night-4)
+- Ran independent verification of night-4 live-exception tasks 30/34/35/36/37 plus artifacts (roadmap, lessons, 3 Hermes SKILL.md files). Method: grep spot-checks against source docs, live system inspection (ss -tlnp, systemctl --user, curl), sha256 manifest checks, mechanical frontmatter/placeholder/dash checks. No files modified besides this entry and the new report.
+- Produced: `artifacts/VERIFY-night4.md` (full pass/fail table).
+- Results: 5/6 checks PASS clean (wiki fixes live in `~/brain` matching the sweep doc, 16/16 sha256 baseline OK; roadmap + lessons + 3 Hermes skills all clean frontmatter/zero em-dash/zero placeholders; both systemd timers enabled+active and byte-identical to staged units; all 15 task-36 skill frontmatter blocks structurally clean; task-37 autofill live script sha256-matches its artifact and the lint path is confirmed read-only). 1 PARTIAL: task 34's Option B claim ("no LAN binds for the 3 services") holds for md-server and camofox but not CCC (still `*:3000`) — this matches the ledger's own admission that CCC's rebind failed and was rolled back, so it is a known, documented gap rather than a new regression.
+
+---
+
+## Task 97 — night-4 report (2026-07-05)
+- **Task:** read ledger entries + VERIFY-night4.md + `logs/3*.done` exit codes, write
+  `~/fable-window/REPORT-night4.md` (exec summary, LIVE vs artifact-only inventory, Mac mirror
+  checklist for the Hermes skills + skill descriptions, open questions, last-Fable-night candidate
+  ranking), append a 3-line night-4 summary to the bottom of REPORT.md.
+- **Produced:** `~/fable-window/REPORT-night4.md`; 3-line addendum appended to `~/fable-window/REPORT.md`.
+- **Findings:** tasks 30-38 all `exit=0`. Live-checked against the running system (not just docs):
+  `~/brain` wiki edits present, both systemd timers (`atria-weekly`, `fatigue-sentinel`) enabled and
+  active, md-server/camofox rebound off-LAN and CCC confirmed still `*:3000` (documented failed
+  rebind), 15 skill-description edits live and correct, autofill.py sha256-matches its artifact. The
+  3 upgraded Hermes skills (task 33) are confirmed NOT yet applied anywhere: box's own
+  `~/.hermes/skills/autonomous-ai-agents/*/SKILL.md` are still v1.0.0 and differ from the v2.0.0
+  artifacts. Tasks 40-48 have no `logs/` entries at all (never started); ranked them for the last
+  Fable night (2026-07-06) by leverage and risk, task 40/41 (dev-map onboarding docs) first, task 48
+  (agentic-os review) last/cuttable.
+- **Open questions:** none new; consolidated task-35's missing ledger entry, the CCC LAN-exposure gap,
+  the 4 non-pristine skill-description backups, the not-yet-applied Hermes skills, and the carried-
+  forward em-dash policy question into REPORT-night4.md section 4.
+- Mechanical issues found and fixed: none — everything checked out clean on first pass.
+- Open questions: (1) task 35 (enabling the two timers) has no ledger entry of its own; live state is verified correct but the paper trail is missing and was not fabricated here; (2) CCC LAN exposure on :3000 remains open per task 34's own recommendation (fold into Option A); (3) 4/15 task-36 skill-description backups are non-pristine (carried forward from task 36, not new).
+
+## Task 40 — CCC dev map + repo CLAUDE.md + verify.sh (2026-07-06)
+- **Produced:** repo `CLAUDE.md` (architecture map, run/dev, conventions, branch state table,
+  known bugs, VERIFY section), `scripts/verify.sh` (lint/tsc/vitest/build/smoke aggregate, live-server
+  safe via NEXT_DIST_DIR=.next-build + :3105 smoke), `scripts/verify-baseline.txt` — all NEW files in
+  `~/creative-command-center`, committed c0a1081 (empty baseline before) → 8e6eab6 (after).
+  Summary artifact: `~/fable-window/artifacts/ccc-dev-map.SUMMARY.md`.
+- **Baseline recorded:** verify.sh ALL GREEN — lint, tsc, 380/380 tests (34 files), build, smoke.
+- **Key findings:** feat/brain-tab (+34, checked out = live) fully contains feat/research-lanes;
+  feat/generate-brief-from-feed and feat/clickup-filename-tool share the same tip (KARIMO plugin +
+  filename tool + one unmerged useApi QA fix 382c575); feat/research-action-queue + design-refresh/v3 +
+  fix-perf-and-today fully merged (deletable); karimo-trial is NOT a branch of this repo (torn-down
+  worktree, feature landed via research-action-queue).
+- **Open questions:** (1) 12/12 live lanes suggestedBrief=null — root cause is the generator
+  (`~/systems/research-agent/lanes/score.mjs:64` hardcodes null; Gemini pass 3 never built): implement
+  pass 3 or drop the field? (2) unmerged useApi 404-retry QA fix sits only on the two filename-tool
+  branches — worth cherry-picking to main? (3) box has no GitHub creds/gh — remote/PR state and any
+  push of feat/brain-tab need the Mac.
+
+## task 41 — systems-dev-map (2026-07-06)
+- Produced: `~/systems/CLAUDE.md` (NEW, 265 lines — subsystem map with per-dir schedule/entry/dry-run, systemd oneshot+timer patterns incl. cgroup-kill/systemd-run --collect gotcha, headless claude conventions (claude-max wrapper, PAUSE_CLAUDE_BG, stdin prompts, --dangerously-skip-permissions), fleet networking (Tailscale IPs, per-host keys), git remote/commit conventions, consolidated VERIFY block).
+- Rule 10 path: CLAUDE.md was absent → written live as a new file; no existing source files modified. Git commits: 0b843ab (baseline before, also captured pending approved night-4 changes) and aacb134 (the map).
+- Artifact: `artifacts/systems-dev-map.SUMMARY.md`.
+- Open questions: (1) copy live-only units (usage-guard, fable-resume, iteration-suggestions) into systemd/ so install.sh owns them; (2) systemd/README.md schedule table is stale (deepdive→lanes repurpose, missing newer timers) — existing file, not touched.
+
+## Task - karpathy-guidelines v2 (2026-07-06)
+- **Task:** upgrade the karpathy-guidelines skill with this week's evidence; artifact only, not installed (RULES #2).
+- **Produced:** `artifacts/karpathy-guidelines.SKILL.md` (105 lines, was 64; same frontmatter name, description updated) + `artifacts/karpathy-guidelines.CHANGES.md`.
+- **Additions:** (5) green-defect gate from the KARIMO trial (4 defects self-reported green, all caught by the external gate; run repo verify + hostile diff self-review; tsc/tests/runs-live = disjoint gates); (6) headless discipline from 07c/07d (one-shot = synchronous, deterministic scripts wait / agents judge, atria-weekly as pattern); (7) box failure modes from ~/systems/CLAUDE.md task 41 (oneshot cgroup reaping -> systemd-run --collect, anchored pgrep, Tailscale IPs not mDNS, stdin hang, no-login-env timers); (8) repo-verify table pointing at tasks 40/41 outputs (CCC scripts/verify.sh + baseline, ~/systems VERIFY block, compliance-eval test_scorer.py as the eval-gate pattern, new-repo-first-deliverable rule); (9) superpowers routing (TDD / systematic-debugging / verification-before-completion).
+- **Verify:** 105 lines < 2x64; zero em/en dashes (grep -P) in both files; frontmatter `name: karpathy-guidelines` unchanged; all referenced proof files confirmed on disk (~/creative-command-center/scripts/verify.sh, ~/creative-command-center/CLAUDE.md, ~/systems/CLAUDE.md, ~/systems/compliance-eval/test_scorer.py).
+- **Open questions:** (1) morning apply = copy SKILL.md over ~/.claude/skills/karpathy-guidelines/SKILL.md (single file, no refs dir); (2) sections 7-8 duplicate ~/systems/CLAUDE.md gotchas by design (skill loads repo-agnostically) - if that file's VERIFY block changes, this skill's pointers should be re-checked.
+
+## ccc-lanes-bug diagnosis (2026-07-06)
+- Task: root-cause all-12-lanes suggestedBrief=null (diagnosis only, nothing applied).
+- Verdict: unshipped optional scope, not a regression. Spec's "Gemini pass 3 (suggest, optional)" was never implemented; `~/systems/research-agent/lanes/score.mjs:64` hardcodes null (born that way in commit 6b43022, confirmed via git log -S; plan doc line 584 hardcodes it too, no plan task covers pass 3). CCC parser/API/UI all handle the field correctly and live only on feat/brain-tab.
+- Second finding: per-spec pass 3 (gap/emerging only) would fill 0 briefs today; live snapshot classifies 12 lanes as 3 proven-ours / 8 watching / 1 fading. Patch widens actionable set to gap/emerging + watching with strong validation or momentum up (5 lanes on current data).
+- Produced: artifacts/ccc-lanes-bug.DIAGNOSIS.md (root cause, evidence, diff blocks, effort ~1-1.5h, lands on ~/systems main; no CCC code change) + rule-3 full replacement files artifacts/ccc-lanes-bug/{tag.mjs,build-lanes.mjs} (node --check clean; suggestBriefs smoke-tested with injected fetch: actionable-only fill, {} on Gemini error).
+- Open questions: (1) actionable-set widening OK vs spec-strict vs all-non-fading? (2) iteration briefs for proven-ours lanes? (3) alternative = drop field, build conveyor on actionFor() labels (not recommended).
+
+---
+
+## Task 44: visual-winner-canon (2026-07-06)
+
+- **Task:** close the tasks 03/20 gap: read the actual winning STATIC creatives and extract the visual pattern canon.
+- **Input reality:** winners.jsonl attachment_urls contain ZERO images (all 83 URLs are .webm/.mp4 ClickBot screen recordings; publicly curl-able, 200 no auth). Degraded gracefully per rule 6: resolved actual creatives via the CCC local cache `~/creative-command-center/.cache/thumbs/<meta_ad_id>.jpg` (1460 full-res 1080px JPEGs) joined on subtask meta_ad_ids / snapshot ad_ids; 240 of 280 winners joinable.
+- **Done:** classified 192/334 winners as static by name tokens, ranked by summed lifetime spend, READ the top 32 images ($1.4k to $15.3k each, ~$129k total). 3 were video frames (excluded, logged); 29 statics / 28 unique creatives analyzed. Extracted 6 layout families with counts and spend weights (urgency banner sandwich 8/$33.5k, comparison table 3/$19.1k, macro close-up 2/$22.7k, broccoli mechanism 4/$12k, DR badge cluster 4/$10.6k, premium serif lifestyle 4/$6.9k) plus 3 one-offs and 10 cross-cutting rules (zero faces in any winning static, headline top-edge 24/28, two text-density modes with no middle, broccoli claim in 5/28, etc.).
+- **Files:** artifacts/feedback_visual_winner_canon.md (memory format, type: feedback), artifacts/visual-canon.SOURCES.md (read/skip log), staging /tmp/visual-canon/ (32 jpgs + manifest.json).
+- **Open questions:** (1) 4 top-band statics have no resolvable image anywhere (SH-394 $8.5k the biggest); Air.inc boards via win_signal upload manifests are the untried fallback. (2) Name-token format classification leaks ~10% video (3/32); ad-level format from BQ creative_dashboard would fix ranking if a v2 is wanted. (3) Canon covers Meta statics only; Amazon PT and advertorial images unrepresented.
+
+---
+
+## Task 96 — VERIFY-dev (2026-07-06)
+- **Task:** verify the dev lane (tasks 40-42): CCC CLAUDE.md + scripts/verify.sh, ~/systems/CLAUDE.md
+  dry-run commands (3 sampled subsystems), karpathy-guidelines.SKILL.md artifact, git hygiene on both
+  repos. Fix trivial artifact issues only.
+- **Produced:** `artifacts/VERIFY-dev.md` (full results), `artifacts/systems-CLAUDE.FIXED.md` (proposed
+  full-replacement patch, rule 3) + `artifacts/systems-CLAUDE.CHANGES.md`.
+- **Results:** CCC `scripts/verify.sh` ran live end-to-end — lint/typecheck/test/build/smoke all PASS,
+  matches `verify-baseline.txt` exactly, no crash. Sampled 3 systems dry-runs: launch-autofill and
+  fatigue-sentinel work exactly as documented (fatigue-sentinel's real `[TEST]` ntfy push fired, as
+  designed); bq-clickup-perf's documented command crashes as literally written (`FileNotFoundError:
+  /tmp/clickup_pk` — script defaults `TOKEN_FILE` to a Mac-era path; the real cron wrapper always sets
+  it, so only the doc example was wrong). karpathy-guidelines.SKILL.md artifact: valid frontmatter, zero
+  placeholders (grep-clean) — correctly differs from the still-older live-installed v1 since v2 is an
+  unapproved proposal (by design, not a defect). Git: `~/systems` clean, task-41 diff-stat is 1 new file
+  only (0 existing source touched). `~/creative-command-center` has one untracked entry, `.claude/`,
+  which is two pre-existing registered git worktrees dated 2026-06-26 (10 days before any fable-window
+  task) — unrelated debris, not caused by tasks 40-42, left untouched (deletion is destructive/out of
+  scope); task-40 diff-stat is 3 new files only (0 existing source touched).
+- **Trivial fix:** delivered as an artifact per rule 3, not live-edited (task 96 has no live-edit
+  exception for `~/systems/CLAUDE.md`) — corrected the bq-clickup-perf dry-run example (lines 21 + 244)
+  to include `TOKEN_FILE=~/.config/clickup/pk`; verified the corrected command runs clean (dry-run:
+  "would write 5 fields to 175 tasks... No changes made").
+- **Open questions:** (1) should `bq_to_clickup_perf.py:40`'s default `TOKEN_FILE` move from
+  `/tmp/clickup_pk` to `~/.config/clickup/pk` at the source (pre-existing source file, out of this
+  task's scope)? (2) recommend a separate cleanup task for the two orphaned CCC worktrees.
+
+---
+
+## Task — eval-factory generalization + email-eval instance (2026-07-06)
+- **Task:** generalize `~/systems/compliance-eval` into a reusable eval-factory: (1) a template
+  for standing up an eval-gate for ANY skill, (2) a working first instance for the `email-copy`
+  skill. Verify the new scorer against its own gold (must be 1.0/1.0) before summarizing.
+  Artifacts only; live harness untouched (RULES #2).
+- **State on entry:** artifacts already existed from a prior run that died before the mandated
+  verify + ledger step (classic headless silent-failure — files present, no ledger entry). Per
+  resume discipline I reviewed the artifacts and ran the required verification rather than
+  regenerating. No duplication, no edits to live `~/systems/compliance-eval`.
+- **Produced / confirmed:**
+  - `artifacts/eval-factory.TEMPLATE.md` — how to build a deterministic un-gameable gate for any
+    generating skill: the 5-part layout (policy.json / scorer.py / gold+labels / test_scorer /
+    prompts / run_eval), the greppable-vs-structural-vs-semantic rule triage, the verify-the-verifier
+    1.0/1.0 discipline, the meta-preamble contamination lesson (mandatory anti-preamble amendment on
+    every bait prompt), the 7-point A/B methodology distilled from eval-ab-clean, box-specific
+    headless gotchas, and an instances table.
+  - `artifacts/email-eval/` — first instance, gate for `email-copy`:
+    `policy.json` (HARD: em_dash, code_fence, labeled_block, drug_name, medical_cure,
+    outcome_guarantee, saturated_phrase, + `structure` checks subject_count=5 and cta_single=1;
+    WARN: spam_trigger, weak_cta, discount_claim vs 46% ceiling, vague_curiosity; allow-list),
+    `scorer.py` (adds a `structure` non-regex scan over the original harness, same Finding plumbing),
+    `test_scorer.py`, `gold/` (15 fixtures), `gold_labels.json`, `prompts.jsonl` (10 baits, each
+    aimed at one rule, all carrying the anti-preamble amendment), `run_eval.py`, `README.md`.
+- **Verification (the gate on this task):**
+  - `email-eval/test_scorer.py` → **precision=1.000 recall=1.000 (TP=12 FP=0 FN=0)**, 15/15
+    fixtures label-exact, RESULT PASS. Requirement met.
+  - `email-eval/run_eval.py --mode fixtures` → runs end-to-end, 15 scored, 0 errors,
+    violation_rate 0.667 (10 violation fixtures fail as designed, 5 clean/warn pass).
+  - Parent `compliance-eval/test_scorer.py` still **1.000/1.000 (TP=16)** — template's claim holds;
+    live harness confirmed untouched.
+- **Coverage vs ask:** em-dash ban ✓, single-CTA contract ✓ (cta_single), subject-count contract ✓
+  (subject_count=5), banned claims ✓ (drug_name/medical_cure/outcome_guarantee/saturated_phrase),
+  10 prompts.jsonl ✓, gold labels ✓, runnable adapted run_eval.py ✓, A/B methodology + meta-preamble
+  lesson folded into the template ✓.
+- **Open questions:** (1) email-eval is fixtures-verified only; a real `--mode generate` baseline
+  against the installed `email-copy` skill was not run (costs window tokens, out of an artifacts-only
+  pass). (2) `cta_single` keys on the arrow convention (→ / ->) — if email-copy ships CTAs without
+  a literal arrow the structure check needs a broader CTA signal; worth confirming against a live
+  generate run before trusting it as a gate. (3) if promoted to `~/systems/`, add to watchdog like
+  compliance-eval (it is currently unscheduled by design).
+
+---
+
+## Task: Distill 2026-04 creative-strategy corpus into one operational memory file
+**Produced:** `feedback_creative_strategy_2026_operational.md` (memory-format artifact, ~8KB, load-every-session compact).
+**What:** Read the 8 deep dives in `~/brain/raw/research-library/legacy-research-1/2026-04_creative-strategy-tactics/` (01 Meta, 02 TikTok, 03 snacks/GLP-1, 04 ops/testing, 05 Andromeda, 06 fiber, 07 founder ads, 08 food psychology) via 3 parallel subagents (~85 candidate tactics extracted). Distilled to 12 briefable tactics, each cross-checked against the SHA winner archive via `feedback_winner_patterns_2026H1.md` (v2) and `feedback-visual-winner-canon.md`.
+**Tags:** 11 tactics marked CONFIRMED-BY-DATA (research + SHA winner evidence agree), 1 marked THEORY-ONLY (comment-reply hook: top cross-cutting research signal, absent from SHA winner archive) plus 3 runner-up theory bets. Added a "winner-data overlay the research under-weights" section (offer wrapper, reason-why, social proof, seasonal) and an ops footer.
+**Files:** `~/fable-window/artifacts/feedback_creative_strategy_2026_operational.md`
+**Ledger rule note:** This is a NEW artifact, not an edit to a live memory file, so no CHANGES section required (rule 3 applies only to replacements of existing files). No live files touched.
+**Open questions:**
+- The task brief said "7 deep dives"; the corpus on disk is 8 numbered files (01-04 landscape + 05-08 focused). Treated all 8 as the corpus. If Tomas meant a specific 7, the distill still holds (05 Andromeda contributes only the diversity/no-touch mechanics).
+- Comment-reply is the strongest research tactic with zero SHA winner backing. Worth a labeled exploration sprint to convert THEORY-ONLY to CONFIRMED, or to explain why it does not win in this account.
+- If this artifact is later promoted to live memory, add the MEMORY.md index line under "Shameless" and link back from `feedback_winner_patterns_2026H1`.
+
+---
+
+## Task 47 — CCC iteration-brief pipeline design (2026-07-06)
+- **Produced:** `artifacts/ccc-iteration-brief.DESIGN.md` (design only, no code, per task).
+- **What it architects:** winner (ClickUp SH-#### + BQ perf + 10-type taxonomy) -> ready-to-push
+  ClickUp iteration brief. Frames the work as an EXTENSION of the existing richer-deterministic
+  ITERATE path in `lib/clickup.ts` (buildBriefPayload/actionFraming/fetchSourceTask), NOT a new
+  engine. Adds a deterministic diagnostic->iteration-type selector in front and a type->
+  deliverable/output/Responsible/metric-to-beat map behind.
+- **Covers (all task asks):** data inputs (+ the missing BQ signals ctr/cvr/frequency/days-live/
+  trend to add to WinnerContext); location (branch `feat/brain-tab`, WinnersView/CreativeDetail,
+  new lib/iterationTaxonomy.ts + lib/iterationDiagnostic.ts + fixtures/iteration-taxonomy.json);
+  generation flow (Tier 0 deterministic = complete shippable brief with copy LOCKED, so no LLM
+  needed; Tier 1 narrow LLM "iteration directions" ONLY, eval-gated); the eval-gate lesson applied
+  (compliance-eval template -> new iteration-brief-eval, HARD checks one-variable/copy-lock/
+  compliance/em-dash, regression -> fall back to Tier 0, never push ungated); human-in-loop
+  (IterationBriefModal type-confirm gate + net-new escape + dry-run preview + URL handoff); ClickUp
+  push via task-creator conventions (per-type deliverable fixes the video-blind "10 images for a
+  video" bug, per-type Responsible routing, type-aware name marker, reuse TPL ids + createTask);
+  MVP vs full cut; branch-state accounting from task 40.
+- **Grounded in:** read `lib/clickup.ts` (1-245) and `lib/briefJob.ts` (1-130) live on
+  `feat/brain-tab`; memories project_clickup_video_iteration_system, project_ccc_research_lanes,
+  project_compliance_eval_harness, project_iteration_suggestions_drop; task-40 ccc-dev-map.SUMMARY.
+- **Verify:** design doc only, no code changed, so scripts/verify.sh not applicable. No live files
+  touched (artifacts-only, rule 2). Grounded every symbol referenced against real code on disk.
+- **Open questions (carried into the doc's section 10):**
+  1. **Hard dependency:** the canon page `video-iteration-formats.md` (the 10-type metadata:
+     per-type deliverable id, Responsible owner, hold/vary rule, trigger thresholds, P.D.A. axis)
+     is NOT on the agent box — `find ~/brain -iname '*iteration-format*'` returns nothing. It lives
+     in the Mac Code Things wiki, unsynced here. The design degrades gracefully (rule 6) by
+     specifying the taxonomy as a to-be-authored committed JSON fixture, but Tomas/Mac must supply
+     the real per-type values before build.
+  2. Only Product Image deliverable + the single Designer group id are in the code today; the VIDEO
+     deliverable option id and any per-type Responsible group ids must be pulled from the live list.
+  3. "retro == iteration?" left unresolved in project_ccc_research_lanes; design assumes the current
+     ITERATE=retro treatment holds.
+  4. Tier 1 LLM directions are optional — Tomas to decide if the quality add is worth an eval harness.
+  5. Auto-push vs draft: design defaults to human-confirm + dry-run (vs today's push-on-click).
+
+---
+## Task 48 — agentic-os DESIGN.md senior-architect review (interactive, 2026-07-06)
+**Produced:** `artifacts/agentic-os.REVIEW.md` — pressure-test of `~/agentic-os/DESIGN.md` (v0.1) against the fable-window evidence.
+**Structure:** verdict / what holds (6 items) / what breaks at contact with reality (B1-B8, each cited to this week) / 3 highest-leverage changes / build-order recommendation (adds a Phase 0 substrate-extraction step).
+**Core finding:** org shape is right and largely already running; the doc puts reliability machinery inside LLM agents when the window proved it must be deterministic scripts (L6). Three locked/implied decisions now contradicted by measured evidence: (1) LLM "Creative Lead" as loop owner = the 07c/07d headless-wait death (L5); (2) QA as reviewer-agent loses to eval-gates (L2/L3/L4); (3) locked-decision #2 "cost is not the binding constraint" is false — the 5h usage window is (night-1 collision + usage-guard build).
+**Recommendation:** do not build a bespoke Creative-Lead orchestrator; extract the fable-window harness (driver + resume + usage-guard + verify + eval-gate) into `~/agentic-os` as Phase 0 first, then hang existing skills off it.
+**Live state changed:** none (review only, artifacts-only per RULES #2). Dash-free per RULES #5.
+**Open questions:** (1) does Tomas want a follow-up task that drafts the Phase-0 substrate extraction (generalize driver.sh/usage-guard/fable-resume into `~/agentic-os/`)? (2) DESIGN.md is unchanged on disk — should the review's changes be folded into a DESIGN v0.2, or kept as an external critique?

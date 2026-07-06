@@ -1,0 +1,5 @@
+MODEL: claude-sonnet-5
+CWD: ~
+
+Read ~/fable-window/RULES.md.
+Verify the dev lane: CCC CLAUDE.md + scripts/verify.sh exist and verify.sh runs (baseline failures allowed, crashes not), ~/systems/CLAUDE.md exists and its stated dry-run commands for 3 sampled subsystems are real (files exist, --help or dry-run flag works), karpathy-guidelines.SKILL.md artifact has valid frontmatter and no placeholders, both repos have clean git status (all changes committed) and no EXISTING source files modified (git log diff-stat check). Fix trivial artifact issues only. Output artifacts/VERIFY-dev.md. Ledger per RULES.

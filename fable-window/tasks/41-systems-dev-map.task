@@ -1,0 +1,6 @@
+MODEL: claude-fable-5
+CWD: ~/systems
+
+Read ~/fable-window/RULES.md (rule 10). Goal: same instantly-effective-developer treatment for the automation estate.
+Write ~/systems/CLAUDE.md (if absent - else artifact): map of every agent/cron dir (what it does, schedule, entry point, its dry-run/test command), the systemd user-unit patterns used here (oneshot vs timer, the cgroup kill gotcha with detached children, systemd-run --collect pattern), headless claude conventions (claude-max wrapper, PAUSE_CLAUDE_BG flag, stdin </dev/null, --dangerously-skip-permissions), fleet networking gotchas relevant to code here (Tailscale IPs not mDNS, ssh keys per host), git remote (Prop-droid/box-systems) and commit conventions, and a VERIFY section per subsystem.
+Git commit before and after. Output artifacts/systems-dev-map.SUMMARY.md. Ledger per RULES.

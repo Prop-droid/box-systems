@@ -71,3 +71,6 @@ Sanity-check after: create one throwaway/dry-run task before trusting it on a re
 
 ## Night-3 addendum (2026-07-04)
 Tasks 20-26 all exit=0, VERIFY-night3.md re-checked all 7 live (scorer 1.0/1.0, nft/patches parse/apply clean, MEMORY.md link parity 133/133) — 1 trivial em-dash fix applied, 2 files still flag the recurring em-dash policy question. Task 27 (eval-ab-clean, separate from the verify scope) never completed — hit the session usage limit 16x over ~8h and gave up; re-queue after reset. Full detail: `REPORT-night3.md`.
+
+## Night-4 addendum (2026-07-05)
+Tasks 30-38 all exit=0, VERIFY-night4.md re-checked all night-4 live exceptions (wiki fixes 16/16 sha256 OK, both systemd timers enabled+active, 15 skill-description edits clean, autofill script sha256-matched) — 5/6 checks PASS clean, 1 PARTIAL (CCC's security rebind failed and was rolled back, a known documented gap, not a new regression). Tasks 40-48 never started (no logs/`.done` files) — queued for the last Fable night, 2026-07-06, ranked in `REPORT-night4.md` section 5. Full detail: `REPORT-night4.md`.

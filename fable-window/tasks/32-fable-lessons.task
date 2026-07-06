@@ -1,0 +1,5 @@
+MODEL: claude-fable-5
+CWD: ~
+
+Read ~/fable-window/RULES.md.
+Meta-distill the whole fable-window (read _ledger.md, REPORT.md, REPORT-night3.md, eval-ab-clean.RESULTS.md, RULES.md amendments): what measurably made outputs better, as transferable canon for authoring future skills/evals/automation with Opus. Candidates the evidence supports: kill-criteria checklists over vibe critique, canon baked into skills beats runtime memory reads (proved by A/B), eval-gate before ship, headless one-shot discipline, deterministic scripts for waiting + agents only for judgment, verify-pass catching YAML/mechanical rot, additive staging + git baselines. Output artifacts/feedback_fable_window_lessons.md in memory-file format (frontmatter type: feedback, Why + How to apply), max one screen per lesson, 6-10 lessons, each citing its evidence from this window. Ledger per RULES.

@@ -1,0 +1,5 @@
+MODEL: claude-opus-4-8
+CWD: ~/brain
+
+Read ~/fable-window/RULES.md.
+Distill the 2026-04 creative-strategy research corpus (the 7 deep dives - find them via the wiki index / projects, memory slug project_creative_strategy_tactics_2026_research) into ONE operational memory-format file: artifacts/feedback_creative_strategy_2026_operational.md - the 10-15 tactics that survived contact with the winners data (cross-check each against winner_patterns v2; mark CONFIRMED-BY-DATA vs THEORY-ONLY), each with a one-line how-to-apply for briefs. Compact enough to load every session. No em dashes. Ledger per RULES.

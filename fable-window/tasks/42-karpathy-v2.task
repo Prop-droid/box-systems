@@ -1,0 +1,11 @@
+MODEL: claude-fable-5
+CWD: ~
+
+Read ~/fable-window/RULES.md.
+Produce karpathy-guidelines v2 as an ARTIFACT (artifacts/karpathy-guidelines.SKILL.md) - do not install. Start from ~/.claude/skills/karpathy-guidelines/SKILL.md and upgrade with evidence from this week + memory:
+(1) Green-defect gate (KARIMO lesson: agents ship plausible-but-broken code): before claiming done, run the repo verify command AND read your own diff as a hostile reviewer; plausible output that was never executed is not done.
+(2) Headless/automation discipline: one-shot agents never background-and-wait; deterministic scripts wait, agents judge (07c/07d evidence).
+(3) Systemd/fleet failure modes from this week: oneshot cgroup kills detached children; anchored pgrep or zombie processes false-match; mDNS dead cross-device (use Tailscale IPs); stdin hangs on headless claude.
+(4) Repo-verify table: point to the CLAUDE.md VERIFY sections that tasks 40/41 create (CCC scripts/verify.sh, ~/systems per-subsystem) plus compliance-eval test_scorer.py as the pattern: every repo names its proof command.
+(5) Routing note: when to escalate to the superpowers skills (test-driven-development for new features, systematic-debugging for bugs, verification-before-completion before any done claim).
+Keep it under 2x current length, same frontmatter name, description updated. Ledger per RULES.

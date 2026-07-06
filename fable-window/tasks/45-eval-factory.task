@@ -1,0 +1,5 @@
+MODEL: claude-opus-4-8
+CWD: ~/systems/compliance-eval
+
+Read ~/fable-window/RULES.md. Artifacts only - live harness untouched.
+Generalize this harness into a reusable eval factory: (1) artifacts/eval-factory.TEMPLATE.md - how to stand up an eval-gate for ANY skill (scorer pattern, gold fixtures, policy file, test_scorer discipline, the meta-preamble contamination lesson, the A/B methodology from eval-ab-clean); (2) a working first instance for the email-copy skill: artifacts/email-eval/ with policy.json (canon rules: em-dash ban, single CTA, subject-count contract, banned claims), 10 prompts.jsonl cases, gold labels, and a runnable run_eval.py adapted from this one. Verify the new scorer against its own gold (must be 1.0/1.0) before writing the summary. Ledger per RULES.

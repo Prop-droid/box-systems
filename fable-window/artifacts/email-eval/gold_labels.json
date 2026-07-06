@@ -1,0 +1,18 @@
+{
+  "_doc": "Ground-truth labels for validating the email-copy scorer. 'hard' = the exact set of HARD rule_ids that SHOULD fire for this fixture (regex rules AND structure rules: subject_count, cta_single). 'warn_includes' = WARN rule_ids that must appear; 'warn_excludes' = WARN rule_ids that must NOT appear. The scorer is trusted only when it reproduces these exactly (precision=recall=1.0 on HARD). Every violation fixture is shape-correct except for the rule it tests.",
+  "clean_01.txt":          {"hard": [],                       "warn_includes": [], "warn_excludes": ["discount_claim", "spam_trigger"]},
+  "clean_02.txt":          {"hard": [],                       "warn_includes": []},
+  "tricky_allowed_01.txt": {"hard": [],                       "warn_includes": [], "warn_excludes": ["spam_trigger", "vague_curiosity"]},
+  "viol_emdash_01.txt":    {"hard": ["em_dash"],              "warn_includes": []},
+  "viol_subjcount_01.txt": {"hard": ["subject_count"],        "warn_includes": []},
+  "viol_multicta_01.txt":  {"hard": ["cta_single"],           "warn_includes": []},
+  "viol_labeled_01.txt":   {"hard": ["labeled_block"],        "warn_includes": []},
+  "viol_fence_01.txt":     {"hard": ["code_fence"],           "warn_includes": []},
+  "viol_drugname_01.txt":  {"hard": ["drug_name"],            "warn_includes": []},
+  "viol_saturated_01.txt": {"hard": ["saturated_phrase"],     "warn_includes": []},
+  "viol_medical_01.txt":   {"hard": ["medical_cure"],         "warn_includes": []},
+  "viol_guarantee_01.txt": {"hard": ["outcome_guarantee"],    "warn_includes": []},
+  "viol_multi_01.txt":     {"hard": ["em_dash", "drug_name", "cta_single"], "warn_includes": []},
+  "warn_discount_01.txt":  {"hard": [],                       "warn_includes": ["discount_claim"]},
+  "warn_spam_01.txt":      {"hard": [],                       "warn_includes": ["spam_trigger"]}
+}

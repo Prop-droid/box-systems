@@ -1,0 +1,5 @@
+MODEL: claude-opus-4-8
+CWD: ~
+
+Read ~/fable-window/RULES.md.
+Senior-architect review of ~/agentic-os/DESIGN.md (virtual agent org on Hermes + Claude Code). Pressure-test it against everything this week proved: headless one-shot limits, deterministic-wait vs agent-judgment split, usage-guard/cap realities, eval-gates, the fable-resume watchdog pattern, karpathy discipline. Output artifacts/agentic-os.REVIEW.md: what holds, what breaks at contact with reality (cite this week's evidence), the 3 highest-leverage changes, and a build-order recommendation. Blunt, decision-ready, no flattery. Ledger per RULES.

@@ -1,0 +1,5 @@
+MODEL: claude-fable-5
+CWD: ~/creative-command-center
+
+Read ~/fable-window/RULES.md. Diagnosis ONLY - no source edits.
+Root-cause the known bug: all 12 research lanes have empty suggestedBrief (flagged by the night-2 UX pass, blocks the Monday Brief Conveyor idea). Trace the data path (where suggestedBrief should be populated - generation code, data pipeline, API route, seed data), determine real-bug vs unshipped-V2-scope with evidence (git history of the relevant files, branch diffs), and write artifacts/ccc-lanes-bug.DIAGNOSIS.md: root cause, evidence, exact proposed patch (as a diff block, not applied), effort estimate, and which branch it should land on. Ledger per RULES.

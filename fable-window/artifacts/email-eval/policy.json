@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "skill": "email-copy",
+    "policy_version": "2026-07-06",
+    "sources": [
+      "~/.claude/skills/email-copy/SKILL.md (deliverable shape, kill-criteria, saturated-phrase audit)",
+      "memory: feedback_no_em_dashes.md (no em/en dashes in copy)",
+      "memory: feedback_creative_output_plaintext.md (no fences, no labeled blocks)",
+      "shameless canon 2026-05-11: real offer ceiling is 46 percent, subscription-gated",
+      "default off-limits per SKILL.md: disease verbs, drug-name adjacency, body-transformation guarantees"
+    ],
+    "note": "HARD = definite violation (fails the email). WARN = review-before-publish. Patterns are case-insensitive regex; literal spaces match any whitespace run. The 'structure' section configures deterministic non-regex shape checks implemented in scorer.py (leading numbered subject-line run, arrow-CTA line count). Semantic baits (canon stat beats brief stat, sequence position, preheader-recaps-subject) are intentionally NOT regexed; see policy_gap handling in eval-factory.TEMPLATE.md."
+  },
+
+  "hard": [
+    {"id": "em_dash", "why": "Em/en dashes banned in all copy (feedback_no_em_dashes)", "patterns": ["[—–]"]},
+    {"id": "code_fence", "why": "Plaintext only, no triple-backtick fences ever", "patterns": ["```"]},
+    {"id": "labeled_block", "why": "No 'Subject:'/'Preheader:'/'Body:'/'CTA:' labels; the shape itself is the labeling", "patterns": ["(?m)^(subject( lines?)?|pre-?header|body|cta|call to action)\\s*:"]},
+    {"id": "drug_name", "why": "Named GLP-1/Rx drug adjacency is default off-limits", "patterns": ["\\bozempic\\b", "\\bwegovy\\b", "\\bzepbound\\b", "\\bmounjaro\\b", "\\bsemaglutide\\b", "\\btirzepatide\\b", "\\bmetformin\\b"]},
+    {"id": "medical_cure", "why": "Disease/medical cure claim (verb requires a medical object)", "patterns": ["cures? (ibs|constipation|bloating|diabetes|disease|your gut)", "treats? (ibs|constipation|diabetes|disease|symptoms?)", "heals? (your )?(gut|stomach|digestion|leaky gut)", "reverses? (diabetes|disease|damage|aging)", "boosts? immunity", "fixes? (your )?(gut|digestion)"]},
+    {"id": "outcome_guarantee", "why": "Body-transformation / outcome guarantee is default off-limits", "patterns": ["guaranteed (weight loss|results)", "\\bguaranteed to (lose|drop|melt)", "lose \\d+ ?(lbs?|pounds?)", "makes you lose weight"]},
+    {"id": "saturated_phrase", "why": "SKILL.md kill-criterion 7: saturated openers/closers get rewritten, never shipped", "patterns": ["i wanted to reach out", "hope this (email )?finds you well", "just checking in", "quick question", "don'?t miss out", "transform your \\w+", "unlock your \\w+"]}
+  ],
+
+  "warn": [
+    {"id": "spam_trigger", "why": "Spam-filter bait; review deliverability before send", "patterns": ["act now", "!{3,}", "\\${2,}"]},
+    {"id": "weak_cta", "why": "Vague CTA verb; convention is verb + object + arrow + link", "patterns": ["click here"]},
+    {"id": "discount_claim", "why": "Numeric discount; review against the brand's real offer ceiling (Shameless: 46 percent sub-gated, 2026-05-11)", "patterns": ["\\b\\d{1,2}\\s*(%|percent)\\s*off"]},
+    {"id": "vague_curiosity", "why": "Vague-curiosity subject pattern the skill bans; review", "patterns": ["you won'?t believe", "this changed everything"]}
+  ],
+
+  "allow": {
+    "_why": "Approved-but-risky-looking language. Any HARD/WARN span inside one of these phrases is suppressed.",
+    "patterns": [
+      "prebiotic fiber",
+      "food noise",
+      "kills cravings",
+      "curbs cravings",
+      "keeps you full",
+      "keto-friendly"
+    ]
+  },
+
+  "structure": {
+    "_why": "Deterministic shape checks (scorer.py implements them; config lives here). The email-copy contract: 5 numbered subject lines open the deliverable; exactly one CTA line using the arrow convention closes it.",
+    "subject_count": {"expect": 5, "severity": "hard", "why": "Deliverable must open with exactly 5 numbered subject-line options (1. through 5.)"},
+    "cta_single": {"expect": 1, "severity": "hard", "why": "Exactly one CTA line (a line containing the arrow convention → or ->); zero = missing CTA, more = multi-CTA dilution"}
+  }
+}

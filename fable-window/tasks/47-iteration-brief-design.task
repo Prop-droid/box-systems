@@ -1,0 +1,5 @@
+MODEL: claude-opus-4-8
+CWD: ~/creative-command-center
+
+Read ~/fable-window/RULES.md. Design doc only - no code.
+Architect the parked CCC iteration-brief pipeline: from a winner (ClickUp id + BQ perf + the 10-type iteration taxonomy in memory project_clickup_video_iteration_system) to a ready-to-push iteration brief. Cover: data inputs, where it lives in CCC (which branch/page), the generation flow (deterministic template vs LLM step - apply the eval-gate lesson), human-in-loop points, ClickUp push via the existing task-creator conventions, and an MVP cut vs full version. Account for the branch states task 40 documented. Output artifacts/ccc-iteration-brief.DESIGN.md, decision-ready. Ledger per RULES.
