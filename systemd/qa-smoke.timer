@@ -1,0 +1,7 @@
+[Unit]
+Description=qa-smoke timer (Sun 08:00)
+[Timer]
+OnCalendar=Sun *-*-* 08:00:00
+Persistent=true
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,5 @@
+[Unit]
+Description=weekly QA smoke test of the ~/systems cron/agent estate
+[Service]
+Type=oneshot
+ExecStart=%h/systems/qa/smoke.sh
