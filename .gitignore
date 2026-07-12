@@ -9,6 +9,8 @@ _claude.err
 
 # Agent / cron report outputs (business data)
 agents/reports/
+box-doctor/reports/
+box-doctor/doctor-report.md
 watchdog/reports/
 watchdog/**/latest-status.json
 comments-digest/out/

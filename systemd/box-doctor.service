@@ -1,0 +1,5 @@
+[Unit]
+Description=box-doctor daily self-diagnostic
+[Service]
+Type=oneshot
+ExecStart=%h/systems/box-doctor/doctor.sh
