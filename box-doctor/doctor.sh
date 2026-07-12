@@ -8,7 +8,8 @@ set -uo pipefail
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
-NTFY_TOPIC="${NTFY_TOPIC:-tomas-tab-958e4431}"
+# ${VAR-default} (not :-) so NTFY_TOPIC="" is an explicit silence-for-testing override
+NTFY_TOPIC="${NTFY_TOPIC-tomas-tab-958e4431}"
 DOC_DIR="$HOME/systems/box-doctor"
 MEM_DIR="$HOME/.claude/projects/-home-tomas/memory"
 SKILLS_DIR="$HOME/.claude/skills"
