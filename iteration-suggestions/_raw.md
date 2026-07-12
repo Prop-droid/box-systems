@@ -1,30 +1,30 @@
-🔁 **Iteration Suggestions — wk Jun 22–28** *(auto-generated)*
+🔁 **Iteration Suggestions — wk Jun 29–Jul 5** *(auto-generated)*
 
 Pick what you want to take — comment on the suggestion + tag yourself, then spawn the brief.
 
 **VIDEO**
 
-**1. {{SH-16180}} (META 9:16 video) — HOOK_SWAP** 🟢
-Top video of the week: ROAS 1.41, 43 orders, $2,597 spend. The -2 variant reveals the gap — 19.5% hook rate with CTR down -25% WoW. Body clearly converts; the open is losing people before the pitch lands. → Build 3 new hooks onto the proven -1 body unchanged, one variable per cut. Metric to beat: hook rate >30%.
+**1. {{SH-16302}} (Janssen Bradshaw WL S25) — BODY_EDIT** 🟢
+Hook 45.4%, hold 6.3% — both strong — and ROAS 1.36 on only $645 spend. Last drop tested LENGTH_VARIANT; the body is already retaining viewers, so now tighten the mid-section to convert that hold time into purchases. → Rewrite body copy to hit the fiber/guilt-free angle harder; keep hook and CTA unchanged. Metric to beat: ROAS > 1.5.
 
-**2. {{SH-15711}} (KAR fiber video) — LENGTH_VARIANT** 🟢
-$779 spend, hook 35.9%, hold 7.1% — best hold rate in the dataset by a wide margin. Strong retention signal at low spend; the asset is barely exposed. → Trimmed cut targeting the highest-retention segment, then scale alongside the full-length version. Metric to beat: hold rate >7% maintained at 3–5× current spend.
+**2. {{SH-13396}} (IGN Letter / We Are Sorry) — CTA_VARIANT** 🟢
+ROAS 1.18 at $2.4k, only 1 variation ever tested. Last drop added SOCIAL_PROOF_INSERT. → Test 2 CTA card endings — direct-offer vs. daily-habit-driver — running alongside the existing cut. Metric to beat: ROAS > 1.25.
 
-**3. {{SH-15587}} (UGC retro) — INTRO_SWAP** 🟡
-Hook 34.5% (strong), hold collapses to 2.4% — viewers enter but bail within 15 seconds. ROAS 0.75 makes this speculative. → Swap the intro bridge to carry hook energy into the body faster; keep hook identical. Metric to beat: hold rate >5%, ROAS >1.0.
+**3. {{SH-16360}} (Phillip Cowley WL) — HOOK_SWAP** 🟡
+Variant -2 is the breakout at ROAS 1.14 in a concept averaging 0.71 overall. The body is working on that cut; the hook is the open variable. → Swap the hook on variant -2 only; everything else untouched. Metric to beat: ROAS > 1.2 on the new variant.
 
 **IMAGE**
 
-**4. {{SH-16142}} (BB CTV launch) — visual refresh** 🟢
-Best concept ROAS in the dataset: 1.46, 29 orders, cmroas 0.97. CTR cratered -37.3% WoW across 30 variations — creative fatigue, not conversion failure. → New visual skin (fresh background + product angle), same headline and copy structure. Metric to beat: CTR ≥1.23%.
+**4. {{SH-13376}} (JDC Mar 16) — visual refresh** 🟢
+Variant -6 hit ROAS 1.57 ($1.3k); concept at ROAS 1.25 across $8.4k — week's top-ROAS image. Last drop ran headline variants. → Fresh visual treatment (new product staging or background) on the -6 layout before spend momentum fades. Metric to beat: ROAS > 1.3.
 
-**5. {{SH-13376}} (JDC Mar image) — headline variants** 🟢
-$4,051 spend, ROAS 1.14, 58 orders — top image spender with only 3 variations. Underexplored before this fades. → 3 new headlines against the same visual, each targeting a different benefit angle. Metric to beat: ROAS >1.14.
+**5. {{SH-13107}} (AYC Poop Retro Headline) — headline variants** 🟢
+ROAS 1.16 at $6.7k, 4 variations still converting. Last drop ran a layout variant. → 3 headline variants on the retro frame; lean into the 26g fiber stat + consequence hook. Metric to beat: ROAS > 1.2.
 
-**6. {{SH-13107}} (AYC poop retro) — scale + variants** 🟢
-$2,773 spend, ROAS 1.16, only 4 variations. Consistent performer running alongside SH-13376. → Scale the lead variant + 2 headline tests swapping proof point (gut benefit vs. texture/craving). Metric to beat: ROAS >1.16.
+**6. {{SH-3028}} (WK22 Images Broad) — visual refresh** 🟡
+ROAS 1.43 on a single variation at $1.7k. Last drop set up scale + variants. → New image treatment alongside the existing winner to validate the concept beyond one layout. Metric to beat: ROAS > 1.2.
 
-**7. {{SH-11295}} (JDC Feb image) — layout variant** 🟡
-$978 spend, ROAS 1.20 — top-3 image ROAS but capped at 13 orders. Efficient on current placements; room to expand. → Test a 9:16/story format to unlock vertical inventory. Metric to beat: ROAS >1.20.
+**7. {{SH-11295}} (JDC Feb 18) — visual refresh** 🟡
+$9.8k spend, ROAS 0.87, CTR down -26.7% — steepest fatigue in the image pool. → One fresh visual before writing it off; if new creative can't clear ROAS 0.9, make the kill call. Metric to beat: ROAS > 0.95.
 
-**Watchlist ⚠️:** {{SH-9428}} — $10,901 spend, ROAS 0.78, contrib_margin –$5,695 — biggest cash burner of the week, iterate-vs-kill call needed now. {{SH-12082}} ($1,057, ROAS 0.65, 1 variation) — no signal left to build on, kill candidate.
+**Watchlist ⚠️:** {{SH-16180}} ($45k, ROAS 0.75) — iterate-vs-kill still unresolved, losses compounding daily. {{SH-16360}} ($21.7k concept, ROAS 0.71, cmroas 0.46) — only variant -2 is earning; retire the rest if the HOOK_SWAP above doesn't move it.
