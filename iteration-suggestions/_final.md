@@ -4,27 +4,27 @@ Pick what you want to take — comment on the suggestion + tag yourself, then sp
 
 **VIDEO**
 
-**1. [SH-16302](https://app.clickup.com/t/868k21211) (Janssen Bradshaw WL S25) — BODY_EDIT** 🟢
-Hook 45.4%, hold 6.3% — both strong — and ROAS 1.36 on only $645 spend. Last drop tested LENGTH_VARIANT; the body is already retaining viewers, so now tighten the mid-section to convert that hold time into purchases. → Rewrite body copy to hit the fiber/guilt-free angle harder; keep hook and CTA unchanged. Metric to beat: ROAS > 1.5.
+**1. [SH-16044](https://app.clickup.com/t/868jwdj1m) (Allison Lundeen LTP May) — BODY_EDIT** 🟢
+Hook 52.7% (week's best), hold 1.5% — body is bleeding every viewer the hook catches. Last drop fixed the intro; mid-section content is the remaining leak. → Rebuild benefit delivery + product moment with hook frame and outro locked. Metric to beat: hold rate > 4%.
 
-**2. [SH-13396](https://app.clickup.com/t/868hwjhwq) (IGN Letter / We Are Sorry) — CTA_VARIANT** 🟢
-ROAS 1.18 at $2.4k, only 1 variation ever tested. Last drop added SOCIAL_PROOF_INSERT. → Test 2 CTA card endings — direct-offer vs. daily-habit-driver — running alongside the existing cut. Metric to beat: ROAS > 1.25.
+**2. [SH-15587](https://app.clickup.com/t/868jj89zc) (Warehouse PAO) — BODY_FORMAT** 🟡
+Hook 45.7%, hold 0.7%, CTR –24% WoW. INTRO_SWAP was the prior fix; body structure is still losing nearly everyone after the open. → Switch mid-section from narrative to benefit-card / text-overlay format; hook and CTA untouched. Metric to beat: hold rate > 3%.
 
-**3. [SH-16360](https://app.clickup.com/t/868k2hqw8) (Phillip Cowley WL) — HOOK_SWAP** 🟡
-Variant -2 is the breakout at ROAS 1.14 in a concept averaging 0.71 overall. The body is working on that cut; the hook is the open variable. → Swap the hook on variant -2 only; everything else untouched. Metric to beat: ROAS > 1.2 on the new variant.
+**3. [SH-15611](https://app.clickup.com/t/868jka8bh) (Meta Vid) — HOOK_SWAP** 🟡
+Hook 30.9%, hold 0.6%, $4k spend at ROAS 0.88 — hook is the primary gate here. → 2 variants (stat-led, consequence-led); body and CTA unchanged. Metric to beat: hook rate > 38%.
+
+**4. [SH-16360](https://app.clickup.com/t/868k2hqw8) (Phillip Cowley WL) — LENGTH_VARIANT** 🟡
+Variant -9 has hook 46.4% and hold 6.3% — best hold in the video pool — yet the concept sits at ROAS 0.71. Viewers watch through but don't convert; likely close friction. → 30s cut of -9 with a sharper offer close. Metric to beat: ROAS > 1.0 on the short cut.
 
 **IMAGE**
 
-**4. [SH-13376](https://app.clickup.com/t/868hwjddd) (JDC Mar 16) — visual refresh** 🟢
-Variant -6 hit ROAS 1.57 ($1.3k); concept at ROAS 1.25 across $8.4k — week's top-ROAS image. Last drop ran headline variants. → Fresh visual treatment (new product staging or background) on the -6 layout before spend momentum fades. Metric to beat: ROAS > 1.3.
+**5. [SH-13376](https://app.clickup.com/t/868hwjddd) (JDC Mar 16) — layout variant** 🟢
+Concept ROAS 1.25 at $8.4k; variant -6 hits 1.57. Headline and visual axes both run in prior drops. → Comparison-table or callout-grid layout on the -6 product as an isolated variable. Metric to beat: ROAS > 1.3.
 
-**5. [SH-13107](https://app.clickup.com/t/868hrmc9q) (AYC Poop Retro Headline) — headline variants** 🟢
-ROAS 1.16 at $6.7k, 4 variations still converting. Last drop ran a layout variant. → 3 headline variants on the retro frame; lean into the 26g fiber stat + consequence hook. Metric to beat: ROAS > 1.2.
+**6. [SH-13107](https://app.clickup.com/t/868hrmc9q) (AYC Poop Retro Headline) — social proof overlay** 🟢
+ROAS 1.16 at $6.7k; layout and headline already tested. → Single variable: ★★★★★ badge or "26g Fiber" stat bar added to the retro frame. Metric to beat: ROAS > 1.2.
 
-**6. [SH-3028](https://app.clickup.com/t/868fnzq10) (WK22 Images Broad) — visual refresh** 🟡
-ROAS 1.43 on a single variation at $1.7k. Last drop set up scale + variants. → New image treatment alongside the existing winner to validate the concept beyond one layout. Metric to beat: ROAS > 1.2.
+**7. [SH-3028](https://app.clickup.com/t/868fnzq10) (WK22 Images Broad) — headline copy** 🟡
+ROAS 1.43, single variation at $1.7k. Scale and visual refresh done in prior drops. → 3 headline-only variants on the existing winner image; no visual change. Metric to beat: ROAS > 1.3.
 
-**7. [SH-11295](https://app.clickup.com/t/868hdyvp6) (JDC Feb 18) — visual refresh** 🟡
-$9.8k spend, ROAS 0.87, CTR down -26.7% — steepest fatigue in the image pool. → One fresh visual before writing it off; if new creative can't clear ROAS 0.9, make the kill call. Metric to beat: ROAS > 0.95.
-
-**Watchlist ⚠️:** [SH-16180](https://app.clickup.com/t/868jyx5ec) ($45k, ROAS 0.75) — iterate-vs-kill still unresolved, losses compounding daily. [SH-16360](https://app.clickup.com/t/868k2hqw8) ($21.7k concept, ROAS 0.71, cmroas 0.46) — only variant -2 is earning; retire the rest if the HOOK_SWAP above doesn't move it.
+**Watchlist ⚠️:** [SH-16180](https://app.clickup.com/t/868jyx5ec) ($45k, ROAS 0.75) — losses compounding; iterate-vs-kill call is overdue. [SH-11295](https://app.clickup.com/t/868hdyvp6) ($9.8k, ROAS 0.87, CTR –26.7%) — if the visual refresh from the prior drop doesn't clear ROAS 0.95, make the kill call.
