@@ -1,0 +1,5 @@
+MODEL: claude-haiku-4-5
+CWD: ~/systems/night-queue
+TIMEOUT: 300
+
+You are a smoke test for the night-queue harness, running headless. Read the file /home/tomas/systems/night-queue/queue/artifacts/smoke-hello.md. If it exists and contains the text "smoke 1", write /home/tomas/systems/night-queue/queue/artifacts/smoke-chain.md with a markdown H1 line "# night-queue smoke 2" and a second line "chain OK: read smoke-hello.md from task 10". If it is missing or lacks that text, write the same file but with the second line "chain FAIL: smoke-hello.md missing or wrong". Write that one file, then stop. Do nothing else.

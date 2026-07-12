@@ -1,0 +1,5 @@
+MODEL: claude-haiku-4-5
+CWD: ~/systems/night-queue
+TIMEOUT: 300
+
+You are a smoke test for the night-queue harness, running headless. Using the Write tool, create the file /home/tomas/systems/night-queue/queue/artifacts/smoke-hello.md with exactly two lines: a markdown H1 line reading "# night-queue smoke 1" and a second line reading "hello from task 10". Create that one file, then stop. Do nothing else.
