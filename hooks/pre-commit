@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+# pre-commit — shared estate hook for ~/systems and ~/personal/* repos (task 55).
+#
+# Three checks, run against the STAGED changes only:
+#   1. secret-scan     (BLOCKING) added lines matching known key/token patterns
+#   2. large-file      (BLOCKING) staged blobs over HOOK_MAX_BYTES (default 5 MB)
+#   3. shellcheck      (WARNING)  staged *.sh linted at -S warning, never blocks
+#
+# Self-contained: no framework, no gitleaks/git-secrets/pre-commit dependency.
+# shellcheck is optional — if it is not installed the lint step is skipped with
+# a one-line note (the check is warning-level and must never block a commit).
+#
+# Bypass everything:            git commit --no-verify
+# Allowlist one line inline:    add  # pragma: allowlist secret   to that line
+# Allowlist patterns per repo:  add ERE lines to  <repo>/.secrets-allowlist
+# Raise the size ceiling once:  HOOK_MAX_BYTES=20000000 git commit ...
+#
+# Source of truth lives in ~/systems/hooks/pre-commit and is symlinked into each
+# repo's .git/hooks/pre-commit by ~/systems/hooks/install.sh.
+set -uo pipefail
+
+RED=$'\033[31m'; YEL=$'\033[33m'; DIM=$'\033[2m'; RST=$'\033[0m'
+# Honour NO_COLOR / non-tty
+if [ -n "${NO_COLOR:-}" ] || [ ! -t 2 ]; then RED=""; YEL=""; DIM=""; RST=""; fi
+
+fail=0
+repo_root="$(git rev-parse --show-toplevel)"
+
+# Resolve the canonical hook location (this file may be reached via symlink) so
+# the shared allowlist that ships beside it is always found.
+hook_src="$(readlink -f "$0" 2>/dev/null || echo "$0")"
+hook_dir="$(dirname "$hook_src")"
+
+# ---- allowlist -------------------------------------------------------------
+# ERE patterns (one per line, blanks and #comments ignored). A staged line that
+# matches ANY allowlist pattern, or carries an inline pragma, is exempt from the
+# secret scan.
+allowlist_files=("$hook_dir/secrets-allowlist.txt" "$repo_root/.secrets-allowlist")
+allowlist_res=()
+for af in "${allowlist_files[@]}"; do
+  [ -f "$af" ] || continue
+  while IFS= read -r line; do
+    case "$line" in ''|\#*) continue ;; esac
+    allowlist_res+=("$line")
+  done < "$af"
+done
+
+is_allowlisted() {
+  local text="$1"
+  case "$text" in *"pragma: allowlist secret"*) return 0 ;; esac
+  local re
+  for re in "${allowlist_res[@]}"; do
+    printf '%s' "$text" | grep -Eq -- "$re" && return 0
+  done
+  return 1
+}
+
+# ---- secret patterns  (label|ERE) -----------------------------------------
+# Known high-signal prefixes plus private-key headers. Kept prefix-anchored to
+# stay low-false-positive; the generic assignment rule is last and allowlistable.
+patterns=(
+  "AWS access key|AKIA[0-9A-Z]{16}"
+  "Google API key|AIza[0-9A-Za-z_-]{35}"
+  "GCP service-account private key|\"private_key\": *\"-----BEGIN"
+  "Private key block|-----BEGIN ([A-Z]+ )?PRIVATE KEY-----"
+  "OpenAI/Anthropic key|sk-(ant-)?[A-Za-z0-9_-]{20,}"
+  "GitHub token|gh[posru]_[0-9A-Za-z]{30,}"
+  "GitHub fine-grained PAT|github_pat_[0-9A-Za-z_]{60,}"
+  "Slack token|xox[baprs]-[0-9A-Za-z-]{10,}"
+  "ClickUp personal token|pk_[0-9]{4,}_[0-9A-Z]{28,}"
+  "Generic secret assignment|(api[_-]?key|secret|token|password|passwd)[\"']? *[:=] *[\"'][^\"']{16,}[\"']"
+)
+
+# ---- 1. secret scan (added lines only) ------------------------------------
+cur=""
+secret_hits=0
+while IFS= read -r line; do
+  case "$line" in
+    "+++ "*) cur="${line#+++ b/}"; [ "$cur" = "/dev/null" ] && cur=""; continue ;;
+    "+"*) : ;;                     # an added line — fall through
+    *) continue ;;
+  esac
+  case "$line" in "+++"*) continue ;; esac
+  content="${line#+}"
+  is_allowlisted "$content" && continue
+  for p in "${patterns[@]}"; do
+    label="${p%%|*}"; re="${p#*|}"
+    if printf '%s' "$content" | grep -Eq -- "$re"; then
+      if [ "$secret_hits" -eq 0 ]; then
+        printf '%s✗ secret-scan: possible credential in staged changes%s\n' "$RED" "$RST" >&2
+      fi
+      printf '  %s%s%s  [%s]\n' "$RED" "${cur:-?}" "$RST" "$label" >&2
+      secret_hits=$((secret_hits+1))
+      break
+    fi
+  done
+done < <(git diff --cached --no-color --unified=0 --diff-filter=ACM 2>/dev/null)
+
+if [ "$secret_hits" -gt 0 ]; then
+  printf '%s  %d suspect line(s). If a false positive: add %s# pragma: allowlist secret%s%s to the line,\n' \
+    "$DIM" "$secret_hits" "$RST$YEL" "$RST$DIM" "$RST" >&2
+  printf '%s  add an ERE to <repo>/.secrets-allowlist, or bypass with %sgit commit --no-verify%s.%s\n' \
+    "$DIM" "$RST$YEL" "$RST$DIM" "$RST" >&2
+  fail=1
+fi
+
+# ---- 2. large-file / binary guard -----------------------------------------
+max_bytes="${HOOK_MAX_BYTES:-5000000}"
+big_hits=0
+while IFS= read -r -d '' f; do
+  sz="$(git cat-file -s ":$f" 2>/dev/null || echo 0)"
+  if [ "$sz" -gt "$max_bytes" ]; then
+    if [ "$big_hits" -eq 0 ]; then
+      printf '%s✗ large-file: staged blob(s) over %s bytes%s\n' "$RED" "$max_bytes" "$RST" >&2
+    fi
+    printf '  %s%s%s  (%s bytes)\n' "$RED" "$f" "$RST" "$sz" >&2
+    big_hits=$((big_hits+1))
+  fi
+done < <(git diff --cached --name-only -z --diff-filter=ACM 2>/dev/null)
+
+if [ "$big_hits" -gt 0 ]; then
+  printf '%s  Keep large binaries out of git. Raise once with %sHOOK_MAX_BYTES=<n> git commit%s%s or bypass with --no-verify.%s\n' \
+    "$DIM" "$RST$YEL" "$RST$DIM" "$RST" "$RST" >&2
+  fail=1
+fi
+
+# ---- 3. shellcheck (warning-level, never blocks) --------------------------
+if command -v shellcheck >/dev/null 2>&1; then
+  mapfile -d '' sh_files < <(git diff --cached --name-only -z --diff-filter=ACM 2>/dev/null | tr '\0' '\n' | grep -E '\.sh$' | tr '\n' '\0')
+  warned=0
+  for f in "${sh_files[@]}"; do
+    [ -n "$f" ] || continue
+    [ -f "$repo_root/$f" ] || continue
+    out="$(shellcheck -S warning -f gcc "$repo_root/$f" 2>/dev/null)" || true
+    if [ -n "$out" ]; then
+      [ "$warned" -eq 0 ] && printf '%s⚠ shellcheck (warnings, non-blocking):%s\n' "$YEL" "$RST" >&2
+      printf '%s\n' "$out" >&2
+      warned=1
+    fi
+  done
+else
+  printf '%s⚠ shellcheck not installed — skipping *.sh lint (non-blocking).%s\n' "$DIM" "$RST" >&2
+fi
+
+if [ "$fail" -ne 0 ]; then
+  printf '%spre-commit: blocked. Fix the above or re-run with --no-verify.%s\n' "$RED" "$RST" >&2
+  exit 1
+fi
+exit 0
