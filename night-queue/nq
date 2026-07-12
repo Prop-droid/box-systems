@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+# nq: night-queue CLI. Commands: add | list | status | stop | release
+set -u
+NQ_HOME="$HOME/systems/night-queue"
+Q="${NQ_DIR:-$NQ_HOME/queue}"
+die() { echo "nq: $*" >&2; exit 1; }
+
+cmd="${1:-status}"; shift 2>/dev/null || true
+case "$cmd" in
+
+add)
+  name=""; model="claude-sonnet-4-6"; cwd="~"; tmo=""; file=""; prompt=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --model)   model="$2"; shift 2 ;;
+      --cwd)     cwd="$2"; shift 2 ;;
+      --timeout) tmo="$2"; shift 2 ;;
+      --file)    file="$2"; shift 2 ;;
+      *) if [ -z "$name" ]; then name="$1"; else prompt="${prompt:+$prompt }$1"; fi; shift ;;
+    esac
+  done
+  [ -n "$name" ] || die "usage: nq add <NN-name> [--model M] [--cwd DIR] [--timeout S] [--file prompt.md | prompt words | prompt on stdin]"
+  t="$Q/tasks/$name.task"
+  [ -e "$t" ] && die "$t already exists"
+  if [ -n "$file" ]; then prompt=$(cat "$file") || die "cannot read $file"
+  elif [ -z "$prompt" ]; then
+    [ -t 0 ] && echo "reading prompt from stdin (end with ctrl-d)..." >&2
+    prompt=$(cat)
+  fi
+  [ -n "$prompt" ] || die "empty prompt"
+  mkdir -p "$Q/tasks" "$Q/logs" "$Q/artifacts"
+  { echo "MODEL: $model"; echo "CWD: $cwd"; [ -n "$tmo" ] && echo "TIMEOUT: $tmo"
+    echo; echo "$prompt"; } > "$t"
+  echo "queued $t (model=$model cwd=$cwd${tmo:+ timeout=$tmo})"
+  ;;
+
+list)
+  found=0
+  for t in "$Q"/tasks/*.task; do
+    [ -f "$t" ] || continue; found=1
+    name=$(basename "$t" .task); d="$Q/logs/$name.done"
+    if [ -f "$d" ]; then
+      case "$(cat "$d")" in
+        *LIMIT-GAVE-UP*) st="GAVE-UP (will retry on next resume tick)" ;;
+        *) st=$(awk '{print $1}' "$d") ;;
+      esac
+    else st="pending"; fi
+    printf "%-30s %s\n" "$name" "$st"
+  done
+  [ "$found" -eq 0 ] && echo "no tasks in $Q/tasks"
+  ;;
+
+status)
+  total=0; done_n=0; current=""
+  for t in "$Q"/tasks/*.task; do
+    [ -f "$t" ] || continue
+    total=$((total+1)); name=$(basename "$t" .task)
+    if [ -f "$Q/logs/$name.done" ]; then done_n=$((done_n+1))
+    elif [ -z "$current" ]; then current="$name"; fi
+  done
+  if systemctl --user is-active --quiet night-queue-driver || pgrep -f "^bash $NQ_HOME/queue.sh" >/dev/null; then
+    drv="RUNNING${current:+ (on $current)}"
+  else drv="idle"; fi
+  echo "queue dir : $Q"
+  echo "driver    : $drv"
+  echo "tasks     : $done_n/$total done"
+  [ -f "$Q/STOP" ] && echo "flag      : STOP present (nq release to clear)"
+  [ -f "$Q/PAUSE" ] && echo "flag      : PAUSE present (manual)"
+  [ -f "$Q/PAUSE_90" ] && echo "flag      : PAUSE_90 present"
+  [ -f "$HOME/.claude/PAUSE_CLAUDE_BG" ] && echo "flag      : global PAUSE_CLAUDE_BG (usage-guard)"
+  last=$(ls -t "$Q"/logs/*.log 2>/dev/null | head -1)
+  [ -n "$last" ] && { echo "last log  : $last"; tail -3 "$last" | sed 's/^/  /'; }
+  ;;
+
+stop)
+  touch "$Q/STOP"
+  echo "STOP set: driver aborts before the next task (mid-task run finishes its timeout)."
+  if [ "${1:-}" = "--now" ]; then
+    systemctl --user stop night-queue-driver 2>/dev/null
+    echo "night-queue-driver unit stopped (current task killed)."
+  fi
+  ;;
+
+release)
+  rm -f "$Q/STOP" "$Q/PAUSE"
+  bash "$NQ_HOME/resume.sh"
+  echo "released; resume.sh ran (launches driver if tasks pending). nq status to check."
+  ;;
+
+*)
+  die "unknown command '$cmd' (add | list | status | stop [--now] | release)"
+  ;;
+esac
+exit 0
