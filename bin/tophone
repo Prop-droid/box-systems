@@ -1,0 +1,38 @@
+#!/bin/bash
+# tophone — push a file or message to Tomas's phone via ntfy (+ Drive for big files)
+# Usage:
+#   tophone <file> [title]        send a file (≤10MB direct attachment; bigger → Drive link)
+#   tophone -m "message" [title]  send a plain notification
+# Topic lives in ~/.config/ntfy-phone-topic. Phone must have the ntfy app subscribed.
+set -euo pipefail
+
+TOPIC=$(cat "$HOME/.config/ntfy-phone-topic")
+NTFY="https://ntfy.sh/$TOPIC"
+
+if [[ "${1:-}" == "-m" ]]; then
+  MSG="${2:?message required}"
+  TITLE="${3:-Claude}"
+  curl -fsS -d "$MSG" -H "Title: $TITLE" "$NTFY" > /dev/null
+  echo "pushed: $MSG"
+  exit 0
+fi
+
+FILE="${1:?usage: tophone <file> [title]  |  tophone -m \"msg\" [title]}"
+[[ -f "$FILE" ]] || { echo "no such file: $FILE" >&2; exit 1; }
+NAME=$(basename "$FILE")
+TITLE="${2:-$NAME}"
+SIZE=$(stat -f%z "$FILE" 2>/dev/null || stat -c%s "$FILE")
+
+if (( SIZE <= 10485760 )); then
+  # small: send as direct ntfy attachment (tap → download on phone)
+  curl -fsS -T "$FILE" -H "Filename: $NAME" -H "Title: $TITLE" "$NTFY" > /dev/null
+  echo "sent as attachment: $NAME ($((SIZE/1024))KB)"
+else
+  # big: upload to Google Drive (work acct via gws), share by link, push the link
+  RESP=$(gws drive files create --upload "$FILE" --json "{\"name\":\"$NAME\"}" 2>/dev/null | grep -v '^Using keyring')
+  FID=$(echo "$RESP" | python3 -c "import sys,json;print(json.load(sys.stdin)['id'])")
+  gws drive permissions create --params "{\"fileId\":\"$FID\"}" --json '{"role":"reader","type":"anyone"}' > /dev/null 2>&1
+  URL="https://drive.google.com/file/d/$FID/view"
+  curl -fsS -d "$URL" -H "Title: $TITLE" -H "Click: $URL" "$NTFY" > /dev/null
+  echo "uploaded to Drive + link pushed: $URL"
+fi
