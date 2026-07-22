@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly wiki -> eJam Company Brain sync (Tue 08:30)
+
+[Timer]
+# Tuesday 08:30 local: after Monday's winners-refresh/weekly-report crons have
+# updated the wiki, outside peak interactive hours.
+OnCalendar=Tue *-*-* 08:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,7 @@
+[Unit]
+Description=brain-push (wiki -> eJam Company Brain weekly sync)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash %h/systems/brain-push/run_brain_push.sh
+TimeoutStartSec=1800
