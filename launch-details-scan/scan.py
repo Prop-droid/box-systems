@@ -41,7 +41,8 @@ DRY = os.environ.get("SCAN_DRY") == "1"
 ALWAYS_PUSH = os.environ.get("SCAN_ALWAYS_PUSH") == "1"
 LOOKBACK_DAYS = int(os.environ.get("SCAN_LOOKBACK_DAYS", "45"))
 STATUSES = [s.strip() for s in os.environ.get(
-    "SCAN_STATUSES", "approved,sent to mb").split(",")]
+    "SCAN_STATUSES",
+    "to do,cs review,needs fixing,approved,sent to mb").split(",")]
 
 # The 4 launch fields (see project_sha_launch_details_fill / autofill.py F dict)
 FIELDS = {
