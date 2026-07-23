@@ -29,8 +29,8 @@ DEFAULT_MODEL = "claude-sonnet-5"
 
 PROMPT = (
     "Answer this question about Shameless Snacks using ONLY the wiki files in the current "
-    "directory (grep/read them; canon pages live under shameless/brand/ and "
-    "shameless/working-cards/). If pages conflict, say so and name the conflict. "
+    "directory (grep/read them; canon pages live under Shameless Snacks/brand/ and "
+    "Shameless Snacks/working-cards/). If pages conflict, say so and name the conflict. "
     "If the wiki does not contain the answer, say NOT DOCUMENTED. Be concise (under 80 words). "
     "Question: {q}"
 )
