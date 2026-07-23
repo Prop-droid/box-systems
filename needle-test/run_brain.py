@@ -16,7 +16,9 @@ import datetime
 import pathlib
 import subprocess
 import sys
+import threading
 
+import guard
 from run import parse_needles, score
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -35,10 +37,13 @@ PROMPT = (
 
 
 def ask(question, model, timeout=300):
+    # guard.mcp_args pins the MCP config to ONLY the brain server: without it
+    # each needle boots all 6 ~/.claude.json servers (melted the box 2026-07-23).
     result = subprocess.run(
         ["claude", "-p", PROMPT.format(q=question), "--model", model,
          "--allowedTools", BRAIN_TOOLS,
-         "--disallowedTools", "Read,Grep,Glob,Bash,WebFetch,WebSearch"],
+         "--disallowedTools", "Read,Grep,Glob,Bash,WebFetch,WebSearch",
+         *guard.mcp_args(["brain"])],
         cwd=CWD, capture_output=True, text=True, timeout=timeout,
     )
     return (result.stdout or result.stderr).strip()
@@ -49,8 +54,12 @@ def main():
     ap.add_argument("--only", help="comma-separated needle ids")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--workers", type=int, default=4)
+    # 2 workers max: this is a shared 4-core box, and each worker is a full
+    # claude process. 4 concurrent spawns contributed to the 2026-07-23 melt.
+    ap.add_argument("--workers", type=int, default=2)
+    ap.add_argument("--fresh", action="store_true", help="ignore today's checkpoint; re-ask everything")
     args = ap.parse_args()
+    args.workers = min(args.workers, 2)
 
     needles = parse_needles(HERE / "needles.yaml")
     if args.only:
@@ -61,7 +70,19 @@ def main():
             print(f"[dry] {n['id']}: {n['q']}")
         return
 
+    today = datetime.date.today().isoformat()
+    ckpt = HERE / f"rows-brain-{today}.jsonl"
+    if args.fresh:
+        ckpt.unlink(missing_ok=True)
+    done = {} if (args.only or args.fresh) else guard.load_done(ckpt)
+    ckpt_lock = threading.Lock()
+
     def run_one(n):
+        if n["id"] in done:
+            r = done[n["id"]]
+            print(f"{r['status']:12} {n['id']:22} (resumed from checkpoint)", flush=True)
+            return (r["id"], r["status"], r["note"], r["answer"], r["score"])
+        guard.wait_for_capacity()
         try:
             answer = ask(n["q"], args.model)
         except subprocess.TimeoutExpired:
@@ -69,7 +90,11 @@ def main():
         s, note = score(answer, n)
         status = "PASS" if s == 1.0 else ("FAIL" if s == 0.0 else f"PARTIAL {s:.0%}")
         print(f"{status:12} {n['id']:22} {note}", flush=True)
-        return (n["id"], status, note, answer.replace("\n", " ")[:300], s)
+        row = (n["id"], status, note, answer.replace("\n", " ")[:300], s)
+        with ckpt_lock:
+            guard.checkpoint(ckpt, {"id": row[0], "status": status, "note": note,
+                                    "answer": row[3], "score": s})
+        return row
 
     with concurrent.futures.ThreadPoolExecutor(args.workers) as pool:
         rows = list(pool.map(run_one, needles))

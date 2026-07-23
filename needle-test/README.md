@@ -13,3 +13,10 @@ Re-sync after editing the live dir: `cp ~/brain/systems/needle-test/{run.py,run_
 - `needles.yaml` — shared needle set. Scoring: all `expected` fragments must
   appear (`a|b` = alternatives); any `forbidden` = auto-FAIL. Add a needle per
   canon change.
+
+## guard.py (added 2026-07-23, post-meltdown)
+Shared box-safety layer for both runners: pins each headless run's MCP config
+to exactly the servers it needs (`--strict-mcp-config` ALONE is a no-op — an
+explicit `--mcp-config` is required or all ~/.claude.json servers boot per
+needle), blocks spawning above loadavg 3.0, and checkpoints every answered
+needle to a daily rows-*.jsonl so killed runs resume. Workers capped at 2.

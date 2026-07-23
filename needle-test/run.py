@@ -23,6 +23,8 @@ import re
 import subprocess
 import sys
 
+import guard
+
 HERE = pathlib.Path(__file__).resolve().parent
 WIKI = HERE.parent.parent / "wiki"
 DEFAULT_MODEL = "claude-sonnet-5"
@@ -52,9 +54,11 @@ def parse_needles(path):
 
 
 def ask(question, model, timeout=180):
+    # guard.mcp_args() pins an EMPTY MCP config: this edition greps the wiki
+    # and must not boot the ~/.claude.json server stack (melted the box 2026-07-23).
     result = subprocess.run(
         ["claude", "-p", PROMPT.format(q=question), "--model", model,
-         "--allowedTools", "Read,Grep,Glob"],
+         "--allowedTools", "Read,Grep,Glob", *guard.mcp_args()],
         cwd=WIKI, capture_output=True, text=True, timeout=timeout,
     )
     return (result.stdout or result.stderr).strip()
@@ -75,8 +79,9 @@ def score(answer, needle):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--only", help="comma-separated needle ids")
+    ap.add_argument("--only", help="comma-separated needle ids (always re-asked)")
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--fresh", action="store_true", help="ignore today's checkpoint; re-ask everything")
     ap.add_argument("--model", default=DEFAULT_MODEL)
     args = ap.parse_args()
 
@@ -85,11 +90,28 @@ def main():
         wanted = set(args.only.split(","))
         needles = [n for n in needles if n["id"] in wanted]
 
+    # Checkpoint: each answered needle lands in the daily jsonl immediately, so
+    # a killed run resumes for free. --only re-asks (that's how you re-verify a
+    # fix); its newer row wins on the next resume (last write wins).
+    today = datetime.date.today().isoformat()
+    ckpt = HERE / f"rows-{today}.jsonl"
+    if args.fresh:
+        ckpt.unlink(missing_ok=True)
+    done = {} if (args.only or args.fresh) else guard.load_done(ckpt)
+
     rows, failures = [], 0
     for n in needles:
         if args.dry_run:
             print(f"[dry] {n['id']}: {n['q']}")
             continue
+        if n["id"] in done:
+            r = done[n["id"]]
+            if r["score"] < 1.0:
+                failures += 1
+            rows.append((r["id"], r["status"], r["note"], r["answer"]))
+            print(f"{r['status']:12} {n['id']:22} (resumed from checkpoint)")
+            continue
+        guard.wait_for_capacity()
         try:
             answer = ask(n["q"], args.model)
         except subprocess.TimeoutExpired:
@@ -98,7 +120,10 @@ def main():
         status = "PASS" if s == 1.0 else ("FAIL" if s == 0.0 else f"PARTIAL {s:.0%}")
         if s < 1.0:
             failures += 1
-        rows.append((n["id"], status, note, answer.replace("\n", " ")[:300]))
+        row = (n["id"], status, note, answer.replace("\n", " ")[:300])
+        rows.append(row)
+        guard.checkpoint(ckpt, {"id": row[0], "status": status, "note": note,
+                                "answer": row[3], "score": s})
         print(f"{status:12} {n['id']:22} {note}")
 
     if args.dry_run:
