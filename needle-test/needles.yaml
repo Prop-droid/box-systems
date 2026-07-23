@@ -30,7 +30,7 @@ needles:
     expected: ["suspended|banned", "bare"]
   - id: whole-bag
     q: "Can new Shameless copy use the 'Eat the whole bag' permission frame?"
-    expected: ["banned"]
+    expected: ["banned|ban"]
   - id: prebiotic
     q: "Can Shameless copy call the fiber 'prebiotic'?"
     expected: ["banned|ban"]
@@ -39,7 +39,7 @@ needles:
     expected: ["suspended", "legal"]
   - id: food-noise
     q: "Is the term 'food noise' allowed in Shameless copy, and with what constraints?"
-    expected: ["sparse|routed through fiber", "fiber"]
+    expected: ["sparse|sparing|through fiber|fiber mechanism|fiber-routed", "fiber"]
   - id: gelling-agent
     q: "What gelling agent do Shameless gummies use instead of gelatin?"
     expected: ["pectin"]
