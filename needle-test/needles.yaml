@@ -1,0 +1,90 @@
+# Brand-canon needles — gkamradt needle-in-a-haystack methodology adapted to the wiki.
+# Each needle: a question an agent answering FROM THE WIKI must get right.
+# Scoring (exact_match style): score = fraction of `expected` fragments present in the answer
+# (case-insensitive substring). Any `forbidden` fragment present = automatic fail (drift detected).
+# Seeded 2026-07-22 from the brand-canon needle-test findings: every needle below either
+# drifted in that audit or is load-bearing for compliance.
+
+needles:
+  - id: fiber-grams
+    q: "How many grams of fiber does one bag of Shameless Snacks have?"
+    expected: ["26"]
+    forbidden: ["29g fiber"]
+  - id: fiber-source
+    q: "What ingredients provide the fiber in Shameless Snacks?"
+    expected: ["polydextrose", "corn fiber"]
+  - id: sweetener-stack
+    q: "Which sweeteners are currently in the Shameless formulation?"
+    expected: ["erythritol", "isomalt", "sucralose"]
+  - id: reformulation
+    q: "Is a sweetener reformulation planned for Shameless, and toward what?"
+    expected: ["stevia", "monk", "not live|in progress|not shipped"]
+  - id: calories
+    q: "How many calories per bag should Shameless copy state?"
+    expected: ["70"]
+  - id: sugar
+    q: "How many grams of sugar per bag?"
+    expected: ["3g|3 grams"]
+  - id: only-prefix
+    q: "Can new Shameless copy say 'Only 3g of sugar' or 'Just 3g of sugar'?"
+    expected: ["suspended|banned", "bare"]
+  - id: whole-bag
+    q: "Can new Shameless copy use the 'Eat the whole bag' permission frame?"
+    expected: ["banned"]
+  - id: prebiotic
+    q: "Can Shameless copy call the fiber 'prebiotic'?"
+    expected: ["banned|ban"]
+  - id: gut-claims
+    q: "What is the status of gut-health and regularity claims for Shameless?"
+    expected: ["suspended", "legal"]
+  - id: food-noise
+    q: "Is the term 'food noise' allowed in Shameless copy, and with what constraints?"
+    expected: ["sparse|routed through fiber", "fiber"]
+  - id: gelling-agent
+    q: "What gelling agent do Shameless gummies use instead of gelatin?"
+    expected: ["pectin"]
+  - id: sub-price
+    q: "What per-bag subscription prices exist, and on which channel does $2.69 apply?"
+    expected: ["2.98|2.75", "2.69", "funnel|40-bag"]
+  - id: buy-once-price
+    q: "What is the one-time (buy once) single-bag price, and what is the real subscription discount?"
+    expected: ["3.50", "10|15"]
+  - id: flavor-count
+    q: "How many distinct flavors should Shameless copy claim?"
+    expected: ["12"]
+    forbidden: ["9 flavors"]
+  - id: review-stats
+    q: "What review and social-proof numbers can Shameless copy cite?"
+    expected: ["15,000"]
+    forbidden: ["1,312"]
+  - id: serving-size
+    q: "What is the serving size of Shameless Snacks and how may copy phrase it?"
+    expected: ["one bag"]
+  - id: dv-base
+    q: "26g of fiber is what percent of the daily value, and what is the DV base?"
+    expected: ["90", "28"]
+  - id: variety-packs
+    q: "Name the Shameless variety packs."
+    expected: ["Berry Blast", "Tropical", "Super Sour"]
+  - id: diabetes-vocab
+    q: "What blood-sugar language is allowed for the diabetes-wedge audience?"
+    expected: ["blood-sugar-conscious"]
+    forbidden: ["diabetic-friendly is allowed"]
+  - id: us-origin
+    q: "Can Shameless claim the product is made in the USA? What is the allowed origin wording?"
+    expected: ["Packed in the US"]
+  - id: flavor-disclosure
+    q: "What flavor disclosure must accompany fruit names or fruit imagery?"
+    expected: ["Naturally and Artificially Flavored"]
+  - id: guilt-free
+    q: "What is the status of the phrase 'guilt-free' in Shameless copy?"
+    expected: ["framing"]
+  - id: appetite-suppressant
+    q: "Can Shameless copy say 'natural appetite suppressant'?"
+    expected: ["banned"]
+  - id: offer-ceiling
+    q: "What is the maximum discount percentage allowed in Shameless offers?"
+    expected: ["46"]
+  - id: legacy-reuse
+    q: "What must happen before reusing any Shameless creative made before June 2026?"
+    expected: ["legal"]
