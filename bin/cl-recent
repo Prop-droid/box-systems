@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# cl-recent [N] — list the N most recent Claude sessions on this box with
+# their topic (first real user message) and a paste-ready resume command.
+# Companion to `cl` (persistent tmux session). Added 2026-07-23.
+set -u
+N="${1:-8}"
+
+ls -t "$HOME"/.claude/projects/*/*.jsonl 2>/dev/null \
+  | grep -v 'claude-memory-compiler' | head -n "$N" | while read -r f; do
+  id="$(basename "$f" .jsonl)"
+  proj="$(basename "$(dirname "$f")" | sed 's/^-home-tomas-*//;s/^$/~/' )"
+  when="$(stat -c %y "$f" | cut -d. -f1)"
+  topic="$(jq -r 'select(.type=="user") | .message.content | if type=="string" then . else empty end' "$f" 2>/dev/null \
+    | grep -vE '^\s*$|^<|^/[a-z]' | head -1 | cut -c1-90)"
+  printf '%s  [%s]\n  %s\n  claude --resume %s\n\n' "$when" "${proj:-~}" "${topic:-（no user text)}" "$id"
+done
