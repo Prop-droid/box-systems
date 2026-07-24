@@ -16,7 +16,7 @@ def line(i, r):
     return f"{i}. **{nm}** — spend {money(r['spend'])} · CPA {cpa} · CPC {cpc}"
 def block(title, rows, n):
     rows = rows[:n]
-    if not rows: return [f"**{title}**", "_none above the spend floor_", ""]
+    if not rows: return [f"**{title}**", "_nothing launched in this window yet_", ""]
     return [f"**{title}**"] + [line(i + 1, r) for i, r in enumerate(rows)] + [""]
 
 rg = d["ranges"]
