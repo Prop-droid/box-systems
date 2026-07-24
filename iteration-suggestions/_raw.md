@@ -1,30 +1,27 @@
-🔁 **Iteration Suggestions — wk Jun 29–Jul 5** *(auto-generated)*
+🔁 **Iteration Suggestions — wk Jul 6–12** *(auto-generated)*
 
 Pick what you want to take — comment on the suggestion + tag yourself, then spawn the brief.
 
 **VIDEO**
 
-**1. {{SH-16044}} (Allison Lundeen LTP May) — BODY_EDIT** 🟢
-Hook 52.7% (week's best), hold 1.5% — body is bleeding every viewer the hook catches. Last drop fixed the intro; mid-section content is the remaining leak. → Rebuild benefit delivery + product moment with hook frame and outro locked. Metric to beat: hold rate > 4%.
+**1. {{SH-16361}} (Chandler Ashcraft WL) — HOOK_SWAP** 🟢
+Hold 9.3% — 2nd highest in the dataset — but hook only 35.5% on $893 spend. The body is excellent; the hook is bleeding impressions before viewers ever land there. → New hook, body and CTA untouched. Metric to beat: hook rate > 42%.
 
-**2. {{SH-15587}} (Warehouse PAO) — BODY_FORMAT** 🟡
-Hook 45.7%, hold 0.7%, CTR –24% WoW. INTRO_SWAP was the prior fix; body structure is still losing nearly everyone after the open. → Switch mid-section from narrative to benefit-card / text-overlay format; hook and CTA untouched. Metric to beat: hold rate > 3%.
+**2. {{SH-16302}} (Janssen Bradshaw WL) — CREATOR_SWAP** 🟢
+ROAS 1.44, hook 40.5%, hold 6.0% on $2,541 spend. Body edit and length variant covered in prior drops; CTR now -13.1% WoW signals the cut is fatiguing fast. → New creator on the same proven angle/script before it flatlines. Metric to beat: ROAS > 1.3.
 
-**3. {{SH-15611}} (Meta Vid) — HOOK_SWAP** 🟡
-Hook 30.9%, hold 0.6%, $4k spend at ROAS 0.88 — hook is the primary gate here. → 2 variants (stat-led, consequence-led); body and CTA unchanged. Metric to beat: hook rate > 38%.
-
-**4. {{SH-16360}} (Phillip Cowley WL) — LENGTH_VARIANT** 🟡
-Variant -9 has hook 46.4% and hold 6.3% — best hold in the video pool — yet the concept sits at ROAS 0.71. Viewers watch through but don't convert; likely close friction. → 30s cut of -9 with a sharper offer close. Metric to beat: ROAS > 1.0 on the short cut.
+**3. {{SH-15477}} (GLP1 Unproven Fiber) — INTRO_SWAP** 🟡
+Hook 46.8% — top of the dataset — but hold crashes to 5.2% on $992 spend. Scroll-stop is there; the opening seconds of the body are losing everyone immediately. → Rebuild the first 5–8s of content, hook untouched. Metric to beat: hold rate > 8%.
 
 **IMAGE**
 
-**5. {{SH-13376}} (JDC Mar 16) — layout variant** 🟢
-Concept ROAS 1.25 at $8.4k; variant -6 hits 1.57. Headline and visual axes both run in prior drops. → Comparison-table or callout-grid layout on the -6 product as an isolated variable. Metric to beat: ROAS > 1.3.
+**4. {{SH-16450}} (SS Launch Image Test) — headline variants** 🟢
+ROAS 1.61 — strongest image ROAS this week. Scale + variants went out last drop; now isolate the headline as a single clean variable across 3 options. Metric to beat: ROAS > 1.5.
 
-**6. {{SH-13107}} (AYC Poop Retro Headline) — social proof overlay** 🟢
-ROAS 1.16 at $6.7k; layout and headline already tested. → Single variable: ★★★★★ badge or "26g Fiber" stat bar added to the retro frame. Metric to beat: ROAS > 1.2.
+**5. {{SH-9428}} (HealthGLP1 Broad) — visual refresh** 🟡
+ROAS 1.07, $2,910 spend, CTR -6.4% early fatigue continuing. Headline variants ran last drop. → New product shot or background with the GLP-1 consequence frame intact; one clean axis before the concept stalls. Metric to beat: ROAS > 1.2.
 
-**7. {{SH-3028}} (WK22 Images Broad) — headline copy** 🟡
-ROAS 1.43, single variation at $1.7k. Scale and visual refresh done in prior drops. → 3 headline-only variants on the existing winner image; no visual change. Metric to beat: ROAS > 1.3.
+**6. {{SH-3028}} (WK22 Images Broad) — layout variant** 🟡
+ROAS 1.20, single variation, CTR -16.6% — steepest image fatigue this week. Scale + variants and visual refresh covered in prior drops. → One comparison-table or split-panel layout treatment; if it can't clear ROAS 1.0, make the kill call. Metric to beat: ROAS > 1.1.
 
-**Watchlist ⚠️:** {{SH-16180}} ($45k, ROAS 0.75) — losses compounding; iterate-vs-kill call is overdue. {{SH-11295}} ($9.8k, ROAS 0.87, CTR –26.7%) — if the visual refresh from the prior drop doesn't clear ROAS 0.95, make the kill call.
+**Watchlist ⚠️:** {{SH-15957}} ($38k, ROAS 0.52) and {{SH-16180}} ($26.9k, ROAS 0.84) are the account's two biggest cash burns — both need an iterate-vs-kill decision this week, not another drop mention. {{SH-15238}} (hold 0.5%, CTR -18%) — if the INTRO_SWAP from last drop hasn't run yet, pause the ad now.

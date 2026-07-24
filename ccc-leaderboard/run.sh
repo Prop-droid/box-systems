@@ -39,6 +39,6 @@ PY
 echo "wrote $OUT"
 if [ -n "$NTFY_TOPIC" ]; then
   curl -s -H "Title: CCC Leaderboards (weekly)" \
-    -H "Click: http://tomas-agent-box.local:3000/leaderboards" \
+    -H "Click: https://tomas-agent-box.tailb74909.ts.net:8443/leaderboards" \
     -d "Quarter top 3: $digest" "https://ntfy.sh/$NTFY_TOPIC" >/dev/null 2>&1 || true
 fi

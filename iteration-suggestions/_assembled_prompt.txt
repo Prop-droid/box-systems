@@ -30,110 +30,150 @@ RULES:
 - Interpret the data tables: spend/revenue/roas/orders/cpa are last-week figures; hook_rate = 3s views / impressions %, hold_rate = throughplays %, ctr_change_pct = week-over-week CTR change (fatigue signal).
 - Keep total body under ~350 words. Punchy, numbers-first, no fluff. Do not invent numbers not present in the data.
 
-## Report data week: 2026-06-29 to 2026-07-05 (label the drop with this week)
-## Today: 2026-07-12
+## Report data week: 2026-07-06 to 2026-07-12 (label the drop with this week)
+## Today: 2026-07-16
 
 ### DATA: 03_top_spend
 +----------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
 |  sh_ref  |                           ad_name                            | channel  |  spend  | revenue | roas | orders |  cpa   |
 +----------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
-| SH-16180 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  | facebook | 45404.0 | 34071.0 | 0.75 |  476.0 |  95.39 |
-| SH-16360 | SH-16360-8_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U | facebook | 15281.0 |  9797.0 | 0.64 |  141.0 | 108.38 |
-| SH-11295 | SH-11295-8_SHA_OG_EN_META_1000X1000_IMG_JDC_18-02-2026.png - | facebook |  9722.0 |  8451.0 | 0.87 |  103.0 |  94.39 |
-| SH-13376 | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook |  7089.0 |  8482.0 |  1.2 |  104.0 |  68.17 |
-| SH-13107 | SH-13107-6_SHA_OG_META_IMG-1080x1080_AYC_Poop_Retro_Headline | facebook |  6208.0 |  7071.0 | 1.14 |   80.0 |   77.6 |
-| SH-15611 | SH-15611-1_SHA_META_VID-1080x1920_7631388123158629645.mp4 -  | facebook |  4001.0 |  3531.0 | 0.88 |   43.0 |  93.06 |
-| Unmapped | SHA_CC_Migrate_ShamelessSnacks_$75_2026-06-17_Set1__JTNejedl | facebook |  3891.0 |  2182.0 | 0.56 |   31.0 |  125.5 |
-| SH-16360 | SH-16360-1_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U | facebook |  3765.0 |  3361.0 | 0.89 |   41.0 |  91.83 |
-| SH-15587 | SH-15587 - SH-8654-7_SHA_OG_META_VID-1080x1350_PAO_Warehouse | facebook |  3027.0 |  2827.0 | 0.93 |   31.0 |  97.64 |
-| SH-9428  | SHA_CC_WK22_HealthGLP1_Broad__post3_880502221406945 – Copy   | facebook |  2963.0 |  2099.0 | 0.71 |   36.0 |  82.29 |
-| Unmapped | JTNejedlo_Product_20260527_Aplus                             | facebook |  2888.0 |  1158.0 |  0.4 |   22.0 | 131.27 |
-| SH-13396 | SH-13396-1_CL_SHA_OG_META_VID-1080x1350_IGN_Letter_WeAreSorr | facebook |  2432.0 |  2872.0 | 1.18 |   33.0 |  73.71 |
-| SH-3028  | SHA_CC_WK22_Images_Broad__post3_786852690771899              | facebook |  1689.0 |  2423.0 | 1.43 |   26.0 |  64.97 |
-| SH-13376 | SH-13376-6_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook |  1238.0 |  1872.0 | 1.51 |   25.0 |  49.53 |
-| SH-16360 | SH-16360-2_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U | facebook |  1234.0 |   926.0 | 0.75 |   13.0 |   94.9 |
+| SH-15957 | SH-15957-7_SHA_AS_EN_META_1080X1080_IMG_JDC_12-06-2026-CTV - | facebook | 38241.0 | 19807.0 | 0.52 |  280.0 | 136.58 |
+| SH-16180 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  | facebook | 26880.0 | 22593.0 | 0.84 |  333.0 |  80.72 |
+| SH-13376 | SH-13376-6_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook |  6981.0 |  8943.0 | 1.28 |  107.0 |  65.24 |
+| SH-15238 | SH-15238-1_SHA_2026_S17_META_1080x1920_OG_QVC_NewEdit_Proven | facebook |  6746.0 |  4527.0 | 0.67 |   63.0 | 107.08 |
+| SH-13376 | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook |  6644.0 |  7818.0 | 1.18 |   90.0 |  73.82 |
+| SH-11295 | SH-11295-8_SHA_OG_EN_META_1000X1000_IMG_JDC_18-02-2026.png - | facebook |  6424.0 |  5434.0 | 0.85 |   72.0 |  89.23 |
+| SH-13107 | SH-13107-6_SHA_OG_META_IMG-1080x1080_AYC_Poop_Retro_Headline | facebook |  5814.0 |  9020.0 | 1.55 |   99.0 |  58.73 |
+| SH-16360 | SH-16360-8_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U | facebook |  4240.0 |  3235.0 | 0.76 |   51.0 |  83.13 |
+| SH-15611 | SH-15611-1_SHA_META_VID-1080x1920_7631388123158629645.mp4 -  | facebook |  3636.0 |  4427.0 | 1.22 |   56.0 |  64.92 |
+| SH-16360 | SH-16360-1_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U | facebook |  3496.0 |  2830.0 | 0.81 |   38.0 |  91.99 |
+| SH-9428  | SHA_CC_WK22_HealthGLP1_Broad__post3_880502221406945 – Copy   | facebook |  2910.0 |  3100.0 | 1.07 |   45.0 |  64.66 |
+| SH-3028  | SHA_CC_WK22_Images_Broad__post3_786852690771899              | facebook |  1698.0 |  2041.0 |  1.2 |   23.0 |  73.85 |
+| SH-13396 | SH-13396-1_CL_SHA_OG_META_VID-1080x1350_IGN_Letter_WeAreSorr | facebook |  1611.0 |  2831.0 | 1.76 |   35.0 |  46.03 |
+| SH-15191 | SH-15191-5_CL_SHA_OG_META_VID-1080x1350_KAR_LoveYourChoices_ | facebook |  1550.0 |  3071.0 | 1.98 |   33.0 |  46.97 |
+| SH-13100 | SH-13100-6_SHA_OG_EN_META_1920X1080_IMG_JDC_11-03-2026-CTV.m | facebook |  1362.0 |  1222.0 |  0.9 |   22.0 |  61.89 |
 +----------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
 
 ### DATA: 04_top_roas
 +----------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 |  sh_ref  |                           ad_name                            | channel  | spend  | revenue | roas | orders |
 +----------+--------------------------------------------------------------+----------+--------+---------+------+--------+
-| SH-13376 | SH-13376-6_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook | 1258.0 |  1980.0 | 1.57 |   26.0 |
-| SH-3028  | SHA_CC_WK22_Images_Broad__post3_786852690771899              | facebook | 1689.0 |  2423.0 | 1.43 |   26.0 |
-| SH-16302 | SH-16302-1_SHA_2026_S25_META_1080x1920_WL_JanssenBradshaw1_A | facebook |  645.0 |   876.0 | 1.36 |   13.0 |
-| Unmapped | KrystaAndrus_ShamelessSuperVarietyPack_20260624_trybe=6e8ff8 | facebook |  577.0 |   706.0 | 1.22 |   10.0 |
-| SH-13376 | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook | 7093.0 |  8482.0 |  1.2 |  104.0 |
-| SH-13396 | SH-13396-1_CL_SHA_OG_META_VID-1080x1350_IGN_Letter_WeAreSorr | facebook | 2435.0 |  2872.0 | 1.18 |   33.0 |
-| Unmapped | Prestonkramer_ShamelessSuperVarietyPack_20260619_trybe=eaef7 | facebook |  533.0 |   627.0 | 1.18 |    6.0 |
-| SH-13107 | SH-13107-6_SHA_OG_META_IMG-1080x1080_AYC_Poop_Retro_Headline | facebook | 6577.0 |  7641.0 | 1.16 |   87.0 |
-| SH-16360 | SH-16360-2_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U | facebook | 1483.0 |  1685.0 | 1.14 |   22.0 |
-| Unmapped | JackPuccio_CandyCarnivalCollection_20260617_trybe=e12f22cb - | facebook |  570.0 |   562.0 | 0.99 |    8.0 |
+| SH-15191 | SH-15191-5_CL_SHA_OG_META_VID-1080x1350_KAR_LoveYourChoices_ | facebook | 1941.0 |  3608.0 | 1.86 |   42.0 |
+| SH-13396 | SH-13396-1_CL_SHA_OG_META_VID-1080x1350_IGN_Letter_WeAreSorr | facebook | 1611.0 |  2831.0 | 1.76 |   35.0 |
+| SH-16450 | SH-16450_SHA_2026_S25_SS_Launch_Online-Exclusive_ImageTest_T | facebook |  603.0 |   973.0 | 1.61 |   11.0 |
+| SH-13107 | SH-13107-6_SHA_OG_META_IMG-1080x1080_AYC_Poop_Retro_Headline | facebook | 5891.0 |  9269.0 | 1.57 |  101.0 |
+| SH-16302 | SH-16302-8_SHA_2026_S25_META_1080x1920_WL_JanssenBradshaw1_A | facebook |  679.0 |   976.0 | 1.44 |   13.0 |
+| SH-13376 | SH-13376-6_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook | 6993.0 |  8943.0 | 1.28 |  107.0 |
+| SH-15611 | SH-15611-1_SHA_META_VID-1080x1920_7631388123158629645.mp4 -  | facebook | 3640.0 |  4427.0 | 1.22 |   56.0 |
+| SH-3028  | SHA_CC_WK22_Images_Broad__post3_786852690771899              | facebook | 1698.0 |  2041.0 |  1.2 |   23.0 |
+| SH-13376 | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook | 6651.0 |  7818.0 | 1.18 |   90.0 |
+| Unmapped | JTNejedlo_CandyCarnivalCollection_ShamelessSuperVarietyPack_ | facebook |  598.0 |   676.0 | 1.13 |    9.0 |
 +----------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 
 ### DATA: 05_losers
-+----------+----------------------------------+----------+--------+---------+------+--------+
-|  sh_ref  |             ad_name              | channel  | spend  | revenue | roas | orders |
-+----------+----------------------------------+----------+--------+---------+------+--------+
-| Unmapped | JTNejedlo_Product_20260527_Aplus | facebook | 2888.0 |  1158.0 |  0.4 |   22.0 |
-+----------+----------------------------------+----------+--------+---------+------+--------+
++----------+--------------------------------------------------------------+----------+--------+---------+------+--------+
+|  sh_ref  |                           ad_name                            | channel  | spend  | revenue | roas | orders |
++----------+--------------------------------------------------------------+----------+--------+---------+------+--------+
+| Unmapped | JTNejedlo_Product_20260527_trybe=33c838c7 - https://snacks.e | facebook | 1117.0 |   185.0 | 0.17 |    5.0 |
++----------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 
 ### DATA: 10_hook_hold
-+-----------------+--------------------------------------------------------------+-----------+-----------+---------+
-| clickup_project |                        ad_name_short                         | hook_rate | hold_rate |  spend  |
-+-----------------+--------------------------------------------------------------+-----------+-----------+---------+
-| SH-16044        | SH-16044-7_SHA_2026_1080x1920_WL_AllisonLundeen_LTPMay_Rehas |      52.7 |       1.5 |   577.0 |
-| SH-16360        | SH-16360-9_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U |      46.4 |       6.3 | 21712.0 |
-| SH-15587        | SH-15587 - SH-8654-7_SHA_OG_META_VID-1080x1350_PAO_Warehouse |      45.7 |       0.7 |  3129.0 |
-| SH-16302        | SH-16302-9_SHA_2026_S25_META_1080x1920_WL_JanssenBradshaw1_A |      45.4 |       6.3 |   831.0 |
-| SH-16196        | SH-16196-7_CL_SHA_OG_META_VID-1080x1350_IGN_May26_Unproven_T |      43.3 |       4.5 |   856.0 |
-| SH-16199        | SH-16199-7_CL_SHA_OG_META_VID-1080x1350_IGN_KristinaBattagli |      37.5 |       3.0 |   755.0 |
-| SH-16306        | SH-16306-8_CL_SHA_OG_META_VID-1080x1350_IGN_ShannonHarvey1_U |      37.4 |       2.3 |   593.0 |
-| SH-16200        | SH-16200-9_SHA_2026_S24_META_1080x1920_Carnival_WL_JessicaDe |      37.0 |       2.8 |   765.0 |
-| Unmapped        | SHA_CC_WK22_UGCVideo_Broad__post5_122124947511202185         |      35.0 |       1.0 | 15486.0 |
-| SH-16358        | SH-16358-9_SHA_2026_S25_WL_PhillipCowley3_MAY26_Tom_agu_META |      33.9 |       4.3 |   516.0 |
-| SH-16342        | SH-16342-9_SHA_OG_META_VID-1080x1920_PAO_WL_LaurenKarhoff1_U |      32.6 |       4.3 |   590.0 |
-| SH-16195        | SH-16195-9_SHA_OG_META_VID-1080x1920_PAO_WL_Unproven_Virgini |      31.7 |       3.1 |   856.0 |
-| SH-15611        | SH-15611-1_SHA_META_VID-1080x1920_7631388123158629645.mp4 -  |      30.9 |       0.6 |  4118.0 |
-| SH-16202        | SH-16202-9_SHA_OG_META_VID-1080x1920_PAO_WL_Unproven_Jessica |      28.5 |       2.7 |   738.0 |
-| SH-16186        | SH-16186-9_CL_SHA_OG_META_VID-1080x1350_IGN_B-roll+Naration_ |      27.4 |       1.8 |   577.0 |
-+-----------------+--------------------------------------------------------------+-----------+-----------+---------+
++-----------------+--------------------------------------------------------------+-----------+-----------+--------+
+| clickup_project |                        ad_name_short                         | hook_rate | hold_rate | spend  |
++-----------------+--------------------------------------------------------------+-----------+-----------+--------+
+| SH-15477        | SH-15477-8_SHA_OG_META_VID-1080x1920_PAO_GLP1_Unproven_Fiber |      46.8 |       5.2 |  992.0 |
+| SH-15587        | SH-15587 - SH-8654-7_SHA_OG_META_VID-1080x1350_PAO_Warehouse |      46.1 |       0.9 |  549.0 |
+| SH-16200        | SH-16200-9_SHA_2026_S24_META_1080x1920_Carnival_WL_JessicaDe |      42.9 |       2.5 | 1949.0 |
+| SH-15238        | SH-15238-1_SHA_2026_S17_META_1080x1920_OG_QVC_NewEdit_Proven |      42.7 |       0.5 | 6751.0 |
+| SH-16306        | SH-16306-8_CL_SHA_OG_META_VID-1080x1350_IGN_ShannonHarvey1_U |      41.8 |       2.1 | 1006.0 |
+| SH-16360        | SH-16360-9_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U |      41.7 |       6.2 | 9987.0 |
+| SH-16199        | SH-16199-7_CL_SHA_OG_META_VID-1080x1350_IGN_KristinaBattagli |      41.4 |       3.1 | 1204.0 |
+| SH-16302        | SH-16302-9_SHA_2026_S25_META_1080x1920_WL_JanssenBradshaw1_A |      40.5 |       6.0 | 2541.0 |
+| SH-16195        | SH-16195-9_SHA_OG_META_VID-1080x1920_PAO_WL_Unproven_Virgini |      35.9 |       3.9 |  946.0 |
+| SH-16310        | SH-16310_10_SHA_OG_META_VID-1080x1920_PAO_WL_BryTielke1_Unpr |      35.8 |       0.9 | 1003.0 |
+| SH-16361        | SH-16361-7_SHA_2026_S25_WL_ChandlerAshcraft1_MAY26_Tom_LEO_M |      35.5 |       9.3 |  893.0 |
+| SH-11606        | SH-11606-04_SHA_META_VID-1080x1920_Tiktok_UGC_demi_does.it_S |      35.0 |       2.3 |  910.0 |
+| SH-16350        | SH-16350-6_CL_SHA_OG_META_VID-1080x1350_IGN_EmilyFauver1_Unp |      33.2 |       3.2 | 1126.0 |
+| SH-16336        | SH-16336-9_CL_SHA_OG_META_VID-1080x1350_IGN_MeghanMattei1_Un |      33.1 |       3.0 |  921.0 |
+| SH-16332        | SH-16332-5_SHA_2026_S25_WL_ShannonMurphy1_MAY26_Tom_KAR_META |      32.7 |      12.4 |  503.0 |
++-----------------+--------------------------------------------------------------+-----------+-----------+--------+
 
 ### DATA: 11_fatigue
 +-----------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
 | clickup_project |                        ad_name_short                         | spend_last | ctr_prior | ctr_last | ctr_change_pct |
 +-----------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
-| SH-16180        | SH-16180-2_SHA_META_VID-1080x1920_7640128942740868383.mp4 -  |    45718.0 |       1.2 |     1.05 |          -12.7 |
-| Unmapped        | SHA_CC_WK22_UGCVideo_Broad__post5_122124947511202185         |    15486.0 |      1.31 |     1.02 |          -22.2 |
-| SH-11295        | SH-11295-8_SHA_OG_EN_META_1000X1000_IMG_JDC_18-02-2026.png - |     9762.0 |      1.94 |     1.42 |          -26.7 |
-| SH-15611        | SH-15611-1_SHA_META_VID-1080x1920_7631388123158629645.mp4 -  |     4118.0 |      2.42 |     2.24 |           -7.7 |
-| SH-15587        | SH-15587 - SH-8654-7_SHA_OG_META_VID-1080x1350_PAO_Warehouse |     3129.0 |      2.73 |     2.07 |          -24.0 |
-| SH-9428         | SHA_CC_WK22_HealthGLP1_Broad__post3_880502221406945 – Copy   |     2966.0 |      1.61 |      1.5 |           -6.5 |
-| SH-13578        | SH-13578_Winner_$85_2026-05-29                               |     1491.0 |      1.02 |      0.9 |          -12.5 |
-| SH-16142        | SH-16154_SH-16142-5_SHA_BB_META_IMG-1080x1080_AYC_CTV_Launch |     1446.0 |      0.75 |     0.65 |          -13.3 |
+| SH-13376        | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  |    13644.0 |      1.65 |      1.5 |           -8.8 |
+| Unmapped        | TizianoPiuma_CandyCarnivalCollection_ShamelessSuperVarietyPa |    12497.0 |      1.01 |     0.99 |           -1.8 |
+| SH-16360        | SH-16360-9_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U |     9987.0 |      4.04 |     3.49 |          -13.5 |
+| SH-15238        | SH-15238-1_SHA_2026_S17_META_1080x1920_OG_QVC_NewEdit_Proven |     6751.0 |       1.3 |     1.06 |          -18.0 |
+| SH-13107        | SHA_CC_Migrate_ShamelessSnacks_$75_2026-06-17_Set1__SH-13107 |     6025.0 |       1.2 |     1.18 |           -1.4 |
+| SH-15611        | SH-15611-1_SHA_META_VID-1080x1920_7631388123158629645.mp4 -  |     3640.0 |      2.22 |     2.04 |           -8.2 |
+| SH-9428         | SHA_CC_WK22_HealthGLP1_Broad__post3_880502221406945 – Copy   |     2946.0 |      1.53 |     1.43 |           -6.4 |
+| SH-16302        | SH-16302-9_SHA_2026_S25_META_1080x1920_WL_JanssenBradshaw1_A |     2541.0 |      3.34 |      2.9 |          -13.1 |
+| SH-15191        | SH-15191-5_CL_SHA_OG_META_VID-1080x1350_KAR_LoveYourChoices_ |     1941.0 |      1.94 |     1.65 |          -14.9 |
+| SH-3028         | SHA_CC_WK22_Images_Broad__post3_786852690771899              |     1698.0 |      0.92 |     0.77 |          -16.6 |
+| SH-13100        | SH-13100-6_SHA_OG_EN_META_1920X1080_IMG_JDC_11-03-2026-CTV.m |     1424.0 |      1.24 |     1.15 |           -7.4 |
+| SH-16350        | SH-16350-6_CL_SHA_OG_META_VID-1080x1350_IGN_EmilyFauver1_Unp |     1126.0 |      2.52 |     1.97 |          -21.8 |
+| SH-14890        | SH-14890-10_SHA_2026_S16__TIKTOK_9x16_OG___Retro_intro test_ |     1014.0 |       0.8 |     0.73 |           -8.8 |
+| SH-16310        | SH-16310_10_SHA_OG_META_VID-1080x1920_PAO_WL_BryTielke1_Unpr |     1003.0 |      2.36 |     2.34 |           -0.6 |
 +-----------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
 
 ### DATA: 12_concepts
-+-----------------+---------+---------+------+------------+--------+--------+------------+----------------+
-| clickup_project |  spend  | revenue | roas | margin_pct | cmroas | orders | variations | contrib_margin |
-+-----------------+---------+---------+------+------------+--------+--------+------------+----------------+
-| SH-3028         |  1689.0 |  2423.0 | 1.43 |       65.5 |   0.94 |     26 |          1 |         -101.0 |
-| SH-12082        |  1153.0 |   934.0 | 0.81 |       64.9 |   0.53 |     11 |          1 |         -546.0 |
-| SH-13396        |  2435.0 |  2872.0 | 1.18 |       65.0 |   0.77 |     33 |          1 |         -567.0 |
-| SH-13578        |  1491.0 |  1217.0 | 0.82 |       63.5 |   0.52 |     16 |          2 |         -719.0 |
-| SH-16142        |  1446.0 |  1080.0 | 0.75 |       64.4 |   0.48 |     15 |         25 |         -751.0 |
-| SH-15587        |  3129.0 |  2910.0 | 0.93 |       66.7 |   0.62 |     32 |          1 |        -1189.0 |
-| SH-13376        |  8351.0 | 10462.0 | 1.25 |       66.0 |   0.83 |    130 |          3 |        -1446.0 |
-| SH-13107        |  6726.0 |  7834.0 | 1.16 |       65.8 |   0.77 |     88 |          4 |        -1571.0 |
-| SH-9428         |  2966.0 |  2099.0 | 0.71 |       64.2 |   0.45 |     36 |          4 |        -1618.0 |
-| SH-15611        |  4118.0 |  3715.0 |  0.9 |       64.8 |   0.59 |     45 |          1 |        -1709.0 |
-| SH-11295        |  9762.0 |  8451.0 | 0.87 |       66.1 |   0.57 |    103 |          2 |        -4177.0 |
-| Unmapped        | 15486.0 |  9935.0 | 0.64 |       64.3 |   0.41 |    154 |         41 |        -9100.0 |
-| SH-16360        | 21712.0 | 15471.0 | 0.71 |       64.7 |   0.46 |    213 |         14 |       -11706.0 |
-| SH-16180        | 45718.0 | 34538.0 | 0.76 |       64.0 |   0.48 |    481 |          3 |       -23624.0 |
-+-----------------+---------+---------+------+------------+--------+--------+------------+----------------+
++-----------------+--------+---------+------+------------+--------+--------+------------+----------------+
+| clickup_project | spend  | revenue | roas | margin_pct | cmroas | orders | variations | contrib_margin |
++-----------------+--------+---------+------+------------+--------+--------+------------+----------------+
+| SH-15191        | 1941.0 |  3608.0 | 1.86 |       66.0 |   1.23 |     42 |          2 |          441.0 |
+| SH-13396        | 1611.0 |  2831.0 | 1.76 |       64.2 |   1.13 |     35 |          1 |          206.0 |
+| SH-13107        | 6025.0 |  9353.0 | 1.55 |       64.7 |    1.0 |    102 |          4 |           27.0 |
+| SH-16300        | 1007.0 |  1265.0 | 1.26 |       64.4 |   0.81 |     19 |         10 |         -192.0 |
+| SH-3028         | 1698.0 |  2041.0 |  1.2 |       66.5 |    0.8 |     23 |          1 |         -342.0 |
+| SH-14890        | 1014.0 |   706.0 |  0.7 |       64.8 |   0.45 |     10 |          1 |         -556.0 |
+| SH-16201        | 1013.0 |   678.0 | 0.67 |       63.7 |   0.43 |     12 |          9 |         -581.0 |
+| SH-16142        | 1500.0 |  1360.0 | 0.91 |       65.4 |   0.59 |     16 |         23 |         -611.0 |
+| SH-13100        | 1424.0 |  1222.0 | 0.86 |       63.3 |   0.54 |     22 |          2 |         -650.0 |
+| SH-16199        | 1204.0 |   858.0 | 0.71 |       64.5 |   0.46 |     11 |          6 |         -650.0 |
+| SH-16362        | 1054.0 |   568.0 | 0.54 |       65.6 |   0.35 |      7 |         10 |         -682.0 |
+| SH-16350        | 1126.0 |   673.0 |  0.6 |       64.9 |   0.39 |     10 |          6 |         -689.0 |
+| SH-16342        | 1019.0 |   498.0 | 0.49 |       63.7 |   0.31 |      6 |          9 |         -701.0 |
+| SH-15611        | 3640.0 |  4427.0 | 1.22 |       66.0 |    0.8 |     56 |          1 |         -716.0 |
+| SH-16200        | 1949.0 |  1886.0 | 0.97 |       65.2 |   0.63 |     22 |         12 |         -719.0 |
++-----------------+--------+---------+------+------------+--------+--------+------------+----------------+
 
 ### PREVIOUS DROPS (do not repeat task + iteration-type combos):
---- 2026-07-09.md
+--- 2026-07-14.md
+🔁 **Iteration Suggestions — wk Jul 6–12** *(auto-generated)*
+
+Pick what you want to take — comment on the suggestion + tag yourself, then spawn the brief.
+
+**VIDEO**
+
+**1. [SH-15238](https://app.clickup.com/t/868jb9rq9) (QVC NewEdit Proven) — INTRO_SWAP** 🟢
+Hook 42.7%, hold 0.5% on $6,751 spend — biggest hook-to-hold collapse in the dataset, CTR already -18% WoW. Viewers stop, then leave in seconds. → Rebuild the 5–8s immediately after the hook; hook and CTA untouched. Metric to beat: hold rate > 3%.
+
+**2. [SH-15191](https://app.clickup.com/t/868ja9fg1) (KAR LoveYourChoices) — CREATOR_SWAP** 🟢
+ROAS 1.86, cmroas 1.23 — the only video concept turning real profit this week — on just 2 variations, $1,941 spend. CTR -14.9% WoW; the window is narrowing. → New creator on the same proven angle/script before these cuts fatigue out. Metric to beat: ROAS > 1.5.
+
+**3. [SH-13396](https://app.clickup.com/t/868hwjhwq) (IGN Letter / We Are Sorry) — AI_VARIANT** 🟢
+ROAS 1.76, $1,611 spend, 1 variation ever. CTA and social-proof structure both covered in prior drops; creative surface is the gap. → AI remix of the top cut: same script spine, varied visual pacing. Metric to beat: ROAS > 1.5.
+
+**4. [SH-16332](https://app.clickup.com/t/868k2hpq4) (Shannon Murphy WL) — HOOK_SWAP** 🟡
+Hold 12.4% — highest in the dataset — but hook only 32.7% at $503 spend. The body converts when people land; the hook is the only blocker. → New hook, body and CTA untouched. Metric to beat: hook > 40%.
+
+**IMAGE**
+
+**5. [SH-16450](https://app.clickup.com/t/868k4zvdn) (SS Launch Image Test) — scale + variants** 🟢
+ROAS 1.61 on a $603 image test — strongest new entrant this week, no prior iteration. → 3 layout variants at stepped-up budget to validate concept efficiency beyond the initial test. Metric to beat: ROAS > 1.4 across variants.
+
+**6. [SH-13376](https://app.clickup.com/t/868hwjddd) (JDC Mar 16) — layout variant** 🟢
+$13,625 total spend this week, ROAS 1.18–1.28 across both active variants. Headline variants and visual refresh already in market; CTR on variant -9 fading -8.8%. → Comparison-table layout to open a new creative axis while the concept still has momentum. Metric to beat: ROAS > 1.3.
+
+**7. [SH-13107](https://app.clickup.com/t/868hrmc9q) (AYC Poop Retro) — visual refresh** 🟡
+ROAS 1.55, $5,891 spend, cmroas exactly 1.0 (margin breakeven). Headline and layout variants covered in prior drops. → Fresh visual treatment on the retro frame to push ROAS above the margin line. Metric to beat: ROAS > 1.6.
+
+**8. [SH-9428](https://app.clickup.com/t/868h4w7nr) (HealthGLP1 Broad) — headline variants** 🟡
+ROAS 1.07, $2,910 spend, CTR -6.4% — early fatigue on a concept with no prior iteration. → 3 headlines on the GLP-1 consequence frame; visual untouched. Metric to beat: ROAS > 1.2.
+
+**Watchlist ⚠️:** [SH-15957](https://app.clickup.com/t/868jufw6k) ($38k spend, ROAS 0.52) is the week's biggest cash burn — iterate-vs-kill call needed now, not next drop. [SH-16180](https://app.clickup.com/t/868jyx5ec) ($26.9k, ROAS 0.84) ticked up slightly WoW but remains underwater at scale; needs a campaign team decision.--- 2026-07-09.md
 🔁 **Iteration Suggestions — wk Jun 29–Jul 5** *(auto-generated)*
 
 Pick what you want to take — comment on the suggestion + tag yourself, then spawn the brief.

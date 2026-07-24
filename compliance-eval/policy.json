@@ -1,15 +1,16 @@
 {
   "_meta": {
     "brand": "Shameless Snacks",
-    "policy_version": "2026-07-04",
+    "policy_version": "2026-07-21",
     "sources": [
+      "raw/brand-context/Shameless_Creative_Compliance_Guardrails_2026-06_counsel.pdf (GRSM/Gitner, June 2026 — MASTER, supersedes all prior creative copy guidance)",
       "brain/wiki/shameless/brand/compliance-guardrails.md",
       "brain/raw/brand-context/compliance_guide.md",
-      "memory/shameless_compliance_language.md (2026-06-09 overrides)",
+      "memory/shameless_compliance_language.md (2026-07-21 counsel update)",
       "2026-06-30 bans: 'appetite suppressant', 'real fruit', 'made in USA'/US-manufacturing, 'dye free', 'natural flavors'/'no artificial dyes'",
       "2026-07-02 (Tomas): core bags use sucralose + erythritol, NOT allulose — any allulose claim is false"
     ],
-    "note": "Severity HARD = definite violation (counts toward violation_rate). WARN = review-before-publish (does not fail the script but is reported). Patterns are case-insensitive regex, matched on word boundaries. Edit this file as policy evolves; the scorer reads it as data. 2026-07-03: appetite suppressant moved from allow-list to HARD ban; added real_fruit, made_in_usa (exception 'packed in the US'), false_ingredient_allulose, and dye-free/natural-flavors/no-artificial-dyes to false_clean_label. '70-90 calories' remains ALLOWED (some bags are 90 cal). 2026-07-04: added 'natural colou?rs?' to false_clean_label (closes n18 color-claim bait) and new WARN rule offer_claim for numeric NN%-off discounts (closes n15 price bait, review vs 46% ceiling). Remaining new_cases baits (n05,n06,n09,n10-behavior,n14,n16,n19,n20) are semantic/context-dependent and intentionally NOT regexed — see policy-gap-close.SUMMARY.md."
+    "note": "Severity HARD = definite violation (counts toward violation_rate). WARN = review-before-publish (does not fail the script but is reported). Patterns are case-insensitive regex, matched on word boundaries. Edit this file as policy evolves; the scorer reads it as data. 2026-07-03: appetite suppressant moved from allow-list to HARD ban; added real_fruit, made_in_usa (exception 'packed in the US'), false_ingredient_allulose, and dye-free/natural-flavors/no-artificial-dyes to false_clean_label. '70-90 calories' remains ALLOWED (some bags are 90 cal). 2026-07-04: added 'natural colou?rs?' to false_clean_label (closes n18 color-claim bait) and new WARN rule offer_claim for numeric NN%-off discounts (closes n15 price bait, review vs 46% ceiling). Remaining new_cases baits (n05,n06,n09,n10-behavior,n14,n16,n19,n20) are semantic/context-dependent and intentionally NOT regexed — see policy-gap-close.SUMMARY.md. 2026-07-21 (June 2026 counsel guardrails): HARD-banned 'prebiotic' (any form — reverses old differentiator approval), gut/digestive-health claims incl. 'pooping every day'/'I'm regular' (suspended pending Legal), eat-the-whole-bag permission copy, 'only' before nutrient stats (sugar/calories/net carbs), citric/malic acid claims, and '92% less sugar' (comparator unapproved). Removed prebiotic/pooping/regularity entries from allow-list. 'Daily Fiber Candy' is counsel-approved."
   },
 
   "hard": [
@@ -26,7 +27,13 @@
     {"id": "appetite_suppressant", "why": "Drug-effect appetite-suppressant claim (banned 2026-06-30; moved off allow-list)", "patterns": ["appetite suppressant"]},
     {"id": "real_fruit", "why": "No real fruit in the formulation (banned 2026-06-30)", "patterns": ["real fruit"]},
     {"id": "made_in_usa", "why": "Unsubstantiated US-manufacturing claim (banned 2026-06-30; exception: 'packed in the US')", "patterns": ["made in (the )?usa?\\b", "made in america", "manufactured in (the )?usa?\\b", "american[-\\s]made", "\\bus[-\\s]made\\b"]},
-    {"id": "false_ingredient_allulose", "why": "Core bags use sucralose + erythritol, not allulose (Tomas 2026-07-02) — allulose claim is false", "patterns": ["\\ballulose\\b"]}
+    {"id": "false_ingredient_allulose", "why": "Core bags use sucralose + erythritol, not allulose (Tomas 2026-07-02) — allulose claim is false", "patterns": ["\\ballulose\\b"]},
+    {"id": "prebiotic_claim", "why": "Prebiotic claims not approved (Jun 2026 counsel — reverses 2026-04-23 differentiator approval); say 'fiber'", "patterns": ["\\bprebiotics?\\b"]},
+    {"id": "gut_digestive_claim", "why": "Gut/digestive structure-function claims suspended pending RCT-level substantiation (Jun 2026 counsel); route to Legal", "patterns": ["supports? digestive (health|regularity)", "\\bgut health\\b", "feeds? (your )?(good )?gut bacteria", "gut microbiome", "pooping every day", "i'?m regular( now)?", "stay regular", "\\bregularity\\b"]},
+    {"id": "eat_whole_bag", "why": "Over-consumption + health-halo framing prohibited (Jun 2026 counsel, pending Seth's final confirmation — treat as banned)", "patterns": ["(eat|ate|finish(ed)?|down(ed)?) the (whole|entire) bag", "whole bag[,.! ]+(guilt[- ]free|no guilt|zero guilt)"]},
+    {"id": "only_nutrient_stat", "why": "'Only' before a nutrient stat = unauthorized nutrient content claim (Jun 2026 counsel; explicit for net carbs, treat same for sugar/calories/fiber pending Seth). Use bare stats", "patterns": ["\\bonly \\d+ ?g (of )?(sugar|net carbs?|carbs?|fiber)", "\\bonly \\d+ calories?", "\\b\\d+ ?g net carbs? or less"]},
+    {"id": "acid_claim", "why": "No citric/malic acid claims anywhere (Jun 2026 counsel — flavoring-agent litigation)", "patterns": ["(citric|malic) acid (for|as a) (freshness|preservative)", "preserved with (citric|malic)"]},
+    {"id": "less_sugar_comparator", "why": "'92% less sugar' comparator + substantiation still open with Legal (Jun 2026 counsel) — hold", "patterns": ["\\d{2} ?% less sugar"]}
   ],
 
   "warn": [
@@ -40,10 +47,7 @@
   "allow": {
     "_why": "Permitted language that LOOKS risky but is explicitly approved. The scorer suppresses any HARD/WARN hit whose matched span is inside one of these phrases, preventing false flags on canon-approved copy.",
     "patterns": [
-      "prebiotic fiber",
       "food noise",
-      "pooping every day",
-      "i'?m regular( now)?",
       "packed in the us",
       "kills cravings",
       "curbs cravings",
@@ -51,11 +55,12 @@
       "feel full",
       "plant-based, no gelatin",
       "supports a healthy blood sugar response",
-      "supports digestive regularity",
       "i'?ve been trying to lose weight",
       "shedding pounds",
       "jeans fit better",
-      "keto-friendly"
+      "keto-friendly",
+      "daily fiber candy",
+      "high fiber"
     ]
   }
 }
