@@ -37,6 +37,21 @@ print(" / ".join(f"{i+1}. {(r.get('cre') or r.get('sh') or r['title'])} {money(r
 PY
 )"
 echo "wrote $OUT"
+
+# Team drop: post the leaderboard message into Tomas Pod (ClickUp chat).
+# CHAT_POST="" skips (silence-for-testing override, same convention as NTFY_TOPIC).
+CHAT_POST="${CHAT_POST-1}"
+BOARDS_URL="https://tomas-agent-box.tailb74909.ts.net:8443/leaderboards"
+if [ -n "$CHAT_POST" ]; then
+  TOK=$(grep -rhoE 'pk_[0-9]+_[A-Z0-9]{24,}' ~/.config/clickup 2>/dev/null | head -1)
+  if [ -n "$TOK" ]; then
+    CLICKUP_TOKEN="$TOK" MSG_FILE="out/$(date +%F)-chat.md" DRY_RUN="${DRY_RUN-0}" \
+      python3 chat_post.py "$TMP" "$BOARDS_URL" || echo "chat post failed (non-fatal)" >&2
+  else
+    echo "no ClickUp token found; skipping chat post" >&2
+  fi
+fi
+
 if [ -n "$NTFY_TOPIC" ]; then
   curl -s -H "Title: CCC Leaderboards (weekly)" \
     -H "Click: https://tomas-agent-box.tailb74909.ts.net:8443/leaderboards" \
