@@ -21,10 +21,10 @@ def block(title, rows, n):
 
 rg = d["ranges"]
 msg = [f"🏆 **Creative Leaderboards** — week of {rg['last7']['to']}", ""]
-msg += block("🎬 Top 3 videos · last 7 days", d["last7"]["videos"], 3)
-msg += block("🖼️ Top 3 images · last 7 days", d["last7"]["images"], 3)
-msg += block("🎬 Top 5 videos · last 30 days", d["last30"]["videos"], 5)
-msg += block("🖼️ Top 5 images · last 30 days", d["last30"]["images"], 5)
+msg += block("🎬 Top 3 videos · launched last 7 days", d["last7"]["videos"], 3)
+msg += block("🖼️ Top 3 images · launched last 7 days", d["last7"]["images"], 3)
+msg += block("🎬 Top 5 videos · launched last 30 days", d["last30"]["videos"], 5)
+msg += block("🖼️ Top 5 images · launched last 30 days", d["last30"]["images"], 5)
 msg += block(f"🏁 Quarter leaderboard (since {rg['quarter']['from']})", d["quarter"], 10)
 msg += [f"Full boards with thumbnails and margins: {boards_url}"]
 text = "\n".join(msg)
