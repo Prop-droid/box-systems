@@ -1,0 +1,9 @@
+[Unit]
+Description=Weekly CCC leaderboard report (Fri 08:00 Europe/Vilnius)
+
+[Timer]
+OnCalendar=Fri *-*-* 08:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,7 @@
+[Unit]
+Description=ccc-leaderboard (weekly Friday creative leaderboard snapshot + phone digest)
+
+[Service]
+Type=oneshot
+ExecStart=%h/systems/ccc-leaderboard/run.sh
+TimeoutStartSec=300
