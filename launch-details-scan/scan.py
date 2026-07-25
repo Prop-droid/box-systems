@@ -167,6 +167,11 @@ def main():
     if DRY:
         print(report)
         return
+    # Weekends: no ClickUp pings (Tomas, 2026-07-25). State stays untouched so
+    # anything new on Sat/Sun still counts as "new" on Monday's run and pushes then.
+    if datetime.now().weekday() >= 5:
+        log(f"weekend: push suppressed, {len(new)} new deferred to Monday")
+        return
     STATE.write_text(json.dumps(sorted(current)))
 
     if new or (ALWAYS_PUSH and found):
