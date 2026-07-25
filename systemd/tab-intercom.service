@@ -1,0 +1,10 @@
+[Unit]
+Description=tab-intercom: live tablet cam + phone-to-tablet voice (port 8093, tailnet via serve :10000)
+After=network.target
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/systems/tab-intercom/server.py
+Restart=on-failure
+RestartSec=5
+[Install]
+WantedBy=default.target
