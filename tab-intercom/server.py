@@ -87,6 +87,72 @@ async function say(){const v=document.getElementById('tts').value.trim();if(!v)r
 </script>"""
 
 
+CLAUDE = "/home/tomas/.local/bin/claude"
+ASK_DIR = HERE / "ask"
+_history = []          # rolling [(q, a)], newest last
+_history_lock = __import__("threading").Lock()
+
+CLAW_PAGE = """<!doctype html><meta charset=utf-8>
+<meta name=viewport content='width=device-width,initial-scale=1'>
+<title>Claw</title>
+<body style='font-family:sans-serif;background:#0d1117;color:#eef;margin:0;padding:12px;text-align:center'>
+<video id=v autoplay playsinline muted style='width:100%;max-width:640px;border-radius:10px;background:#222'></video>
+<div style='margin:14px 0'>
+<button id=ptt style='width:80%;max-width:400px;padding:20px;font-size:1.25em;border:0;border-radius:14px;background:#1f6feb;color:#fff'>&#127908; Hold — ask about what you see</button>
+<div id=st style='margin-top:6px;color:#8b949e'>idle</div></div>
+<div><input id=q placeholder='or type a question…' style='padding:10px;width:60%;max-width:300px;border-radius:8px;border:1px solid #333;background:#161b22;color:#eef'>
+<button onclick='send(document.getElementById("q").value)' style='padding:10px 16px;border-radius:8px;border:0;background:#238636;color:#fff'>Ask</button></div>
+<div id=log style='text-align:left;max-width:640px;margin:14px auto;line-height:1.5'></div>
+<script>
+const T=new URLSearchParams(location.search).get('t');
+const v=document.getElementById('v'),st=document.getElementById('st'),ptt=document.getElementById('ptt'),logd=document.getElementById('log');
+navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280}}}).then(s=>v.srcObject=s).catch(e=>st.textContent='camera blocked: '+e.message);
+let rec=null;
+function mkRec(){const R=window.SpeechRecognition||window.webkitSpeechRecognition;if(!R)return null;
+ const r=new R();r.lang='en-US';r.interimResults=false;
+ r.onresult=e=>send(e.results[0][0].transcript);r.onerror=e=>st.textContent='speech: '+e.error;return r;}
+ptt.addEventListener('pointerdown',e=>{e.preventDefault();rec=mkRec();
+ if(!rec){st.textContent='no speech API — type instead';return}
+ rec.start();ptt.style.background='#da3633';st.textContent='listening…';});
+ptt.addEventListener('pointerup',e=>{e.preventDefault();if(rec)rec.stop();ptt.style.background='#1f6feb';});
+async function send(q){q=(q||'').trim();if(!q)return;st.textContent='thinking…';
+ logd.innerHTML+='<p><b>You:</b> '+q+'</p>';
+ const c=document.createElement('canvas');const sc=Math.min(1,800/v.videoWidth||1);
+ c.width=(v.videoWidth||800)*sc;c.height=(v.videoHeight||600)*sc;
+ c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+ c.toBlob(async b=>{try{
+  const r=await fetch('/ask?t='+T+'&q='+encodeURIComponent(q),{method:'POST',body:b});
+  const a=await r.text();if(!r.ok)throw new Error(a);
+  logd.innerHTML+='<p style=color:#7ee787><b>Claw:</b> '+a+'</p>';st.textContent='idle';
+  speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance(a));
+ }catch(err){st.textContent='failed: '+err.message}},'image/jpeg',0.7);}
+</script>"""
+
+
+def ask_claw(question, frame_bytes):
+    ASK_DIR.mkdir(exist_ok=True)
+    (ASK_DIR / "frame.jpg").write_bytes(frame_bytes)
+    with _history_lock:
+        past = "\n".join(f"Q: {q}\nA: {a}" for q, a in _history[-8:])
+    prompt = (
+        "You are Claw, a hands-free voice assistant running on Tomas's phone. "
+        "The current phone-camera frame is saved as frame.jpg in the current directory — "
+        "Read it whenever the question could relate to what's visible. "
+        "Answer in 1-3 short conversational sentences (they are spoken aloud); no markdown.\n\n"
+        + (f"[Recent exchanges]\n{past}\n\n" if past else "")
+        + f"Q: {question}"
+    )
+    gen = subprocess.run([CLAUDE, "-p", "--model", "claude-sonnet-5", "--allowedTools", "Read"],
+                        input=prompt, capture_output=True, text=True, timeout=90, cwd=ASK_DIR)
+    answer = (gen.stdout or "").strip()
+    if gen.returncode != 0 or not answer:
+        raise RuntimeError((gen.stderr or answer or "empty").strip()[:120])
+    with _history_lock:
+        _history.append((question, answer))
+        del _history[:-8]
+    return answer
+
+
 class Handler(BaseHTTPRequestHandler):
     def _ok(self, body, ctype="text/plain"):
         self.send_response(200)
@@ -114,6 +180,8 @@ class Handler(BaseHTTPRequestHandler):
             return
         if url.path == "/":
             self._ok(PAGE.encode(), "text/html; charset=utf-8")
+        elif url.path == "/claw":
+            self._ok(CLAW_PAGE.encode(), "text/html; charset=utf-8")
         elif url.path == "/camshot":
             try:
                 self._ok(fully("getCamshot"), "image/jpeg")
@@ -132,6 +200,21 @@ class Handler(BaseHTTPRequestHandler):
         url = urllib.parse.urlparse(self.path)
         if not self._authed(urllib.parse.parse_qs(url.query)):
             self.send_error(403)
+            return
+        if url.path == "/ask":
+            q = urllib.parse.parse_qs(url.query).get("q", [""])[0][:500]
+            raw = self.rfile.read(min(int(self.headers.get("Content-Length", 0)), 5_000_000))
+            if not q:
+                self.send_error(400, "no question")
+                return
+            try:
+                answer = ask_claw(q, raw)
+            except Exception as e:
+                log(f"ask failed: {e}")
+                self.send_error(502, str(e)[:150])
+                return
+            log(f"ask ok: {q[:60]!r} -> {len(answer)} chars")
+            self._ok(answer.encode(), "text/plain; charset=utf-8")
             return
         if url.path != "/voice":
             self.send_error(404)
