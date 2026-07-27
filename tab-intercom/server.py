@@ -15,6 +15,7 @@ The tablet itself fetches clips over plain LAN HTTP from /audio/<random>.mp3.
 Token: .token next to this file (auto-generated on first run).
 """
 import json
+import re
 import secrets
 import subprocess
 import tempfile
@@ -26,7 +27,20 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 PORT = 8093
-FULLY = "http://192.168.0.161:2323"
+FULLY_FALLBACK_IP = "192.168.0.161"
+
+
+def tablet_ip():
+    """Current tablet LAN IP from adb (watchdog keeps it connected); DHCP drifts."""
+    try:
+        out = subprocess.run(["adb", "devices"], capture_output=True, text=True, timeout=8).stdout
+        for line in out.splitlines():
+            m = re.match(r"(\d+\.\d+\.\d+\.\d+):\d+\tdevice$", line)
+            if m:
+                return m.group(1)
+    except Exception:
+        pass
+    return FULLY_FALLBACK_IP
 FULLY_PW = "tomastab2026"
 BOX_LAN = "192.168.0.107"          # URL the TABLET uses to fetch clips
 AUDIO_DIR = HERE / "audio"
@@ -51,7 +65,7 @@ TOKEN = None  # set in __main__
 
 def fully(cmd, **params):
     qs = urllib.parse.urlencode({"cmd": cmd, "password": FULLY_PW, **params})
-    with urllib.request.urlopen(f"{FULLY}/?{qs}", timeout=15) as r:
+    with urllib.request.urlopen(f"http://{tablet_ip()}:2323/?{qs}", timeout=15) as r:
         return r.read()
 
 

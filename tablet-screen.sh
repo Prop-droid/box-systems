@@ -12,6 +12,7 @@ ADB="$ADB" TABLET_IP="$TABLET_IP" "$CONNECT" >/dev/null 2>&1 || true
 
 # Find the tablet's currently-connected serial (port rotates across reboots).
 DEV="$("$ADB" devices 2>/dev/null | awk -v ip="$TABLET_IP" '$2=="device" && index($1,ip){print $1; exit}')"
+[ -z "$DEV" ] && DEV="$("$ADB" devices 2>/dev/null | awk '$2=="device"{print $1; exit}')"
 [ -z "$DEV" ] && { echo "tablet not connected" >&2; exit 1; }
 
 case "${1:-}" in
