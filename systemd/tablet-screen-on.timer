@@ -2,7 +2,7 @@
 Description=Tablet screen ON at 07:00 daily
 
 [Timer]
-OnCalendar=*-*-* 07:00:00
+OnCalendar=*-*-* 08:00:00
 Persistent=false
 
 [Install]

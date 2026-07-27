@@ -124,7 +124,7 @@ command to prove a change works before the timer fires.
 - **lib/** — `hermes_fallback.sh`: shared retry-through-Hermes for failed headless
   claude runs (`hermes_fallback <prompt_file> <out> <err>`; spends paid tokens,
   only fires on actual failure).
-- **tablet-screen.sh** — `off|on` over adb (tablet 192.168.0.161); scheduled
+- **tablet-night-mode.sh** — day/night dashboard modes via Fully REST (22:00 night: motion-gated black screensaver, camera senses motion; 08:00 day: screen always on, motionDetection OFF so camera is on-demand only). tablet-screen.sh (raw adb off/on) kept as manual tool.
   23:00/07:00 via tablet-screen-{off,on} units.
 
 ## systemd user-unit patterns

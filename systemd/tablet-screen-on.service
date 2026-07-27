@@ -1,5 +1,5 @@
 [Unit]
-Description=Dashboard tablet screen on (overnight OLED/battery saver)
+Description=Tablet day mode: screen on, camera on-demand (08:00)
 After=network-online.target
 
 [Service]
@@ -8,4 +8,4 @@ User=tomas
 Environment=ADB=/usr/bin/adb
 Environment=TABLET_IP=192.168.0.161
 Environment=HOME=/home/tomas
-ExecStart=/home/tomas/systems/tablet-screen.sh on
+ExecStart=/home/tomas/systems/tablet-night-mode.sh day

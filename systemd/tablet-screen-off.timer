@@ -2,7 +2,7 @@
 Description=Tablet screen OFF at 23:00 daily
 
 [Timer]
-OnCalendar=*-*-* 23:00:00
+OnCalendar=*-*-* 22:00:00
 Persistent=false
 
 [Install]
