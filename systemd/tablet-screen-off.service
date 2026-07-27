@@ -6,6 +6,6 @@ After=network-online.target
 Type=oneshot
 User=tomas
 Environment=ADB=/usr/bin/adb
-Environment=TABLET_IP=192.168.0.160
+Environment=TABLET_IP=192.168.0.161
 Environment=HOME=/home/tomas
 ExecStart=/home/tomas/systems/tablet-screen.sh off

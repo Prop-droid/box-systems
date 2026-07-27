@@ -1,13 +1,18 @@
 # ~/systems QA smoke report
 
-- Run: 2026-07-19 08:00:31 EEST
+- Run: 2026-07-26 08:00:00 EEST
 - Host: tomas-agent-box
-- Checks: 10 pass, 0 fail, 16 gaps (no safe dry-run)
+- Checks: 9 pass, 1 fail, 16 gaps (no safe dry-run)
+
+## FAIL — subsystem findings (report, not auto-fixed)
+
+- **compliance-eval** — compliance-eval scorer test (rc=1)
+  - `RESULT: FAIL — fix the scorer/policy before trusting it`
+  - log: `qa/logs/compliance-eval.log`
 
 ## PASS
 
 - research-lanes — research-agent lanes unit tests
-- compliance-eval — compliance-eval scorer test
 - creative-feedback — creative-feedback gate/promote tests
 - usage-guard — usage-guard run + window JSON parses
 - fable-resume — fable-resume no-op / launch

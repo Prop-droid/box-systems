@@ -26,7 +26,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 PORT = 8093
-FULLY = "http://192.168.0.160:2323"
+FULLY = "http://192.168.0.161:2323"
 FULLY_PW = "tomastab2026"
 BOX_LAN = "192.168.0.107"          # URL the TABLET uses to fetch clips
 AUDIO_DIR = HERE / "audio"

@@ -4,7 +4,7 @@
 # Usage: tablet-screen.sh off|on
 set -u
 ADB="${ADB:-/usr/bin/adb}"
-TABLET_IP="${TABLET_IP:-192.168.0.160}"
+TABLET_IP="${TABLET_IP:-192.168.0.161}"
 CONNECT="${CONNECT:-/home/tomas/agent-box-setup/tablet-control/adb-tablet-connect.sh}"
 
 # Ensure we're connected (reboot-proof mDNS discovery lives in the watchdog script).

@@ -39,3 +39,7 @@ launch-details-scan/.env
 launch-details-scan/state.json
 launch-details-scan/logs/
 launch-details-scan/reports/
+tab-intercom/.token
+tab-intercom/audio/
+tab-intercom/ask/
+*.bak-*

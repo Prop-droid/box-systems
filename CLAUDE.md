@@ -124,7 +124,7 @@ command to prove a change works before the timer fires.
 - **lib/** — `hermes_fallback.sh`: shared retry-through-Hermes for failed headless
   claude runs (`hermes_fallback <prompt_file> <out> <err>`; spends paid tokens,
   only fires on actual failure).
-- **tablet-screen.sh** — `off|on` over adb (tablet 192.168.0.160); scheduled
+- **tablet-screen.sh** — `off|on` over adb (tablet 192.168.0.161); scheduled
   23:00/07:00 via tablet-screen-{off,on} units.
 
 ## systemd user-unit patterns
@@ -204,7 +204,7 @@ Full manual = the `fleet-control` skill. Load-bearing subset for this repo:
   in cron paths, `|| true` if best-effort.
 - **Per-host ssh keys/aliases** live in `~/.ssh/config` — use the alias
   (`github-personal`, `nobara`, key-pinned Mac), never assume the default key.
-- **Tablet** (Lenovo P11 Pro) is LAN adb at `192.168.0.160` (port rotates across
+- **Tablet** (Lenovo P11 Pro) is LAN adb at `192.168.0.161` (port rotates across
   reboots — rediscover the serial like `tablet-screen.sh` does).
 - **ntfy topics:** tablet/main alerts `tomas-tab-958e4431`, phone usage alerts
   `tomas-usage-guard-7c31`. `curl -s -d "msg" -H "Title: x" [-H "Priority: high"]
