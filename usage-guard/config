@@ -1,5 +1,5 @@
 # tokens per 5h window; calibrated below from observed history, override manually anytime
-TOKEN_LIMIT=auto
+TOKEN_LIMIT=220000000  # Max x20 rough estimate 2026-07-27; auto-calibration disabled: max-block-observed was flush-storm noise, never a real cap hit. Re-tune if a genuine rate-limit lands.
 THRESHOLD=90
 DAY_START=8
 DAY_END=23
