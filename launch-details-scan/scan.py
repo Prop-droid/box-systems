@@ -10,6 +10,8 @@ details" gap — and reports:
   - reports/latest.md (+ dated copy) every run
   - one ntfy push to Tomas's phone ONLY when a task newly appears in the
     missing set (state.json remembers what was already reported — no daily nag)
+  - the same push mirrored to the #assistant Discord channel via the EA bot
+    token (Tomas, 2026-07-28), so the fill can be dispatched from the thread
 
 Unlike the autofill cron, SUBTASKS ARE IN SCOPE (talent THT cuts like
 "[Lindsay Ortega] - SHA_..." live as subtasks and are exactly the ones media
@@ -33,6 +35,8 @@ HERE = Path(__file__).resolve().parent
 TEAM_ID = "9011638245"
 LIST_ID = "901110066469"
 NTFY_TOPIC = "tomas-ph-1ea8ac8e"
+DISCORD_CHANNEL_ID = "1531571387108429964"  # #assistant (EA bot)
+BOTS_ENV = Path.home() / "agentic-os" / "discord" / "bots.env"
 STATE = HERE / "state.json"
 REPORTS = HERE / "reports"
 LOG = HERE / "logs" / "scan.log"
@@ -190,6 +194,27 @@ def main():
             log(f"pushed ntfy ({len(top)} listed)")
         except Exception as e:
             log(f"ntfy push failed: {e}")
+        discord_push(f"**Launch details missing: {len(found)} task(s)**\n{body}")
+
+
+def discord_push(content):
+    # mirror to #assistant with the EA bot token; fail-open like ntfy
+    try:
+        m = re.search(r"^EA_TOKEN=(\S+)", BOTS_ENV.read_text(), re.M)
+        if not m:
+            log("discord push skipped: no EA_TOKEN")
+            return
+        req = urllib.request.Request(
+            f"https://discord.com/api/v10/channels/{DISCORD_CHANNEL_ID}/messages",
+            data=json.dumps({"content": content[:1900]}).encode(),
+            headers={"Authorization": f"Bot {m.group(1)}",
+                     "Content-Type": "application/json",
+                     # Discord 403s the default Python-urllib UA
+                     "User-Agent": "launch-details-scan/1.0"})
+        urllib.request.urlopen(req, timeout=20)
+        log("pushed discord #assistant")
+    except Exception as e:
+        log(f"discord push failed: {e}")
 
 
 if __name__ == "__main__":
