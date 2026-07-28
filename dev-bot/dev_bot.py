@@ -89,61 +89,73 @@ def snippet(text: str, n: int = 80) -> str:
     return line[:n] + ("…" if len(line) > n else "")
 
 
-def describe_block(block: dict) -> str | None:
-    """One activity-log line for a stream content block, or None to skip."""
-    t = block.get("type")
-    if t == "thinking":
-        s = snippet(block.get("thinking", ""))
-        return f"💭 {s}" if s else None
-    if t == "text":
-        s = snippet(block.get("text", ""))
-        return f"💬 {s}" if s else None
-    if t != "tool_use":
-        return None
-    name = block.get("name", "?")
-    inp = block.get("input") or {}
+def tool_phrase(name: str, inp: dict) -> str:
+    """Plain-English 'what is happening now' phrase for a tool call. Never raw commands."""
     if name == "Bash":
-        arg = inp.get("description") or inp.get("command", "")
-    elif name in ("Read", "Edit", "Write", "NotebookEdit"):
-        arg = os.path.basename(inp.get("file_path", ""))
-    elif name in ("Grep", "Glob"):
-        arg = inp.get("pattern", "")
-    elif name in ("Task", "Agent"):
-        arg = inp.get("description", "")
-    elif name == "Skill":
-        arg = inp.get("skill", "")
-    elif name == "WebFetch":
-        arg = inp.get("url", "")
-    elif name == "WebSearch":
-        arg = inp.get("query", "")
-    elif name == "TodoWrite":
-        todos = inp.get("todos") or []
-        active = next((t2 for t2 in todos if t2.get("status") == "in_progress"), None)
-        arg = active.get("activeForm", "") if active else f"{len(todos)} items"
-    else:
-        arg = ""
-    return f"🔧 {name}" + (f": {snippet(arg, 70)}" if arg else "")
+        d = (inp.get("description") or "").strip().rstrip(".")
+        return f"{d}…" if d else "Running a command…"
+    if name == "Read":
+        f = os.path.basename(inp.get("file_path", ""))
+        return f"Reading {f}…" if f else "Reading a file…"
+    if name in ("Edit", "Write", "NotebookEdit"):
+        f = os.path.basename(inp.get("file_path", ""))
+        return f"Editing {f}…" if f else "Editing a file…"
+    if name in ("Grep", "Glob"):
+        return "Searching the code…"
+    if name in ("Task", "Agent"):
+        d = (inp.get("description") or "").strip()
+        return f"Delegating: {d}…" if d else "Delegating a subtask…"
+    if name == "Skill":
+        s = inp.get("skill", "")
+        return f"Using the {s} skill…" if s else "Loading a skill…"
+    if name == "WebSearch":
+        q = snippet(inp.get("query", ""), 50)
+        return f"Searching the web: {q}…" if q else "Searching the web…"
+    if name == "WebFetch":
+        return "Reading a webpage…"
+    if name.startswith("mcp__"):
+        return f"Using {name.split('__')[-1]}…"
+    return f"Using {name}…"
 
 
 class StatusBoard:
-    """One Discord message per task, edited in place with a rolling activity log."""
-    KEEP = 12          # log lines shown
+    """One Discord message per task, edited in place: current activity + checklist + counters."""
     MIN_EDIT_GAP = 2.0  # seconds between edits (Discord rate limits)
+    MAX_TODOS = 8
+
+    MARKS = {"completed": "☑", "in_progress": "▸", "pending": "◻"}
 
     def __init__(self, thread: discord.Thread):
         self.thread = thread
         self.msg: discord.Message | None = None
-        self.lines: list[str] = []
+        self.current = "Starting…"
+        self.todos: list[dict] = []
         self.steps = 0
         self.started = time.monotonic()
         self._last_edit = 0.0
         self._pending: asyncio.Task | None = None
+        self._done = False
+
+    def _counter(self) -> str:
+        return f"{self.steps} step" + ("s" if self.steps != 1 else "")
+
+    def _elapsed(self) -> str:
+        mins, secs = divmod(int(time.monotonic() - self.started), 60)
+        return f"{mins}m {secs:02d}s" if mins else f"{secs}s"
 
     def _render(self, header: str) -> str:
-        body = "\n".join(self.lines[-self.KEEP:])
-        return f"{header}\n{body}"[:1990] if body else header
+        lines = [header]
+        for td in self.todos[:self.MAX_TODOS]:
+            mark = self.MARKS.get(td.get("status"), "◻")
+            lines.append(f"{mark} {snippet(td.get('content', ''), 60)}")
+        if len(self.todos) > self.MAX_TODOS:
+            lines.append(f"… +{len(self.todos) - self.MAX_TODOS} more")
+        if not self._done:
+            lines.append(f"-# {self._counter()} · {self._elapsed()}")
+        return "\n".join(lines)[:1990]
 
-    async def _push(self, header: str):
+    async def _push(self, header: str | None = None):
+        header = header or f"⏳ **{self.current}**"
         try:
             if self.msg is None:
                 self.msg = await self.thread.send(self._render(header))
@@ -155,26 +167,40 @@ class StatusBoard:
 
     async def _delayed_push(self, delay: float):
         await asyncio.sleep(delay)
-        await self._push("⏳ **Working…**")
+        await self._push()
 
     async def on_block(self, block: dict):
-        line = describe_block(block)
-        if not line or (self.lines and self.lines[-1] == line):
-            return
-        if block.get("type") == "tool_use":
+        t = block.get("type")
+        if t == "text":
+            s = snippet(block.get("text", ""), 100)
+            if not s:
+                return
+            self.current = s
+        elif t == "tool_use":
             self.steps += 1
-        self.lines.append(line)
+            name = block.get("name", "?")
+            inp = block.get("input") or {}
+            if name == "TodoWrite":
+                self.todos = inp.get("todos") or []
+                active = next((td for td in self.todos if td.get("status") == "in_progress"), None)
+                if active:
+                    self.current = snippet(active.get("activeForm", ""), 80) + "…"
+            else:
+                self.current = tool_phrase(name, inp)
+        else:
+            return  # thinking etc. — narration text covers it
         gap = time.monotonic() - self._last_edit
         if gap >= self.MIN_EDIT_GAP:
-            await self._push("⏳ **Working…**")
+            await self._push()
         elif self._pending is None or self._pending.done():
             self._pending = asyncio.create_task(self._delayed_push(self.MIN_EDIT_GAP - gap))
 
     async def finish(self, header_icon: str):
         if self._pending and not self._pending.done():
             self._pending.cancel()
-        mins, secs = divmod(int(time.monotonic() - self.started), 60)
-        await self._push(f"{header_icon} {self.steps} tool calls · {mins}m {secs:02d}s")
+        self._done = True
+        word = {"✅": "Done", "❌": "Failed", "⏱️": "Timed out"}.get(header_icon, "Done")
+        await self._push(f"{header_icon} {word} · {self._counter()} · {self._elapsed()}")
 
 
 async def save_attachments(msg: discord.Message) -> list[str]:
