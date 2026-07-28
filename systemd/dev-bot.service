@@ -1,0 +1,13 @@
+[Unit]
+Description=dev-bot: Discord #dev channel -> Claude Code (Fable 5) sessions
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/tomas/systems/dev-bot
+ExecStart=/home/tomas/systems/dev-bot/venv/bin/python /home/tomas/systems/dev-bot/dev_bot.py
+Restart=always
+RestartSec=10
+Environment=HOME=/home/tomas
+
+[Install]
+WantedBy=default.target

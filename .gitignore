@@ -43,3 +43,6 @@ tab-intercom/.token
 tab-intercom/audio/
 tab-intercom/ask/
 *.bak-*
+dev-bot/.env
+dev-bot/venv/
+dev-bot/sessions.json
