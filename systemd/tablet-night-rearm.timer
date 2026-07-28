@@ -1,0 +1,9 @@
+[Unit]
+Description=Every 15 min overnight backstop for tablet night mode
+
+[Timer]
+OnCalendar=*-*-* *:05,20,35,50
+Persistent=false
+
+[Install]
+WantedBy=timers.target

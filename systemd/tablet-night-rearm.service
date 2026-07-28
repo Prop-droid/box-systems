@@ -1,0 +1,8 @@
+[Unit]
+Description=Tablet night mode re-arm: restart screensaver if motion knocked it out
+After=network-online.target
+
+[Service]
+Type=oneshot
+Environment=HOME=/home/tomas
+ExecStart=/home/tomas/systems/tablet-night-mode.sh rearm
