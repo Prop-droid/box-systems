@@ -1,0 +1,14 @@
+[Unit]
+Description=coach-bot: Discord #coatch channel -> Claude Code sessions (Stuikys)
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/tomas/systems/coach-bot
+Environment=BOT_DIR=/home/tomas/systems/coach-bot
+Environment=HOME=/home/tomas
+ExecStart=/home/tomas/systems/dev-bot/venv/bin/python /home/tomas/systems/dev-bot/dev_bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

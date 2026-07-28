@@ -46,3 +46,5 @@ tab-intercom/ask/
 dev-bot/.env
 dev-bot/venv/
 dev-bot/sessions.json
+coach-bot/.env
+coach-bot/sessions.json

@@ -1,9 +1,20 @@
 #!/usr/bin/env python3
-"""dev-bot: Discord #dev channel -> Claude Code (Fable 5) sessions on the box.
+"""channel-agent: a Discord channel -> Claude Code sessions on the box.
 
-Top-level message in #dev = new task -> creates a thread + fresh claude session.
-Message inside a known thread = --resume of that thread's session.
+Top-level message in the watched channel = new task -> creates a thread + fresh
+claude session. Message inside a known thread = --resume of that thread's session.
 State: sessions.json maps thread_id -> session_id.
+
+Instances are configured via .env in BOT_DIR (default: script dir):
+  DISCORD_TOKEN=...                      # required
+  CHANNEL_NAME=dev                       # channel to watch
+  CLAUDE_CWD=/home/tomas                 # cwd for claude sessions
+  SYSTEM_PROMPT_FILES=/path/a:/path/b    # optional, concatenated; else default guardrails
+  MODEL=claude-fable-5
+
+Messages that @mention a bot are ignored here — those belong to the agentic-bots
+persona runner (draft-and-approve), which answers DMs/@mentions. Plain channel
+messages belong to this executor.
 """
 import asyncio
 import json
@@ -13,21 +24,19 @@ from pathlib import Path
 
 import discord
 
-BASE = Path(__file__).resolve().parent
+BASE = Path(os.environ.get("BOT_DIR", Path(__file__).resolve().parent))
 ENV = BASE / ".env"
 SESSIONS_FILE = BASE / "sessions.json"
 
 GUILD_ID = 1515766239228723410          # Agentic OS
-DEV_CHANNEL_NAME = "dev"
 ALLOWED_USERS = {385075348066271233}    # Tomas
 CLAUDE_BIN = os.path.expanduser("~/.local/bin/claude")
-MODEL = "claude-fable-5"
 TIMEOUT_S = 30 * 60
 CHUNK = 1900
 
-GUARDRAILS = (
-    "You are dev-bot, dispatched from the Agentic OS Discord #dev channel for "
-    "development, system-fix and infra tasks across Tomas's fleet (see the "
+DEFAULT_GUARDRAILS = (
+    "You are dispatched from a Discord channel in Tomas's Agentic OS server for "
+    "development, system-fix and infra tasks across his fleet (see the "
     "fleet-control skill). Rules: (1) Destructive or hard-to-reverse operations "
     "(rm -rf, disabling/removing services or crons, resets, dropping data) require "
     "an explicit in-thread confirmation BEFORE running - state the exact command and "
@@ -44,6 +53,19 @@ def load_env():
         if line and not line.startswith("#") and "=" in line:
             k, v = line.split("=", 1)
             os.environ.setdefault(k, v)
+
+
+def system_prompt() -> str:
+    files = os.environ.get("SYSTEM_PROMPT_FILES", "")
+    if not files:
+        return DEFAULT_GUARDRAILS
+    parts = []
+    for p in files.split(":"):
+        try:
+            parts.append(Path(p).read_text().strip())
+        except OSError as e:
+            print(f"WARN: system prompt file {p}: {e}", flush=True)
+    return "\n\n".join(parts) or DEFAULT_GUARDRAILS
 
 
 def load_sessions() -> dict:
@@ -63,10 +85,10 @@ async def run_claude(prompt: str, resume: str | None) -> tuple[str, str | None]:
     """Returns (reply_text, session_id)."""
     cmd = [
         CLAUDE_BIN, "-p", prompt,
-        "--model", MODEL,
+        "--model", os.environ.get("MODEL", "claude-fable-5"),
         "--dangerously-skip-permissions",
         "--output-format", "json",
-        "--append-system-prompt", GUARDRAILS,
+        "--append-system-prompt", system_prompt(),
     ]
     if resume:
         cmd += ["--resume", resume]
@@ -74,7 +96,7 @@ async def run_claude(prompt: str, resume: str | None) -> tuple[str, str | None]:
     env["PATH"] = os.path.expanduser("~/.local/bin") + ":" + env.get("PATH", "")
     proc = await asyncio.create_subprocess_exec(
         *cmd,
-        cwd=os.path.expanduser("~"),
+        cwd=os.path.expanduser(os.environ.get("CLAUDE_CWD", "~")),
         env=env,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
@@ -94,26 +116,28 @@ async def run_claude(prompt: str, resume: str | None) -> tuple[str, str | None]:
         return (out.decode(errors="replace")[-1500:], resume)
 
 
-class DevBot(discord.Client):
-    def __init__(self):
+class ChannelAgent(discord.Client):
+    def __init__(self, channel_name: str):
         intents = discord.Intents.default()
         intents.message_content = True
         super().__init__(intents=intents)
+        self.channel_name = channel_name
         self.sessions = load_sessions()
         self.locks: dict[int, asyncio.Lock] = {}
-        self.dev_channel_id: int | None = None
+        self.channel_id: int | None = None
 
-    def resolve_dev_channel(self) -> int | None:
-        if self.dev_channel_id is None:
+    def resolve_channel(self) -> int | None:
+        if self.channel_id is None:
             guild = self.get_guild(GUILD_ID)
-            chan = discord.utils.get(guild.text_channels, name=DEV_CHANNEL_NAME) if guild else None
+            chan = discord.utils.get(guild.text_channels, name=self.channel_name) if guild else None
             if chan:
-                self.dev_channel_id = chan.id
-                print(f"dev-bot: watching #{chan.name} ({chan.id})", flush=True)
-        return self.dev_channel_id
+                self.channel_id = chan.id
+                print(f"channel-agent: watching #{chan.name} ({chan.id})", flush=True)
+        return self.channel_id
 
     async def on_ready(self):
-        print(f"dev-bot ready as {self.user}; #dev found: {self.resolve_dev_channel() is not None}", flush=True)
+        print(f"channel-agent ready as {self.user}; #{self.channel_name} found: "
+              f"{self.resolve_channel() is not None}", flush=True)
 
     def lock_for(self, tid: int) -> asyncio.Lock:
         return self.locks.setdefault(tid, asyncio.Lock())
@@ -137,17 +161,19 @@ class DevBot(discord.Client):
             return
         if not msg.content.strip():
             return
-        dev_id = self.resolve_dev_channel()
-        if dev_id is None:
+        if any(m.bot for m in msg.mentions):
+            return  # @mentions belong to the agentic-bots persona runner
+        chan_id = self.resolve_channel()
+        if chan_id is None:
             return
-        # Follow-up inside a thread under #dev
-        if isinstance(msg.channel, discord.Thread) and msg.channel.parent_id == dev_id:
+        # Follow-up inside a thread under the watched channel
+        if isinstance(msg.channel, discord.Thread) and msg.channel.parent_id == chan_id:
             resume = self.sessions.get(str(msg.channel.id))
             asyncio.create_task(self.handle_task(msg.channel, msg.content, resume))
             return
-        # New task in #dev
-        if msg.channel.id == dev_id:
-            name = msg.content.strip().replace("\n", " ")[:80] or "dev task"
+        # New task in the watched channel
+        if msg.channel.id == chan_id:
+            name = msg.content.strip().replace("\n", " ")[:80] or "task"
             thread = await msg.create_thread(name=name)
             asyncio.create_task(self.handle_task(thread, msg.content, None))
 
@@ -157,7 +183,7 @@ def main():
     token = os.environ.get("DISCORD_TOKEN")
     if not token:
         sys.exit("DISCORD_TOKEN missing in .env")
-    DevBot().run(token)
+    ChannelAgent(os.environ.get("CHANNEL_NAME", "dev")).run(token)
 
 
 if __name__ == "__main__":
