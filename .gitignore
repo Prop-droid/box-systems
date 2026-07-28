@@ -48,3 +48,5 @@ dev-bot/venv/
 dev-bot/sessions.json
 coach-bot/.env
 coach-bot/sessions.json
+ea-bot/.env
+ea-bot/sessions.json
