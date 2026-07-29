@@ -316,6 +316,7 @@ class ChannelAgent(discord.Client):
         self.channel_name = channel_name
         self.sessions = load_sessions()
         self.locks: dict[int, asyncio.Lock] = {}
+        self.queues: dict[int, list[str]] = {}
         self.channel_id: int | None = None
 
     def resolve_channel(self) -> int | None:
@@ -339,16 +340,39 @@ class ChannelAgent(discord.Client):
         for i in range(0, len(text), CHUNK):
             await dest.send(text[i:i + CHUNK])
 
-    async def handle_task(self, thread: discord.Thread, prompt: str, resume: str | None):
+    def queue_for(self, tid: int) -> list[str]:
+        return self.queues.setdefault(tid, [])
+
+    async def enqueue(self, thread: discord.Thread, prompt: str, msg: discord.Message | None = None):
+        """Terminal-style: messages sent while a task runs are queued, never interrupt it.
+        They're delivered (batched) to the same session as soon as the current turn ends."""
+        self.queue_for(thread.id).append(prompt)
+        if self.lock_for(thread.id).locked():
+            if msg:
+                try:
+                    await msg.add_reaction("📨")
+                except discord.HTTPException:
+                    pass
+            return
+        asyncio.create_task(self.drain(thread))
+
+    async def drain(self, thread: discord.Thread):
         async with self.lock_for(thread.id):
-            board = StatusBoard(thread)
-            async with thread.typing():
-                reply, session_id = await run_claude(prompt, resume, on_block=board.on_block)
-            await board.finish("⏱️" if reply.startswith("⏱️") else "❌" if reply.startswith("❌") else "✅")
-            if session_id:
-                self.sessions[str(thread.id)] = session_id
-                save_sessions(self.sessions)
-            await self.send_chunked(thread, reply)
+            q = self.queue_for(thread.id)
+            while q:
+                prompt = "\n\n".join(q)
+                q.clear()
+                resume = self.sessions.get(str(thread.id))  # resolved NOW, not at message time
+                board = StatusBoard(thread)
+                async with thread.typing():
+                    reply, session_id = await run_claude(prompt, resume, on_block=board.on_block)
+                await board.finish("⏱️" if reply.startswith("⏱️") else "❌" if reply.startswith("❌") else "✅")
+                if session_id:
+                    self.sessions[str(thread.id)] = session_id
+                    save_sessions(self.sessions)
+                await self.send_chunked(thread, reply)
+        if self.queue_for(thread.id):  # message raced in between final check and lock release
+            asyncio.create_task(self.drain(thread))
 
     async def on_message(self, msg: discord.Message):
         if msg.author.bot or msg.author.id not in ALLOWED_USERS:
@@ -362,9 +386,8 @@ class ChannelAgent(discord.Client):
             return
         # Follow-up inside a thread under the watched channel
         if isinstance(msg.channel, discord.Thread) and msg.channel.parent_id == chan_id:
-            resume = self.sessions.get(str(msg.channel.id))
             prompt = with_attachments(msg.content, await save_attachments(msg))
-            asyncio.create_task(self.handle_task(msg.channel, prompt, resume))
+            await self.enqueue(msg.channel, prompt, msg)
             return
         # New task in the watched channel
         if msg.channel.id == chan_id:
@@ -373,7 +396,7 @@ class ChannelAgent(discord.Client):
                         or (msg.attachments[0].filename[:80] if msg.attachments else "task"))
             name = await asyncio.to_thread(thread_title, msg.content or fallback, fallback)
             thread = await msg.create_thread(name=name)
-            asyncio.create_task(self.handle_task(thread, with_attachments(msg.content, files), None))
+            await self.enqueue(thread, with_attachments(msg.content, files))
 
 
 def main():
