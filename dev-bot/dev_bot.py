@@ -20,6 +20,7 @@ import asyncio
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -48,6 +49,22 @@ DEFAULT_GUARDRAILS = (
     "Discord, so no giant walls of text. (4) If blocked on info only Tomas has, ask "
     "in one compact question."
 )
+
+
+def thread_title(text: str, fallback: str) -> str:
+    """2-4 word thread name via a cheap haiku call; falls back to truncated text."""
+    try:
+        p = subprocess.run(
+            [CLAUDE_BIN, "-p", "--model", "claude-haiku-4-5-20251001"],
+            input="Name this task in 2-4 plain words, like a short ticket title. "
+                  f"Reply with the title only, no quotes or punctuation.\n\nTask:\n{text[:600]}",
+            capture_output=True, text=True, timeout=25, cwd=str(Path.home()))
+        t = " ".join((p.stdout or "").split()).strip("\"'.,:;")
+        if 0 < len(t) <= 80:
+            return t
+    except Exception as e:
+        print(f"[title] error: {e}", flush=True)
+    return fallback
 
 
 def load_env():
@@ -228,15 +245,18 @@ def with_attachments(content: str, paths: list[str]) -> str:
             f"{listing}\nUse these files as part of the task.]")
 
 
-async def run_claude(prompt: str, resume: str | None, on_block=None) -> tuple[str, str | None]:
-    """Streams claude's work via on_block(content_block). Returns (reply_text, session_id)."""
+async def run_claude(prompt: str, resume: str | None, on_block=None,
+                     cwd: str | None = None, model: str | None = None,
+                     sys_prompt: str | None = None) -> tuple[str, str | None]:
+    """Streams claude's work via on_block(content_block). Returns (reply_text, session_id).
+    cwd/model/sys_prompt override the instance .env config (used by general_bot)."""
     cmd = [
         CLAUDE_BIN, "-p", prompt,
-        "--model", os.environ.get("MODEL", "claude-fable-5"),
+        "--model", model or os.environ.get("MODEL", "claude-fable-5"),
         "--dangerously-skip-permissions",
         "--output-format", "stream-json",
         "--verbose",
-        "--append-system-prompt", system_prompt(),
+        "--append-system-prompt", sys_prompt or system_prompt(),
     ]
     if resume:
         cmd += ["--resume", resume]
@@ -244,7 +264,7 @@ async def run_claude(prompt: str, resume: str | None, on_block=None) -> tuple[st
     env["PATH"] = os.path.expanduser("~/.local/bin") + ":" + env.get("PATH", "")
     proc = await asyncio.create_subprocess_exec(
         *cmd,
-        cwd=os.path.expanduser(os.environ.get("CLAUDE_CWD", "~")),
+        cwd=os.path.expanduser(cwd or os.environ.get("CLAUDE_CWD", "~")),
         env=env,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
@@ -349,8 +369,9 @@ class ChannelAgent(discord.Client):
         # New task in the watched channel
         if msg.channel.id == chan_id:
             files = await save_attachments(msg)
-            name = (msg.content.strip().replace("\n", " ")[:80]
-                    or (msg.attachments[0].filename[:80] if msg.attachments else "task"))
+            fallback = (msg.content.strip().replace("\n", " ")[:80]
+                        or (msg.attachments[0].filename[:80] if msg.attachments else "task"))
+            name = await asyncio.to_thread(thread_title, msg.content or fallback, fallback)
             thread = await msg.create_thread(name=name)
             asyncio.create_task(self.handle_task(thread, with_attachments(msg.content, files), None))
 
