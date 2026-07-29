@@ -1,0 +1,14 @@
+[Unit]
+Description=qa-bot: Discord #qa channel -> Codex CLI sessions (Copywriter bot)
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/tomas/systems/qa-bot
+Environment=BOT_DIR=/home/tomas/systems/qa-bot
+Environment=HOME=/home/tomas
+ExecStart=/home/tomas/systems/dev-bot/venv/bin/python /home/tomas/systems/dev-bot/codex_bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
