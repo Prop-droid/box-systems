@@ -318,6 +318,20 @@ async def run_claude(prompt: str, resume: str | None, on_block=None,
     return (result_text or "(empty result)", session_id)
 
 
+async def thread_context(thread: discord.Thread, limit: int = 15) -> str:
+    """Last messages of a thread, oldest first, for a bot joining mid-conversation."""
+    lines = []
+    try:
+        async for m in thread.history(limit=limit):
+            txt = " ".join(m.content.split())
+            if not txt or txt.startswith(("⏳", "☑", "◻", "▸", "-#")):
+                continue  # skip live status boards
+            lines.append(f"{m.author.display_name}: {txt[:400]}")
+    except discord.HTTPException:
+        pass
+    return "\n".join(reversed(lines))
+
+
 class ChannelAgent(discord.Client):
     def __init__(self, channel_name: str):
         intents = discord.Intents.default()
@@ -354,17 +368,7 @@ class ChannelAgent(discord.Client):
         return self.queues.setdefault(tid, [])
 
     async def thread_context(self, thread: discord.Thread, limit: int = 15) -> str:
-        """Last messages of a thread, oldest first, for a bot joining mid-conversation."""
-        lines = []
-        try:
-            async for m in thread.history(limit=limit):
-                txt = " ".join(m.content.split())
-                if not txt or txt.startswith(("⏳", "☑", "◻", "▸", "-#")):
-                    continue  # skip live status boards
-                lines.append(f"{m.author.display_name}: {txt[:400]}")
-        except discord.HTTPException:
-            pass
-        return "\n".join(reversed(lines))
+        return await thread_context(thread, limit)
 
     async def enqueue(self, thread: discord.Thread, prompt: str, msg: discord.Message | None = None):
         """Terminal-style: messages sent while a task runs are queued, never interrupt it.
