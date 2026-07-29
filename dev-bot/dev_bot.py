@@ -36,6 +36,10 @@ ALLOWED_USERS = {385075348066271233}    # Tomas
 DROPS_DIR = Path.home() / "Downloads" / "discord-drops"
 CLAUDE_BIN = os.path.expanduser("~/.local/bin/claude")
 TIMEOUT_S = 30 * 60
+# Channels where channel-agent executors (not the persona runner) own @mentions.
+# Must stay in sync with the same default in agentic-os/discord/agent_bots.py.
+EXEC_CHANNELS = set(os.environ.get(
+    "EXECUTOR_CHANNELS", "dev,coach,assistant,creative,qa").split(","))
 CHUNK = 1900
 
 DEFAULT_GUARDRAILS = (
@@ -349,6 +353,19 @@ class ChannelAgent(discord.Client):
     def queue_for(self, tid: int) -> list[str]:
         return self.queues.setdefault(tid, [])
 
+    async def thread_context(self, thread: discord.Thread, limit: int = 15) -> str:
+        """Last messages of a thread, oldest first, for a bot joining mid-conversation."""
+        lines = []
+        try:
+            async for m in thread.history(limit=limit):
+                txt = " ".join(m.content.split())
+                if not txt or txt.startswith(("⏳", "☑", "◻", "▸", "-#")):
+                    continue  # skip live status boards
+                lines.append(f"{m.author.display_name}: {txt[:400]}")
+        except discord.HTTPException:
+            pass
+        return "\n".join(reversed(lines))
+
     async def enqueue(self, thread: discord.Thread, prompt: str, msg: discord.Message | None = None):
         """Terminal-style: messages sent while a task runs are queued, never interrupt it.
         They're delivered (batched) to the same session as soon as the current turn ends."""
@@ -369,6 +386,13 @@ class ChannelAgent(discord.Client):
                 prompt = "\n\n".join(q)
                 q.clear()
                 resume = self.sessions.get(str(thread.id))  # resolved NOW, not at message time
+                if resume is None:
+                    # First turn in this thread for THIS bot (e.g. @mentioned into another
+                    # agent's thread) — give the session the conversation so far.
+                    ctx = await self.thread_context(thread)
+                    if ctx:
+                        prompt = (f"[Discord thread context so far, oldest first]\n{ctx}\n\n"
+                                  f"[Latest request addressed to you]\n{prompt}")
                 try:
                     board = StatusBoard(thread)
                     async with thread.typing():
@@ -394,24 +418,38 @@ class ChannelAgent(discord.Client):
             return
         if not msg.content.strip() and not msg.attachments:
             return
-        if any(m.bot for m in msg.mentions):
-            return  # @mentions belong to the agentic-bots persona runner
-        chan_id = self.resolve_channel()
-        if chan_id is None:
+        # Mention dispatch (2026-07-29): @mentioning THIS bot anywhere in an executor
+        # channel dispatches a real tool session here — the tool-less persona runner
+        # yields these (it keeps war-room/#general/DMs). Mentions of OTHER bots only
+        # are their executors' business.
+        mentions_me = self.user in msg.mentions
+        if any(m.bot and m.id != self.user.id for m in msg.mentions) and not mentions_me:
             return
-        # Follow-up inside a thread under the watched channel
-        if isinstance(msg.channel, discord.Thread) and msg.channel.parent_id == chan_id:
-            prompt = with_attachments(msg.content, await save_attachments(msg))
+        chan_id = self.resolve_channel()
+        parent = msg.channel.parent if isinstance(msg.channel, discord.Thread) else msg.channel
+        home = chan_id is not None and getattr(parent, "id", None) == chan_id
+        if not home and not (mentions_me and getattr(parent, "name", None) in EXEC_CHANNELS):
+            return
+        content = msg.content
+        if mentions_me:
+            content = (content.replace(f"<@{self.user.id}>", "")
+                       .replace(f"<@!{self.user.id}>", "").strip()) or msg.content
+        # Follow-up inside a thread
+        if isinstance(msg.channel, discord.Thread):
+            prompt = with_attachments(content, await save_attachments(msg))
             await self.enqueue(msg.channel, prompt, msg)
             return
-        # New task in the watched channel
-        if msg.channel.id == chan_id:
-            files = await save_attachments(msg)
-            fallback = (msg.content.strip().replace("\n", " ")[:80]
-                        or (msg.attachments[0].filename[:80] if msg.attachments else "task"))
-            name = await asyncio.to_thread(thread_title, msg.content or fallback, fallback)
+        # New task at channel top level
+        files = await save_attachments(msg)
+        fallback = (content.strip().replace("\n", " ")[:80]
+                    or (msg.attachments[0].filename[:80] if msg.attachments else "task"))
+        name = await asyncio.to_thread(thread_title, content or fallback, fallback)
+        try:
             thread = await msg.create_thread(name=name)
-            await self.enqueue(thread, with_attachments(msg.content, files))
+        except discord.HTTPException:
+            # another mentioned bot created the thread first (thread id == message id)
+            thread = msg.channel.get_thread(msg.id) or await self.fetch_channel(msg.id)
+        await self.enqueue(thread, with_attachments(content, files))
 
 
 def main():
