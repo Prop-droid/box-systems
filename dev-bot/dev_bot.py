@@ -268,7 +268,7 @@ async def run_claude(prompt: str, resume: str | None, on_block=None,
         env=env,
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
-        limit=10 * 1024 * 1024,
+        limit=32 * 1024 * 1024,
     )
     stderr_task = asyncio.create_task(proc.stderr.read())
     loop = asyncio.get_running_loop()
@@ -300,6 +300,12 @@ async def run_claude(prompt: str, resume: str | None, on_block=None,
         proc.kill()
         stderr_task.cancel()
         return ("⏱️ Task timed out after 30 min. The session is saved - reply here to continue it.", session_id)
+    except ValueError:
+        # stream-json line exceeded the buffer limit (huge tool result) — readline raises ValueError
+        proc.kill()
+        stderr_task.cancel()
+        return ("❌ Output stream overflowed the line buffer (oversized tool result). "
+                "The session is saved - reply here to continue it.", session_id)
     rc = await proc.wait()
     err = await stderr_task
     if result_text is None:
@@ -363,14 +369,23 @@ class ChannelAgent(discord.Client):
                 prompt = "\n\n".join(q)
                 q.clear()
                 resume = self.sessions.get(str(thread.id))  # resolved NOW, not at message time
-                board = StatusBoard(thread)
-                async with thread.typing():
-                    reply, session_id = await run_claude(prompt, resume, on_block=board.on_block)
-                await board.finish("⏱️" if reply.startswith("⏱️") else "❌" if reply.startswith("❌") else "✅")
-                if session_id:
-                    self.sessions[str(thread.id)] = session_id
-                    save_sessions(self.sessions)
-                await self.send_chunked(thread, reply)
+                try:
+                    board = StatusBoard(thread)
+                    async with thread.typing():
+                        reply, session_id = await run_claude(prompt, resume, on_block=board.on_block)
+                    await board.finish("⏱️" if reply.startswith("⏱️") else "❌" if reply.startswith("❌") else "✅")
+                    if session_id:
+                        self.sessions[str(thread.id)] = session_id
+                        save_sessions(self.sessions)
+                    await self.send_chunked(thread, reply)
+                except Exception as e:
+                    # drain() runs as a bare create_task — an uncaught exception dies
+                    # silently and leaves the thread with a dangling status board.
+                    print(f"ERROR: drain({thread.id}): {e!r}", flush=True)
+                    try:
+                        await thread.send(f"❌ Task crashed: `{e!r}`"[:1980] + "\nReply here to retry.")
+                    except Exception:
+                        pass
         if self.queue_for(thread.id):  # message raced in between final check and lock release
             asyncio.create_task(self.drain(thread))
 
