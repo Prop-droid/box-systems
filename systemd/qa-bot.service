@@ -1,5 +1,5 @@
 [Unit]
-Description=qa-bot: Discord #qa channel -> Codex CLI sessions (Copywriter bot)
+Description=qa-bot: Discord #qa channel -> Codex CLI sessions (QA bot, ex-Copywriter)
 After=network-online.target
 
 [Service]
