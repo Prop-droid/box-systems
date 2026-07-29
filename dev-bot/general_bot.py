@@ -21,9 +21,11 @@ from pathlib import Path
 
 import discord
 
+import codex_bot
 import dev_bot
 from dev_bot import (ALLOWED_USERS, CLAUDE_BIN, DEFAULT_GUARDRAILS, GUILD_ID,
-                     StatusBoard, run_claude, save_attachments, with_attachments)
+                     TRUSTED_BOT_IDS, StatusBoard, run_claude, save_attachments,
+                     with_attachments)
 
 HERE = Path(__file__).resolve().parent
 SESSIONS_FILE = HERE / "general_sessions.json"
@@ -46,6 +48,11 @@ PROFILES = {
     "creative": {
         "dir": Path.home() / "systems/creative-bot",
         "route": "marketing, ads, creative strategy, briefs, scripts/copy, brand questions, research, competitor/web lookups",
+    },
+    "qa": {
+        "dir": Path.home() / "systems/qa-bot",
+        "route": "QA review, critiquing/verifying another agent's work or plan, spec and naming compliance checks, test plans",
+        "engine": "codex",
     },
 }
 
@@ -83,7 +90,7 @@ def route(message: str) -> str:
         "Route Tomas's message to exactly ONE executor agent on his team.\n"
         f"Agents:\n{menu}\n\n"
         f"Message:\n{message}\n\n"
-        "Reply with ONLY the agent key (dev, coach, ea or creative). No other words."
+        f"Reply with ONLY the agent key ({', '.join(PROFILES)}). No other words."
     )
     try:
         p = subprocess.run([CLAUDE_BIN, "-p", "--model", "claude-haiku-4-5-20251001"],
@@ -104,6 +111,7 @@ class Shared:
         self.sessions = self._load()
         self.locks: dict[int, asyncio.Lock] = {}
         self.channel_id: int | None = None
+        self.bot_dispatches: dict[int, list[float]] = {}
 
     def _load(self) -> dict:
         try:
@@ -119,6 +127,19 @@ class Shared:
     def lock_for(self, tid: int) -> asyncio.Lock:
         return self.locks.setdefault(tid, asyncio.Lock())
 
+    BOT_DISPATCH_MAX, BOT_DISPATCH_WINDOW = 5, 600  # per-channel inter-agent loop breaker
+
+    def bot_dispatch_ok(self, cid: int) -> bool:
+        import time
+        now = time.monotonic()
+        hist = self.bot_dispatches.setdefault(cid, [])
+        hist[:] = [t for t in hist if now - t < self.BOT_DISPATCH_WINDOW]
+        if len(hist) >= self.BOT_DISPATCH_MAX:
+            print(f"WARN: inter-agent dispatch cap hit in {cid}", flush=True)
+            return False
+        hist.append(now)
+        return True
+
 
 async def handle_task(shared: Shared, key: str, thread: discord.Thread,
                       prompt: str, resume: str | None):
@@ -131,11 +152,12 @@ async def handle_task(shared: Shared, key: str, thread: discord.Thread,
                 if ctx:
                     prompt = (f"[Discord thread context so far, oldest first]\n{ctx}\n\n"
                               f"[Latest request addressed to you]\n{prompt}")
+            runner = codex_bot.run_codex if p.get("engine") == "codex" else run_claude
             board = StatusBoard(thread)
             async with thread.typing():
-                reply, session_id = await run_claude(prompt, resume, on_block=board.on_block,
-                                                     cwd=p["cwd"], model=p["model"],
-                                                     sys_prompt=p["sys"])
+                reply, session_id = await runner(prompt, resume, on_block=board.on_block,
+                                                 cwd=p["cwd"], model=p["model"],
+                                                 sys_prompt=p["sys"])
             await board.finish("⏱️" if reply.startswith("⏱️") else "❌" if reply.startswith("❌") else "✅")
             if session_id:
                 entry = shared.sessions.get(str(thread.id)) or {"profile": key}
@@ -184,7 +206,8 @@ class GeneralAgent(discord.Client):
         client = self.shared.clients[key]
         chan = client.get_channel(msg.channel.id)
         m = await chan.fetch_message(msg.id)
-        content = self.strip_mention(msg.content, client.user)
+        content = self.strip_mention(m, client.user,
+                                     {r.id for r in getattr(chan.guild.me, "roles", [])})
         fallback = (content.strip().replace("\n", " ")[:80]
                     or (msg.attachments[0].filename[:80] if msg.attachments else "task"))
         name = await asyncio.to_thread(dev_bot.thread_title, content or fallback, fallback)
@@ -196,19 +219,40 @@ class GeneralAgent(discord.Client):
         await handle_task(self.shared, key, thread, with_attachments(content, files), None)
 
     @staticmethod
-    def strip_mention(content: str, user) -> str:
-        return (content.replace(f"<@{user.id}>", "")
-                .replace(f"<@!{user.id}>", "").strip()) or content
+    def strip_mention(msg: discord.Message, user, role_ids=frozenset()) -> str:
+        content = msg.content.replace(f"<@{user.id}>", "").replace(f"<@!{user.id}>", "")
+        for r in msg.role_mentions:
+            if r.managed and r.id in role_ids:
+                content = content.replace(f"<@&{r.id}>", "")
+        content = content.strip() or msg.content
+        if msg.author.bot:
+            content = (f"[Dispatched by fellow agent {msg.author.display_name} — its request is "
+                       f"below. Reply with the result. Only @mention another agent if you need "
+                       f"them to act; never mention one just to acknowledge.]\n{content}")
+        return content
 
     async def on_message(self, msg: discord.Message):
-        if msg.author.bot or msg.author.id not in ALLOWED_USERS:
+        if msg.author.id == getattr(self.user, "id", None):
             return
         if not msg.content.strip() and not msg.attachments:
             return
-        # Mention dispatch: @mentioning a profile bot targets that profile directly.
-        # Mentions of non-profile bots (Copywriter etc.) stay with the persona runner.
-        mentions_me = self.user in msg.mentions
-        if any(m.bot for m in msg.mentions) and not mentions_me:
+        # Mention dispatch: @mentioning a profile bot (user OR managed role) targets
+        # that profile directly. Mentions of non-profile bots stay with the personas.
+        me = msg.guild.me if msg.guild else None
+        my_roles = {r.id for r in getattr(me, "roles", [])}
+        mentions_me = (self.user in msg.mentions
+                       or any(r.managed and r.id in my_roles for r in msg.role_mentions))
+        if msg.author.bot:
+            # inter-agent dispatch, same rules as dev_bot: trusted fleet bots only,
+            # only when they @mention this profile; per-channel cap breaks loops
+            if msg.author.id not in TRUSTED_BOT_IDS or not mentions_me:
+                return
+            if not self.shared.bot_dispatch_ok(msg.channel.id):
+                return
+        elif msg.author.id not in ALLOWED_USERS:
+            return
+        if (any(m.bot for m in msg.mentions) or any(r.managed for r in msg.role_mentions)) \
+                and not mentions_me:
             return
         chan_id = self.resolve_channel()
         if chan_id is None:
@@ -224,7 +268,7 @@ class GeneralAgent(discord.Client):
                 resume = entry.get("session")
             else:
                 return
-            content = self.strip_mention(msg.content, self.user) if mentions_me else msg.content
+            content = self.strip_mention(msg, self.user, my_roles) if mentions_me else msg.content
             prompt = with_attachments(content, await save_attachments(msg))
             asyncio.create_task(handle_task(self.shared, self.key, msg.channel, prompt, resume))
             return

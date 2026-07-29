@@ -40,6 +40,14 @@ TIMEOUT_S = 30 * 60
 # Must stay in sync with the same default in agentic-os/discord/agent_bots.py.
 EXEC_CHANNELS = set(os.environ.get(
     "EXECUTOR_CHANNELS", "dev,coach,assistant,creative,qa").split(","))
+# Fleet bot user-ids (name -> id). A message AUTHORED by one of these bots that
+# @mentions this bot dispatches a real run — inter-agent communication. Regenerate
+# via /users/@me per token if bots are added.
+try:
+    TRUSTED_BOT_IDS = set(json.loads(
+        (Path(__file__).resolve().parent / "fleet_bots.json").read_text()).values())
+except Exception:
+    TRUSTED_BOT_IDS = set()
 CHUNK = 1900
 
 DEFAULT_GUARDRAILS = (
@@ -341,6 +349,7 @@ class ChannelAgent(discord.Client):
         self.sessions = load_sessions()
         self.locks: dict[int, asyncio.Lock] = {}
         self.queues: dict[int, list[str]] = {}
+        self.bot_dispatches: dict[int, list[float]] = {}
         self.channel_id: int | None = None
 
     def resolve_channel(self) -> int | None:
@@ -358,6 +367,18 @@ class ChannelAgent(discord.Client):
 
     def lock_for(self, tid: int) -> asyncio.Lock:
         return self.locks.setdefault(tid, asyncio.Lock())
+
+    BOT_DISPATCH_MAX, BOT_DISPATCH_WINDOW = 5, 600  # per-channel inter-agent loop breaker
+
+    def bot_dispatch_ok(self, cid: int) -> bool:
+        now = time.monotonic()
+        hist = self.bot_dispatches.setdefault(cid, [])
+        hist[:] = [t for t in hist if now - t < self.BOT_DISPATCH_WINDOW]
+        if len(hist) >= self.BOT_DISPATCH_MAX:
+            print(f"WARN: inter-agent dispatch cap hit in {cid}", flush=True)
+            return False
+        hist.append(now)
+        return True
 
     async def send_chunked(self, dest, text: str):
         text = text.strip() or "(no output)"
@@ -418,16 +439,30 @@ class ChannelAgent(discord.Client):
             asyncio.create_task(self.drain(thread))
 
     async def on_message(self, msg: discord.Message):
-        if msg.author.bot or msg.author.id not in ALLOWED_USERS:
+        if msg.author.id == getattr(self.user, "id", None):
             return
         if not msg.content.strip() and not msg.attachments:
             return
-        # Mention dispatch (2026-07-29): @mentioning THIS bot anywhere in an executor
-        # channel dispatches a real tool session here — the tool-less persona runner
-        # yields these (it keeps war-room/#general/DMs). Mentions of OTHER bots only
-        # are their executors' business.
-        mentions_me = self.user in msg.mentions
-        if any(m.bot and m.id != self.user.id for m in msg.mentions) and not mentions_me:
+        # Mention dispatch (2026-07-29): @mentioning THIS bot (user OR its managed role)
+        # anywhere in an executor channel dispatches a real tool session here — the
+        # tool-less persona runner yields these (it keeps war-room/DMs). Mentions of
+        # OTHER bots only are their executors' business.
+        me = msg.guild.me if msg.guild else None
+        my_roles = {r.id for r in getattr(me, "roles", [])}
+        mentions_me = (self.user in msg.mentions
+                       or any(r.managed and r.id in my_roles for r in msg.role_mentions))
+        other_bot = (any(m.bot and m.id != self.user.id for m in msg.mentions)
+                     or any(r.managed and r.id not in my_roles for r in msg.role_mentions))
+        if msg.author.bot:
+            # Inter-agent dispatch (2026-07-29): a trusted fleet bot @mentioning this
+            # bot triggers a real run. Cap per channel breaks mention loops.
+            if msg.author.id not in TRUSTED_BOT_IDS or not mentions_me:
+                return
+            if not self.bot_dispatch_ok(msg.channel.id):
+                return
+        elif msg.author.id not in ALLOWED_USERS:
+            return
+        if other_bot and not mentions_me:
             return
         chan_id = self.resolve_channel()
         parent = msg.channel.parent if isinstance(msg.channel, discord.Thread) else msg.channel
@@ -436,8 +471,15 @@ class ChannelAgent(discord.Client):
             return
         content = msg.content
         if mentions_me:
-            content = (content.replace(f"<@{self.user.id}>", "")
-                       .replace(f"<@!{self.user.id}>", "").strip()) or msg.content
+            content = content.replace(f"<@{self.user.id}>", "").replace(f"<@!{self.user.id}>", "")
+            for r in msg.role_mentions:
+                if r.managed and r.id in my_roles:
+                    content = content.replace(f"<@&{r.id}>", "")
+            content = content.strip() or msg.content
+        if msg.author.bot:
+            content = (f"[Dispatched by fellow agent {msg.author.display_name} — its request is "
+                       f"below. Reply with the result. Only @mention another agent if you need "
+                       f"them to act; never mention one just to acknowledge.]\n{content}")
         # Follow-up inside a thread
         if isinstance(msg.channel, discord.Thread):
             prompt = with_attachments(content, await save_attachments(msg))
