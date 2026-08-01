@@ -1,0 +1,13 @@
+[Unit]
+Description=general-bot: Discord #general -> haiku router -> channel-agent Claude sessions
+After=network-online.target
+
+[Service]
+WorkingDirectory=/home/tomas/systems/dev-bot
+ExecStart=/home/tomas/systems/dev-bot/venv/bin/python /home/tomas/systems/dev-bot/general_bot.py
+Restart=always
+RestartSec=10
+Environment=HOME=/home/tomas
+
+[Install]
+WantedBy=default.target

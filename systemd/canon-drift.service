@@ -1,0 +1,5 @@
+[Unit]
+Description=Canon-drift scan: brand facts baked into skill/command surfaces
+[Service]
+Type=oneshot
+ExecStart=%h/systems/canon-drift/scan.sh

@@ -8,6 +8,8 @@ WorkingDirectory=%h/systems/md-server
 Environment=MD_ROOT=%h/brain
 Environment=MD_HOST=0.0.0.0
 Environment=MD_PORT=8092
+# MD_USER / MD_PASS / MD_PREFIX — kept out of git, mode 600
+EnvironmentFile=%h/.config/md-server/env
 ExecStart=%h/.local/bin/uv run %h/systems/md-server/server.py
 Restart=on-failure
 RestartSec=3

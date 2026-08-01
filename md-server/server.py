@@ -12,7 +12,12 @@ Serves the brain tree as styled HTML over HTTP (intended for the Tailnet/LAN).
 
 Run: uv run server.py   (deps auto-installed by uv via the inline metadata)
 Env: MD_ROOT (default ~/brain), MD_HOST (default 0.0.0.0), MD_PORT (default 8092)
+     MD_PREFIX (path prefix to prepend to generated links, e.g. /brain, when
+       served behind `tailscale serve/funnel --set-path`)
+     MD_USER / MD_PASS (if MD_PASS is set, HTTP Basic auth is required)
 """
+import base64
+import hmac
 import html
 import os
 import urllib.parse
@@ -24,6 +29,10 @@ import markdown
 ROOT = Path(os.environ.get("MD_ROOT", str(Path.home() / "brain"))).resolve()
 HOST = os.environ.get("MD_HOST", "0.0.0.0")
 PORT = int(os.environ.get("MD_PORT", "8092"))
+PREFIX = "/" + os.environ.get("MD_PREFIX", "").strip("/") if os.environ.get("MD_PREFIX") else ""
+USER = os.environ.get("MD_USER", "tomas")
+PASS = os.environ.get("MD_PASS", "")
+EXPECT = base64.b64encode(f"{USER}:{PASS}".encode()).decode() if PASS else ""
 
 CSS = """
 :root{color-scheme:dark}
@@ -62,10 +71,10 @@ def page(title, body):
 
 
 def crumb(rel: Path):
-    parts, acc, out = rel.parts, "", ["<a href='/'>brain</a>"]
+    parts, acc, out = rel.parts, "", [f"<a href='{PREFIX}/'>brain</a>"]
     for p in parts:
         acc = f"{acc}/{p}" if acc else p
-        out.append(f"<a href='/{urllib.parse.quote(acc)}'>{html.escape(p)}</a>")
+        out.append(f"<a href='{PREFIX}/{urllib.parse.quote(acc)}'>{html.escape(p)}</a>")
     return "<div class=crumb>" + " / ".join(out) + "</div>"
 
 
@@ -74,7 +83,7 @@ def listing(target: Path, rel: Path):
     for c in sorted(target.iterdir(), key=lambda x: x.name.lower()):
         if c.name.startswith("."):
             continue
-        href = "/" + urllib.parse.quote(str(c.relative_to(ROOT)))
+        href = PREFIX + "/" + urllib.parse.quote(str(c.relative_to(ROOT)))
         if c.is_dir():
             dirs.append(f"<li><a class=dir href='{href}'>📁 {html.escape(c.name)}</a></li>")
         elif c.suffix.lower() in (".md", ".markdown"):
@@ -98,8 +107,30 @@ class H(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def authed(self):
+        """Constant-time Basic-auth check. Open access when MD_PASS is unset."""
+        if not EXPECT:
+            return True
+        got = self.headers.get("Authorization", "")
+        if got.startswith("Basic ") and hmac.compare_digest(got[6:].strip(), EXPECT):
+            return True
+        body = page("401", "<h1>401</h1><p>Auth required.</p>")
+        self.send_response(401)
+        self.send_header("WWW-Authenticate", 'Basic realm="brain"')
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+        return False
+
     def do_GET(self):
-        rel_str = urllib.parse.unquote(self.path.split("?", 1)[0]).lstrip("/")
+        if not self.authed():
+            return
+        path = self.path.split("?", 1)[0]
+        # tolerate the prefix arriving unstripped from a reverse proxy
+        if PREFIX and (path == PREFIX or path.startswith(PREFIX + "/")):
+            path = path[len(PREFIX):]
+        rel_str = urllib.parse.unquote(path).lstrip("/")
         target = (ROOT / rel_str).resolve()
         # block traversal outside ROOT
         if target != ROOT and ROOT not in target.parents:

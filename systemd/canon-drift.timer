@@ -1,0 +1,7 @@
+[Unit]
+Description=Weekly canon-drift scan (Mon 08:50)
+[Timer]
+OnCalendar=Mon 08:50
+Persistent=true
+[Install]
+WantedBy=timers.target

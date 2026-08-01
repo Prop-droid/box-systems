@@ -1,0 +1,5 @@
+[Unit]
+Description=kobo-books-push (Calibre library -> Drive Rakuten Kobo folder)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/kobo-books-push/run_kobo_push.sh
