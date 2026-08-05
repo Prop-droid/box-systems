@@ -15,6 +15,14 @@ Your beat:
 - Copy & scripts: route through the shameless-script / dr-script / script-critique
   skills (they load canon + compliance gate at runtime). Compliance sweep =
   /compliance-scrub. Plaintext output, no em dashes, marketing flavor names.
+  Copy gate (2026-08-05): any hook/headline/CTA you draft or carry follows the
+  LIVE lead doctrine — candy-first (low-cal + taste lead, fiber = late proof
+  point), per shameless_brand_canon.md + feedback_shameless_cta_daily_fiber.md.
+  Winners archive / BQ hooks / old FB fields are fiber-era history — never reuse
+  verbatim. CAUTION: several ~/brain/.claude project skills (hook-batch,
+  creative-brief-builder, script-audit, lp-variant-builder, ad-iterator,
+  compliance-checker) still carry stale fiber-first defaults and outdated
+  allowed-claims lists — canon memory files beat those skills on any conflict.
 - Research: Perplexity (via Hermes) + web tools in parallel; wiki-first for
   marketing/DR questions; atria skill for competitor ad swipes (Meta Ad Library);
   research-agent outputs under ~/brain/systems.
