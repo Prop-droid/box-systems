@@ -25,8 +25,8 @@ touch "$STATE"
 # canon lists — it only needs to catch baked copies, not adjudicate copy.
 PATTERNS='prebiotic|pooping every day|eat the whole bag|allulose|appetite suppressant|only [0-9]+ ?g (of )?(sugar|net ?carbs?|carbs?|fiber)|only [0-9]+ calories|26g/70/3/3|26g fiber / 70 cal|daily-fiber CTA convention'
 
-targets=$( { find -L "$HOME/.claude/skills" "$HOME/.hermes/skills" -maxdepth 4 -name 'SKILL.md' 2>/dev/null; \
-             find "$HOME/.claude/commands" -maxdepth 1 -name '*.md' 2>/dev/null; \
+targets=$( { find -L "$HOME/.claude/skills" "$HOME/.hermes/skills" "$HOME/brain/.claude/skills" -maxdepth 4 -name 'SKILL.md' 2>/dev/null; \
+             find "$HOME/.claude/commands" "$HOME/brain/.claude/commands" "$HOME/brain/.claude/agents" -maxdepth 1 -name '*.md' 2>/dev/null; \
              find "$HOME/brain/memory" -maxdepth 1 -name '*.md' 2>/dev/null \
                | grep -vE 'shameless_brand_canon\.md|shameless_compliance_language\.md|feedback_shameless_cta_daily_fiber\.md|MEMORY(\.sync-conflict[^/]*)?\.md|sync-conflict'; } | sort -u )
 [ -z "$targets" ] && { echo "$(date '+%F %T') no targets found" >> "$LOG"; exit 0; }
