@@ -12,7 +12,7 @@ LOG="$BASE/run.log"
 CHANNEL_ID="8cj5bz5-125371"          # Tomas Pod
 WORKSPACE_ID="9011638245"
 END_DATE="2026-07-17"                # last scheduled drop is Thu 2026-07-16
-NTFY_TOPIC="tomas-tab-958e4431"
+NOTIFY="$HOME/systems/lib/discord-notify.sh"
 
 mkdir -p "$DROPS"
 exec >>"$LOG" 2>&1
@@ -20,8 +20,7 @@ echo "=== [$(date)] iteration-suggestions run ==="
 
 fail() {
   echo "FAIL: $1"
-  curl -s -d "iteration-suggestions FAILED on box: $1 (see ~/systems/iteration-suggestions/run.log)" \
-    -H "Title: Iteration drop failed" "https://ntfy.sh/$NTFY_TOPIC" >/dev/null || true
+  "$NOTIFY" "Iteration drop failed" "iteration-suggestions FAILED on box: $1 (see ~/systems/iteration-suggestions/run.log)" high || true
   exit 1
 }
 

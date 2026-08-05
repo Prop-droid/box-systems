@@ -3,7 +3,7 @@
 # v2: usage-limit hits pause and retry (30 min, max 16 tries) instead of failing forward.
 set -u
 B="$HOME/fable-window"; CL="$HOME/.local/bin/claude"
-NTFY="https://ntfy.sh/tomas-tab-958e4431"
+NOTIFY="$HOME/systems/lib/discord-notify.sh"
 START_AT="${START_AT:-}"
 if [ -n "$START_AT" ] && [ ! -f "$B/START_NOW" ]; then
   target=$(date -d "today $START_AT" +%s)
@@ -11,7 +11,7 @@ if [ -n "$START_AT" ] && [ ! -f "$B/START_NOW" ]; then
   echo "waiting until $(date -d @$target) (touch $B/START_NOW to begin immediately)"
   while [ "$(date +%s)" -lt "$target" ] && [ ! -f "$B/START_NOW" ]; do sleep 60; done
 fi
-curl -s -d "Fable run STARTING" -H "Title: Fable window" "$NTFY" >/dev/null
+"$NOTIFY" "Fable window" "Fable run STARTING"
 for t in "$B"/tasks/*.task; do
   [ -f "$B/STOP" ] && { echo "STOP file present, aborting"; break; }
   name=$(basename "$t" .task)
@@ -31,16 +31,16 @@ for t in "$B"/tasks/*.task; do
       tries=$((tries+1))
       if [ $tries -ge 16 ]; then
         echo "exit=$rc LIMIT-GAVE-UP $(date -Is)" > "$B/logs/$name.done"
-        curl -s -d "fable: $name gave up after 16 limit-retries" "$NTFY" >/dev/null
+        "$NOTIFY" "Fable window" "$name gave up after 16 limit-retries" high
         break
       fi
-      curl -s -d "fable: usage limit hit on $name, sleeping 30m (try $tries/16)" "$NTFY" >/dev/null
+      "$NOTIFY" "Fable window" "usage limit hit on $name, sleeping 30m (try $tries/16)"
       sleep 1800
       continue
     fi
     echo "exit=$rc $(date -Is)" > "$B/logs/$name.done"
-    curl -s -d "fable: $name done (exit=$rc)" "$NTFY" >/dev/null
+    "$NOTIFY" "Fable window" "$name done (exit=$rc)"
     break
   done
 done
-curl -s -d "Fable run COMPLETE (or stopped). See ~/fable-window/REPORT.md" -H "Title: Fable window" "$NTFY" >/dev/null
+"$NOTIFY" "Fable window" "Fable run COMPLETE (or stopped). See ~/fable-window/REPORT.md"

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# box-watchdog — verify migrated systemd timers/services + core services; alert via ntfy.
+# box-watchdog — verify migrated systemd timers/services + core services; alert via Discord #ops-log.
 # Replaces the Mac watchdog (launchd/CCC checks). Runs ~06:30, after the night crons.
 set -uo pipefail
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
-NTFY_TOPIC="${NTFY_TOPIC:-tomas-tab-958e4431}"
+NOTIFY="$HOME/systems/lib/discord-notify.sh"
 TIMERS="bq-clickup-perf winners-refresh comments-digest research-monitor research-deepdive sha-weekly-report creative-feedback-synth gbrain-weekly raw-ingest-scan agents-weekly agents-monthly box-doctor qa-smoke night-queue-resume"
 WD_DIR="$HOME/systems/watchdog"; mkdir -p "$WD_DIR/reports"
 fails=(); oks=()
@@ -24,8 +24,8 @@ REPORT="$WD_DIR/reports/$(date +%Y-%m-%d).md"
 } > "$REPORT"
 ln -sf "$REPORT" "$WD_DIR/reports/latest.md"
 if [ ${#fails[@]} -eq 0 ]; then
-  curl -fsS -m 10 -H "Title: Box watchdog: all green" -H "Priority: min" -d "${#oks[@]} timers OK, syncthing+tailscale up" "https://ntfy.sh/$NTFY_TOPIC" >/dev/null 2>&1
+  "$NOTIFY" "Box watchdog: all green" "${#oks[@]} timers OK, syncthing+tailscale up" min
 else
-  curl -fsS -m 10 -H "Title: Box watchdog: ${#fails[@]} issue(s)" -H "Priority: high" -d "$(printf "%s\n" "${fails[@]}")" "https://ntfy.sh/$NTFY_TOPIC" >/dev/null 2>&1
+  "$NOTIFY" "Box watchdog: ${#fails[@]} issue(s)" "$(printf "%s\n" "${fails[@]}")" high
 fi
 echo "watchdog status: ${#fails[@]} fails, ${#oks[@]} oks"

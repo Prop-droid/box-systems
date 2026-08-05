@@ -8,8 +8,8 @@ set -uo pipefail
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
-# ${VAR-default} (not :-) so NTFY_TOPIC="" is an explicit silence-for-testing override
-NTFY_TOPIC="${NTFY_TOPIC-tomas-tab-958e4431}"
+# NOTIFY="" (env override) is an explicit silence-for-testing override
+NOTIFY="${NOTIFY-$HOME/systems/lib/discord-notify.sh}"
 DOC_DIR="$HOME/systems/box-doctor"
 MEM_DIR="$HOME/.claude/projects/-home-tomas/memory"
 SKILLS_DIR="$HOME/.claude/skills"
@@ -175,12 +175,11 @@ n_bad=$(( ${#fails[@]} + ${#warns[@]} ))
 } > "$REPORT"
 ln -sf "$REPORT" "$DOC_DIR/doctor-report.md"
 
-# --- ntfy: ONLY when something is wrong -------------------------------------------
-if [ "$n_bad" -gt 0 ]; then
+# --- Discord #ops-log: ONLY when something is wrong -------------------------------
+if [ "$n_bad" -gt 0 ] && [ -n "$NOTIFY" ]; then
   prio="default"; [ ${#fails[@]} -gt 0 ] && prio="high"
   body="$(printf "%s\n" "${fails[@]/#/FAIL: }" "${warns[@]/#/WARN: }" 2>/dev/null | grep . | head -20)"
-  curl -fsS -m 10 -H "Title: Box doctor: ${#fails[@]} fail, ${#warns[@]} warn" -H "Priority: $prio" \
-    -d "$body" "https://ntfy.sh/$NTFY_TOPIC" >/dev/null 2>&1 || true
+  "$NOTIFY" "Box doctor: ${#fails[@]} fail, ${#warns[@]} warn" "$body" "$prio"
 fi
 
 echo "box-doctor: ${#fails[@]} fail, ${#warns[@]} warn, ${#fixed[@]} fixed -> $REPORT"

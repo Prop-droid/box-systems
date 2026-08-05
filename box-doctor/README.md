@@ -1,7 +1,7 @@
 # box-doctor — daily box self-diagnostic
 
 Daily health sweep over the known failure modes of the agent box. Silent when
-green: the ntfy digest (topic `tomas-tab-958e4431`) fires ONLY when a check
+green: the Discord #ops-log digest (via `lib/discord-notify.sh`) fires ONLY when a check
 fails or warns. Report always lands at `reports/YYYY-MM-DD.md`, with
 `doctor-report.md` symlinked to the latest.
 

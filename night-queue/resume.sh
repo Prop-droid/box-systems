@@ -19,5 +19,4 @@ pgrep -f "^bash $NQ_HOME/queue.sh" >/dev/null && exit 0
 systemctl --user is-active --quiet night-queue-driver && exit 0
 systemd-run --user --unit night-queue-driver --collect \
   bash -c "NQ_DIR='$Q' bash $NQ_HOME/queue.sh >> $Q/logs/driver.console 2>&1"
-curl -sm 10 -d "night-queue: driver relaunched $(date +%H:%M)" \
-  "https://ntfy.sh/${NQ_NTFY:-tomas-tab-958e4431}" >/dev/null || true
+"$HOME/systems/lib/discord-notify.sh" "night-queue" "driver relaunched $(date +%H:%M)" || true

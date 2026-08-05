@@ -21,8 +21,8 @@ export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 export GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS:-$HOME/.config/gcloud/ejam-dwh-sa.json}"
 export RTK_HOOK_OFF=1
 
-# ${VAR-default} (not :-) so NTFY_TOPIC="" is an explicit silence-for-testing override.
-NTFY_TOPIC="${NTFY_TOPIC-tomas-tab-958e4431}"
+# NOTIFY="" (env override) is an explicit silence-for-testing override.
+NOTIFY="${NOTIFY-$HOME/systems/lib/discord-notify.sh}"
 
 SYS="$HOME/systems"
 QA="$SYS/qa"
@@ -146,12 +146,11 @@ gap litellm           "litellm"            "dormant proxy; nothing points at it 
 echo "--- report written: $REPORT ---"
 echo "summary: ${#PASS[@]} pass / ${#FAIL[@]} fail / ${#GAPS[@]} gaps"
 
-# ---- ntfy digest only on failure -------------------------------------------
-if [ "${#FAIL[@]}" -gt 0 ] && [ -n "$NTFY_TOPIC" ]; then
+# ---- Discord digest only on failure ----------------------------------------
+if [ "${#FAIL[@]}" -gt 0 ] && [ -n "$NOTIFY" ]; then
   msg="QA smoke: ${#FAIL[@]} failing —"
   for f in "${FAIL[@]}"; do IFS='|' read -r id _ _ _ <<<"$f"; msg+=" $id"; done
-  curl -s -m 10 -H "Title: systems QA smoke" -H "Priority: high" \
-    -d "$msg (see qa/qa-report.md)" "https://ntfy.sh/$NTFY_TOPIC" >/dev/null 2>&1 || true
+  "$NOTIFY" "systems QA smoke" "$msg (see qa/qa-report.md)" high
 fi
 
 exit 0

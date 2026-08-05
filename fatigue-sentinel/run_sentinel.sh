@@ -7,7 +7,6 @@ set -uo pipefail
 
 export PATH="/usr/local/bin:/usr/bin:/bin:$HOME/.local/bin:$PATH"
 export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/ejam-dwh-sa.json"
-export NTFY_TOPIC="${NTFY_TOPIC:-tomas-tab-958e4431}"
 
 SCRIPT_DIR="$HOME/systems/fatigue-sentinel"
 cd "$SCRIPT_DIR" || { echo "ERROR: cannot cd to $SCRIPT_DIR"; exit 1; }

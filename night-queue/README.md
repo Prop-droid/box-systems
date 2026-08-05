@@ -73,8 +73,8 @@ systemd-run --user --unit night-queue-driver --collect \
   by resume.sh.
 - Each run: `(cd $CWD && timeout $TIMEOUT claude -p "$prompt" --model $MODEL
   --dangerously-skip-permissions < /dev/null)` → `logs/name.log`.
-- ntfy per task done/limit/gave-up + queue start/complete to
-  `tomas-tab-958e4431` (override: `NQ_NTFY=<topic>`).
+- Discord #ops-log notify per task done/limit/gave-up + queue start/complete
+  (via `lib/discord-notify.sh`).
 - On completion: auto `git commit` of `queue/artifacts/` + `queue/tasks/`
   (only if the queue dir is inside a git repo; logs stay out via .gitignore).
 

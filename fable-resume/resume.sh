@@ -15,4 +15,4 @@ pgrep -f "^bash .*fable-window/driver.sh" >/dev/null && exit 0
 systemctl --user is-active --quiet fable-driver && exit 0
 systemd-run --user --unit fable-driver --collect \
   bash -c "bash $B/driver.sh >> $B/logs/driver.console 2>&1"
-curl -s -d "fable-resume: driver relaunched $(date +%H:%M)" https://ntfy.sh/tomas-tab-958e4431 >/dev/null
+"$HOME/systems/lib/discord-notify.sh" "fable-resume" "driver relaunched $(date +%H:%M)" || true

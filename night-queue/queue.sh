@@ -11,10 +11,10 @@ set -u
 NQ_HOME="$HOME/systems/night-queue"
 Q="${NQ_DIR:-$NQ_HOME/queue}"
 CL="$HOME/.local/bin/claude"
-NTFY="https://ntfy.sh/${NQ_NTFY:-tomas-tab-958e4431}"
+NOTIFY="$HOME/systems/lib/discord-notify.sh"
 LIMIT_RE="session limit|usage limit|rate limit|credit balance|reached your .*limit|usage-credits|limit (reached|hit)|hit your .*limit|5-hour limit|weekly limit|fable.*limit|resets at [0-9]"
 
-ntfy() { curl -sm 10 -d "$1" -H "Title: night-queue" "$NTFY" >/dev/null || true; }
+ntfy() { "$NOTIFY" "night-queue" "$1" || true; }
 paused() { [ -f "$HOME/.claude/PAUSE_CLAUDE_BG" ] || [ -f "$Q/PAUSE" ] || [ -f "$Q/PAUSE_90" ]; }
 
 mkdir -p "$Q/tasks" "$Q/logs" "$Q/artifacts"

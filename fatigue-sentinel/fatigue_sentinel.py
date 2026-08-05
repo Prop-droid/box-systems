@@ -30,7 +30,7 @@ heartbeat ("sentinel alive, N ads watched") regardless.
 
 Env:
   GOOGLE_APPLICATION_CREDENTIALS  BQ service account json (for the `bq` CLI)
-  NTFY_TOPIC                      ntfy topic (default tomas-tab-958e4431)
+  (alerts post to Discord #ops-log via ~/systems/lib/discord-notify.sh)
 """
 import argparse
 import datetime
@@ -38,7 +38,6 @@ import json
 import os
 import subprocess
 import sys
-import urllib.request
 
 # ---- config (tune here) ---------------------------------------------------
 FLOOR_SPEND_PER_DAY = 50.0     # active set: >= this * NOW_WINDOW_DAYS spend in the now window
@@ -54,8 +53,6 @@ BRAND = None                   # None = all brands; else exact brand string (cre
 
 BQ_PROJECT = "ejam-dwh"
 TABLE = "ejam-dwh.production.creative_dashboard"
-NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "tomas-tab-958e4431")
-NTFY_URL = f"https://ntfy.sh/{NTFY_TOPIC}"
 
 NOW_CUT = NOW_WINDOW_DAYS - 1                       # dt >= CURRENT_DATE - NOW_CUT  => NOW_WINDOW_DAYS days
 BASE_START = NOW_CUT + BASELINE_WINDOW_DAYS         # full scan range
@@ -171,12 +168,11 @@ def alert_line(a):
 
 
 def send_ntfy(title, body, priority):
-    req = urllib.request.Request(
-        NTFY_URL, data=body.encode(), method="POST",
-        headers={"Title": title, "Priority": priority},
+    # Alerts go to Discord #ops-log (was ntfy tablet topic until 2026-08-05).
+    subprocess.run(
+        [os.path.expanduser("~/systems/lib/discord-notify.sh"), title, body, priority],
+        timeout=30, check=True,
     )
-    with urllib.request.urlopen(req, timeout=15) as resp:
-        resp.read()
 
 
 def main():
