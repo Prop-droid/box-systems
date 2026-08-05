@@ -5,8 +5,14 @@
 # craft and read canon at runtime (memory: feedback_canon_single_source).
 #
 # Scope: SKILL.md files under ~/.claude/skills + ~/.hermes/skills (symlinks
-# followed), and ~/.claude/commands/*.md. references/ docs, .bak files, memory
-# dirs, and compliance-eval (the sanctioned machine mirror) are out of scope.
+# followed), ~/.claude/commands/*.md, and (since 2026-08-05, after a stale
+# "Fiber = default angle" line in a workflow memory shipped fiber-first copy)
+# the memory dir ~/brain/memory/*.md — EXCLUDING the sanctioned fact carriers
+# (brand canon, compliance language, CTA doctrine, MEMORY.md index) and
+# sync-conflict files. references/ docs, .bak files, memory archive/, and
+# compliance-eval (the sanctioned machine mirror) are out of scope.
+# NOTE: memory hits were baseline-seeded into state.txt on 2026-08-05 —
+# only NEW bakes alert.
 # State-file dedupe: ntfy only on NEW hits (launch-details-scan pattern).
 set -uo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -20,7 +26,9 @@ touch "$STATE"
 PATTERNS='prebiotic|pooping every day|eat the whole bag|allulose|appetite suppressant|only [0-9]+ ?g (of )?(sugar|net ?carbs?|carbs?|fiber)|only [0-9]+ calories|26g/70/3/3|26g fiber / 70 cal|daily-fiber CTA convention'
 
 targets=$( { find -L "$HOME/.claude/skills" "$HOME/.hermes/skills" -maxdepth 4 -name 'SKILL.md' 2>/dev/null; \
-             find "$HOME/.claude/commands" -maxdepth 1 -name '*.md' 2>/dev/null; } | sort -u )
+             find "$HOME/.claude/commands" -maxdepth 1 -name '*.md' 2>/dev/null; \
+             find "$HOME/brain/memory" -maxdepth 1 -name '*.md' 2>/dev/null \
+               | grep -vE 'shameless_brand_canon\.md|shameless_compliance_language\.md|feedback_shameless_cta_daily_fiber\.md|MEMORY(\.sync-conflict[^/]*)?\.md|sync-conflict'; } | sort -u )
 [ -z "$targets" ] && { echo "$(date '+%F %T') no targets found" >> "$LOG"; exit 0; }
 
 hits=$(echo "$targets" | xargs grep -HniE "$PATTERNS" 2>/dev/null | grep -v '\.bak' || true)

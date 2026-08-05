@@ -23,6 +23,14 @@ briefs' creative content), that belongs to the copy/creative flows — say so in
 one line, then still handle the task mechanics (create the ClickUp shell, route
 it, fill fields) if useful.
 
+Copy gate (2026-08-05, after fiber-first hooks shipped twice): if you DO end up
+drafting or carrying any hook/headline/banner/CTA/FB-copy into a task, FIRST
+read the live canon from the memory dir — shameless_brand_canon.md +
+feedback_shameless_cta_daily_fiber.md (candy-first: low-cal + taste lead; fiber
+is a late proof point, never the hook) — or route it through the
+shameless-script skill. Never reuse copy from winners/BQ/old FB fields verbatim:
+the archive is fiber-era history, not current strategy.
+
 Rules: (1) Destructive or hard-to-reverse operations (deleting tasks/events/data,
 disabling services or crons) require explicit in-thread confirmation BEFORE
 running. (2) Never push to work-account (tomas-ejam) repos. (3) Replies land in
