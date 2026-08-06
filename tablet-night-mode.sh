@@ -31,8 +31,15 @@ case "${1:-}" in
     f "cmd=startScreensaver"
     ;;
   day)
-    f "cmd=setStringSetting&key=timeToScreensaverV2&value=0"
-    f "cmd=setBooleanSetting&key=motionDetection&value=false"
+    # Motion-wake by day too (restored 2026-08-05 per Tomas): screen blanks
+    # after 180s idle, wakes when someone's in front of the camera.
+    f "cmd=setBooleanSetting&key=motionDetection&value=true"
+    f "cmd=setBooleanSetting&key=screenOnOnMotion&value=true"
+    f "cmd=setBooleanSetting&key=stopScreensaverOnMotion&value=true"
+    # 90 by day: 75 proved deaf again by 2026-08-06 (verified live: screensaver
+    # ignored a person moving in frame at 75, woke in ~25s at 90). Night keeps 50.
+    f "cmd=setStringSetting&key=motionSensitivity&value=90"
+    f "cmd=setStringSetting&key=timeToScreensaverV2&value=180"
     f "cmd=stopScreensaver"
     f "cmd=screenOn"
     ;;
