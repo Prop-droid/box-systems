@@ -382,8 +382,21 @@ class ChannelAgent(discord.Client):
 
     async def send_chunked(self, dest, text: str):
         text = text.strip() or "(no output)"
-        for i in range(0, len(text), CHUNK):
-            await dest.send(text[i:i + CHUNK])
+        while text:
+            if len(text) <= CHUNK:
+                await dest.send(text)
+                break
+            window = text[:CHUNK]
+            # break at a natural boundary: paragraph > line > word
+            cut = window.rfind("\n\n")
+            if cut < CHUNK // 2:
+                cut = window.rfind("\n")
+            if cut < CHUNK // 2:
+                cut = window.rfind(" ")
+            if cut < CHUNK // 2:
+                cut = CHUNK
+            await dest.send(text[:cut].rstrip())
+            text = text[cut:].lstrip()
 
     def queue_for(self, tid: int) -> list[str]:
         return self.queues.setdefault(tid, [])
