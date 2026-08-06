@@ -20,4 +20,4 @@ if [ $rc -ne 0 ] || grep -qE "FAIL|NO WRITE GRANT" "$LOG"; then
   echo "brain-push FAILED (rc=$rc) — see $LOG"
   exit 1
 fi
-echo "brain-push ok — $(grep -c '^  ok ' "$LOG") entries"
+echo "brain-push ok — $(grep -oE 'pass 1: [0-9]+ ok, [0-9]+ failed' "$LOG" | tail -1)"
