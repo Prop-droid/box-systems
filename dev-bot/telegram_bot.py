@@ -238,6 +238,17 @@ class TgAgent:
         sp = dev_bot.system_prompt()
         return TELEGRAM_GUARDRAILS if sp == dev_bot.DEFAULT_GUARDRAILS else sp
 
+    def persist_chat_id(self, cid: int):
+        """Adopt a group as the bot's forum group and write it back to .env."""
+        self.chat_id = cid
+        lines = dev_bot.ENV.read_text().splitlines()
+        if any(l.startswith("CHAT_ID=") for l in lines):
+            lines = [f"CHAT_ID={cid}" if l.startswith("CHAT_ID=") else l for l in lines]
+        else:
+            lines.append(f"CHAT_ID={cid}")
+        dev_bot.ENV.write_text("\n".join(lines) + "\n")
+        print(f"[adopt] group {cid} persisted to .env", flush=True)
+
     async def save_attachments(self, msg: dict) -> list[str]:
         """Download document/photo/voice/video/audio to DROPS_DIR; returns paths."""
         items: list[tuple[str, str]] = []  # (file_id, name)
@@ -359,11 +370,29 @@ class TgAgent:
                 except (RuntimeError, OSError):
                     pass
             return
+        # Group -> supergroup migration (e.g. Topics enabled): follow the new id.
+        if (new_id := msg.get("migrate_to_chat_id")) and chat.get("id") == self.chat_id:
+            self.persist_chat_id(new_id)
+            return
         if uid not in self.allowed:
             return
         private = chat.get("type") == "private"
-        if not private and chat.get("id") != self.chat_id:
-            return
+        if not private:
+            if (self.chat_id == 0 and chat.get("type") in ("group", "supergroup")):
+                # No group configured yet — adopt the first group an allowed user
+                # messages from, then keep processing this message normally.
+                self.persist_chat_id(chat["id"])
+                try:
+                    gc = await api("getChat", chat_id=chat["id"])
+                    note = ("topic-per-task mode" if gc.get("is_forum") else
+                            "Topics are OFF — running as one rolling session; enable "
+                            "Topics in group settings for a topic per task")
+                    await api("sendMessage", chat_id=chat["id"],
+                              text=f"✅ Group linked ({note}).")
+                except (RuntimeError, OSError):
+                    pass
+            elif chat.get("id") != self.chat_id:
+                return
         if not text.strip() and not any(msg.get(k) for k in
                                         ("document", "photo", "voice", "audio", "video", "video_note")):
             return
