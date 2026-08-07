@@ -354,6 +354,8 @@ class TgAgent:
         uid = (msg.get("from") or {}).get("id")
         chat = msg.get("chat") or {}
         text = msg.get("text") or msg.get("caption") or ""
+        print(f"[msg] chat={chat.get('id')} type={chat.get('type')} uid={uid} "
+              f"text={dev_bot.snippet(text, 40)!r}", flush=True)
         if (msg.get("from") or {}).get("is_bot"):
             return
         # Setup mode: no allowed users configured — echo the ids for .env, once per chat.
