@@ -332,6 +332,7 @@ class TgAgent:
         if not self.chat_id or not self.allowed:
             if chat.get("id") not in self.setup_replied:
                 self.setup_replied.add(chat.get("id"))
+                print(f"[setup] chat={chat.get('id')} type={chat.get('type')} user={uid}", flush=True)
                 try:
                     await api("sendMessage", chat_id=chat["id"],
                               text=("Setup mode — add to BOT_DIR/.env:\n"
