@@ -1,0 +1,14 @@
+[Unit]
+Description=tg-dev-bot: Telegram forum group -> Claude Code (Fable 5) sessions
+After=network-online.target
+
+[Service]
+WorkingDirectory=%h/systems/dev-bot
+Environment=BOT_DIR=%h/systems/tg-dev-bot
+Environment=HOME=%h
+ExecStart=%h/systems/dev-bot/venv/bin/python %h/systems/dev-bot/telegram_bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

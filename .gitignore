@@ -54,3 +54,5 @@ ea-bot/sessions.json
 qa-bot/.env
 qa-bot/transcripts/
 qa-bot/memory/
+tg-dev-bot/.env
+tg-dev-bot/sessions.json
