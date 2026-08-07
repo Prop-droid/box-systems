@@ -1,26 +1,30 @@
 #!/usr/bin/env python3
-"""telegram-agent: Telegram forum topics -> Claude Code sessions on the box.
+"""telegram-agent: Telegram -> Claude Code sessions on the box.
 
 Reuses dev_bot.py's engine (run_claude stream-json runner, sessions.json,
 thread_title, tool_phrase) with a Telegram Bot API transport — plain urllib
 long-polling, no third-party deps.
 
-Model of use (mirrors the Discord channel-agent):
-  Message in the General topic of the forum group = new task -> the bot creates
-  a forum topic + fresh claude session. Message inside a topic = --resume of
-  that topic's session. State: sessions.json (BOT_DIR) maps topic_id -> session_id.
-  Messages sent mid-run get a reaction ack, queue, and land in the same session.
-  Replies over ~12k chars ship as a .md document instead of message spam.
+Two modes, both active when configured:
+  PRIVATE CHAT (zero setup): any ALLOWED_USER_IDS user DMs the bot. One rolling
+    session per user; /new starts a fresh session. This is the default surface.
+  FORUM GROUP (optional, CHAT_ID set to a Topics-enabled supergroup): message in
+    the General topic = new task -> the bot creates a forum topic + fresh
+    session; message inside a topic = --resume of that topic's session.
+
+Shared behavior: messages sent mid-run get a reaction ack, queue, and land in
+the same session (terminal-style). Replies over ~12k chars ship as a .md
+document instead of message spam. State: sessions.json (BOT_DIR).
 
 Instance .env keys (in BOT_DIR):
   TELEGRAM_TOKEN=...        # required (@BotFather)
-  CHAT_ID=-100...           # forum supergroup id; unset = setup mode (bot echoes ids)
-  ALLOWED_USER_IDS=123,456  # telegram user ids allowed to dispatch tasks
+  ALLOWED_USER_IDS=123,456  # required; unset = setup mode (bot echoes ids)
+  CHAT_ID=-100...           # optional forum supergroup id
   CLAUDE_CWD=/home/tomas
   SYSTEM_PROMPT_FILES=/a:/b # optional, same semantics as dev_bot
   MODEL=claude-fable-5
 
-Group setup: create a group -> enable Topics -> add the bot as ADMIN with
+Group mode setup: group -> enable Topics -> add the bot as ADMIN with
 "Manage Topics" (admins see all messages, so privacy mode doesn't matter).
 Run: BOT_DIR=~/systems/tg-dev-bot ~/systems/dev-bot/venv/bin/python telegram_bot.py
 
@@ -47,15 +51,21 @@ DOC_THRESHOLD = 12000   # > ~3 messages -> send a .md document instead
 QUEUED_REACTION = "✍"   # Telegram only allows emoji from its fixed reaction set
 
 TELEGRAM_GUARDRAILS = (
-    "You are dispatched from Tomas's Agentic OS Telegram group for development, "
+    "You are dispatched from Tomas's Agentic OS Telegram bot for development, "
     "system-fix and infra tasks across his fleet (see the fleet-control skill). "
     "Rules: (1) Destructive or hard-to-reverse operations (rm -rf, disabling/"
     "removing services or crons, resets, dropping data) require an explicit "
-    "in-topic confirmation BEFORE running - state the exact command and wait for "
+    "confirmation BEFORE running - state the exact command and wait for "
     "the next message. (2) Never push to work-account (tomas-ejam) repos. "
     "(3) Reply Hermes-style: lead with what changed + proof, short; this lands "
     "in Telegram, so no giant walls of text. (4) If blocked on info only Tomas "
     "has, ask in one compact question."
+)
+
+START_TEXT = (
+    "Developer bot online. Send a task as a plain message — it runs in a fresh "
+    "Claude session that follow-up messages continue. /new starts a clean "
+    "session. Attach files freely; long replies arrive as .md documents."
 )
 
 
@@ -106,15 +116,22 @@ def _download_file(file_path: str, dest: Path):
         dest.write_bytes(r.read())
 
 
+class Ctx:
+    """Where a task lives: chat + optional forum thread + session-map key."""
+    def __init__(self, chat_id: int, thread_id: int | None, key: str):
+        self.chat_id = chat_id
+        self.thread_id = thread_id
+        self.key = key
+
+
 class Board:
     """One Telegram message per task, edited in place — port of dev_bot.StatusBoard."""
     MIN_EDIT_GAP = 3.0  # Telegram edit rate limits are tighter than Discord's
     MAX_TODOS = 8
     MARKS = {"completed": "☑", "in_progress": "▸", "pending": "◻"}
 
-    def __init__(self, chat_id: int, topic_id: int):
-        self.chat_id = chat_id
-        self.topic_id = topic_id
+    def __init__(self, ctx: Ctx):
+        self.ctx = ctx
         self.msg_id: int | None = None
         self.current = "Starting…"
         self.todos: list[dict] = []
@@ -150,11 +167,11 @@ class Board:
             return
         try:
             if self.msg_id is None:
-                m = await api("sendMessage", chat_id=self.chat_id,
-                              message_thread_id=self.topic_id, text=text)
+                m = await api("sendMessage", chat_id=self.ctx.chat_id,
+                              message_thread_id=self.ctx.thread_id, text=text)
                 self.msg_id = m["message_id"]
             else:
-                await api("editMessageText", chat_id=self.chat_id,
+                await api("editMessageText", chat_id=self.ctx.chat_id,
                           message_id=self.msg_id, text=text)
             self._last_text = text
             self._last_edit = time.monotonic()
@@ -202,8 +219,8 @@ class Board:
 class TgAgent:
     def __init__(self):
         self.sessions = dev_bot.load_sessions()
-        self.locks: dict[int, asyncio.Lock] = {}
-        self.queues: dict[int, list[str]] = {}
+        self.locks: dict[str, asyncio.Lock] = {}
+        self.queues: dict[str, list[str]] = {}
         self.chat_id = int(os.environ.get("CHAT_ID", "0") or 0)
         self.allowed = {int(x) for x in
                         os.environ.get("ALLOWED_USER_IDS", "").replace(" ", "").split(",") if x}
@@ -211,11 +228,11 @@ class TgAgent:
         self.setup_replied: set[int] = set()
 
     # --- helpers -----------------------------------------------------------
-    def lock_for(self, tid: int) -> asyncio.Lock:
-        return self.locks.setdefault(tid, asyncio.Lock())
+    def lock_for(self, key: str) -> asyncio.Lock:
+        return self.locks.setdefault(key, asyncio.Lock())
 
-    def queue_for(self, tid: int) -> list[str]:
-        return self.queues.setdefault(tid, [])
+    def queue_for(self, key: str) -> list[str]:
+        return self.queues.setdefault(key, [])
 
     def system_prompt(self) -> str:
         sp = dev_bot.system_prompt()
@@ -255,17 +272,17 @@ class TgAgent:
         return (f"{content}\n\n[Attachments from this Telegram message, saved on the box:\n"
                 f"{listing}\nUse these files as part of the task.]")
 
-    async def send_reply(self, topic_id: int, text: str):
+    async def send_reply(self, ctx: Ctx, text: str):
         text = text.strip() or "(no output)"
         if len(text) > DOC_THRESHOLD:
             head = dev_bot.snippet(text, 900)
-            await asyncio.to_thread(_send_document, self.chat_id, topic_id,
+            await asyncio.to_thread(_send_document, ctx.chat_id, ctx.thread_id,
                                     "reply.md", text.encode(), f"📄 Full reply attached. {head}")
             return
         while text:
             if len(text) <= MSG_LIMIT:
-                await api("sendMessage", chat_id=self.chat_id,
-                          message_thread_id=topic_id, text=text)
+                await api("sendMessage", chat_id=ctx.chat_id,
+                          message_thread_id=ctx.thread_id, text=text)
                 break
             window = text[:MSG_LIMIT]
             cut = window.rfind("\n\n")
@@ -275,52 +292,52 @@ class TgAgent:
                 cut = window.rfind(" ")
             if cut < MSG_LIMIT // 2:
                 cut = MSG_LIMIT
-            await api("sendMessage", chat_id=self.chat_id,
-                      message_thread_id=topic_id, text=text[:cut].rstrip())
+            await api("sendMessage", chat_id=ctx.chat_id,
+                      message_thread_id=ctx.thread_id, text=text[:cut].rstrip())
             text = text[cut:].lstrip()
 
     # --- task flow ---------------------------------------------------------
-    async def enqueue(self, topic_id: int, prompt: str, msg_id: int | None = None):
-        self.queue_for(topic_id).append(prompt)
-        if self.lock_for(topic_id).locked():
+    async def enqueue(self, ctx: Ctx, prompt: str, msg_id: int | None = None):
+        self.queue_for(ctx.key).append(prompt)
+        if self.lock_for(ctx.key).locked():
             if msg_id:
                 try:
-                    await api("setMessageReaction", chat_id=self.chat_id, message_id=msg_id,
+                    await api("setMessageReaction", chat_id=ctx.chat_id, message_id=msg_id,
                               reaction=[{"type": "emoji", "emoji": QUEUED_REACTION}])
                 except (RuntimeError, OSError):
                     pass
             return
-        asyncio.create_task(self.drain(topic_id))
+        asyncio.create_task(self.drain(ctx))
 
-    async def drain(self, topic_id: int):
-        async with self.lock_for(topic_id):
-            q = self.queue_for(topic_id)
+    async def drain(self, ctx: Ctx):
+        async with self.lock_for(ctx.key):
+            q = self.queue_for(ctx.key)
             while q:
                 prompt = "\n\n".join(q)
                 q.clear()
-                resume = self.sessions.get(str(topic_id))
+                resume = self.sessions.get(ctx.key)
                 try:
-                    board = Board(self.chat_id, topic_id)
+                    board = Board(ctx)
                     reply, session_id = await dev_bot.run_claude(
                         prompt, resume, on_block=board.on_block,
                         sys_prompt=self.system_prompt())
                     await board.finish("⏱️" if reply.startswith("⏱️")
                                        else "❌" if reply.startswith("❌") else "✅")
                     if session_id:
-                        self.sessions[str(topic_id)] = session_id
+                        self.sessions[ctx.key] = session_id
                         dev_bot.save_sessions(self.sessions)
-                    await self.send_reply(topic_id, reply)
+                    await self.send_reply(ctx, reply)
                 except Exception as e:
-                    print(f"ERROR: drain({topic_id}): {e!r}", flush=True)
+                    print(f"ERROR: drain({ctx.key}): {e!r}", flush=True)
                     try:
-                        await api("sendMessage", chat_id=self.chat_id,
-                                  message_thread_id=topic_id,
+                        await api("sendMessage", chat_id=ctx.chat_id,
+                                  message_thread_id=ctx.thread_id,
                                   text=f"❌ Task crashed: {e!r}"[:MSG_LIMIT]
                                        + "\nReply here to retry.")
                     except Exception:
                         pass
-        if self.queue_for(topic_id):
-            asyncio.create_task(self.drain(topic_id))
+        if self.queue_for(ctx.key):
+            asyncio.create_task(self.drain(ctx))
 
     async def handle(self, msg: dict):
         uid = (msg.get("from") or {}).get("id")
@@ -328,30 +345,55 @@ class TgAgent:
         text = msg.get("text") or msg.get("caption") or ""
         if (msg.get("from") or {}).get("is_bot"):
             return
-        # Setup mode: not configured yet — echo the ids needed for .env, once per chat.
-        if not self.chat_id or not self.allowed:
+        # Setup mode: no allowed users configured — echo the ids for .env, once per chat.
+        if not self.allowed:
             if chat.get("id") not in self.setup_replied:
                 self.setup_replied.add(chat.get("id"))
                 print(f"[setup] chat={chat.get('id')} type={chat.get('type')} user={uid}", flush=True)
                 try:
                     await api("sendMessage", chat_id=chat["id"],
                               text=("Setup mode — add to BOT_DIR/.env:\n"
-                                    f"CHAT_ID={chat.get('id')}\n"
                                     f"ALLOWED_USER_IDS={uid}\n"
+                                    f"CHAT_ID={chat.get('id')}  # only if this is the forum group\n"
                                     "then restart the service."))
                 except (RuntimeError, OSError):
                     pass
             return
-        if chat.get("id") != self.chat_id or uid not in self.allowed:
+        if uid not in self.allowed:
+            return
+        private = chat.get("type") == "private"
+        if not private and chat.get("id") != self.chat_id:
             return
         if not text.strip() and not any(msg.get(k) for k in
                                         ("document", "photo", "voice", "audio", "video", "video_note")):
             return
+
+        # --- private chat: one rolling session per user, /new resets -------
+        if private:
+            ctx = Ctx(chat["id"], None, f"dm{uid}")
+            cmd = text.strip().lower()
+            if cmd.startswith("/start"):
+                await api("sendMessage", chat_id=ctx.chat_id, text=START_TEXT)
+                return
+            if cmd.startswith("/new"):
+                self.sessions.pop(ctx.key, None)
+                dev_bot.save_sessions(self.sessions)
+                rest = text.strip()[4:].strip()
+                await api("sendMessage", chat_id=ctx.chat_id, text="🆕 Fresh session.")
+                if not rest:
+                    return
+                text = rest
+            content = self.with_attachments(text, await self.save_attachments(msg))
+            await self.enqueue(ctx, content, msg["message_id"])
+            return
+
+        # --- forum group: topic per task -----------------------------------
         files = await self.save_attachments(msg)
         content = self.with_attachments(text, files)
-        topic_id = msg.get("message_thread_id")
-        if topic_id:  # inside an existing topic = follow-up (or fresh session in a manual topic)
-            await self.enqueue(topic_id, content, msg["message_id"])
+        thread_id = msg.get("message_thread_id")
+        if thread_id:  # inside an existing topic = follow-up (or fresh session in a manual topic)
+            await self.enqueue(Ctx(self.chat_id, thread_id, str(thread_id)), content,
+                               msg["message_id"])
             return
         # General topic = new task -> create a forum topic
         fallback = (text.strip().replace("\n", " ")[:80]
@@ -359,19 +401,21 @@ class TgAgent:
         name = await asyncio.to_thread(dev_bot.thread_title, text or fallback, fallback)
         try:
             topic = await api("createForumTopic", chat_id=self.chat_id, name=name[:128])
-            topic_id = topic["message_thread_id"]
-            await api("sendMessage", chat_id=self.chat_id, message_thread_id=topic_id,
+            thread_id = topic["message_thread_id"]
+            await api("sendMessage", chat_id=self.chat_id, message_thread_id=thread_id,
                       text=f"📋 {dev_bot.snippet(text, 300) or fallback}")
         except (RuntimeError, OSError) as e:
             print(f"WARN: createForumTopic failed ({e}); replying in General", flush=True)
-            topic_id = msg["message_id"]  # degrade: session keyed to the message's reply thread
-        await self.enqueue(topic_id, content)
+            thread_id = None  # degrade: single General-keyed session
+        await self.enqueue(Ctx(self.chat_id, thread_id,
+                               str(thread_id) if thread_id else "general"), content)
 
     # --- main loop ---------------------------------------------------------
     async def run(self):
         me = await api("getMe")
-        print(f"telegram-agent ready as @{me.get('username')}; chat={self.chat_id or 'SETUP MODE'}",
-              flush=True)
+        mode = "SETUP MODE" if not self.allowed else \
+            f"dm={sorted(self.allowed)} group={self.chat_id or 'off'}"
+        print(f"telegram-agent ready as @{me.get('username')}; {mode}", flush=True)
         while True:
             try:
                 updates = await api("getUpdates", http_timeout=60, offset=self.offset,
