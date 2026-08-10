@@ -1,0 +1,5 @@
+[Unit]
+Description=tax-reminder (monthly 27th -> Google Tasks)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/tax-reminder/run.sh

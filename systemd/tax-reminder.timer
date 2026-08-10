@@ -1,0 +1,7 @@
+[Unit]
+Description=tax-reminder timer (27th of every month)
+[Timer]
+OnCalendar=*-*-27 09:00:00
+Persistent=true
+[Install]
+WantedBy=timers.target

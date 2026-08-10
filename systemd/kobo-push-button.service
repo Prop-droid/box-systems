@@ -1,0 +1,11 @@
+[Unit]
+Description=kobo-push-button (manual one-tap trigger for kobo-books-push, port 8091)
+After=network-online.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/tomas/systems/kobo-books-push/push_button.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
