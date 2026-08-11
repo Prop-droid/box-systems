@@ -4,7 +4,7 @@ import { readdirSync, readFileSync, existsSync } from 'fs'
 import { join } from 'path'
 import { execFileSync } from 'child_process'
 import { assembleLane, classifyLanes } from './score.mjs'
-import { tagAds, proposeLanes } from './tag.mjs'
+import { tagAds, proposeLanes, suggestBriefs } from './tag.mjs'
 
 const DRY = process.argv.includes('--dry-run')
 const KEY = process.env.GEMINI_API_KEY
@@ -151,6 +151,7 @@ async function main() {
   )
   // Final classification is RELATIVE across our covered lanes (see classifyLanes).
   lanes = classifyLanes(lanes)
+  await suggestBriefs(lanes, KEY)
 
   const unmatched = recent.filter(a => adLaneRaw[a.id] === 'unmatched')
   const proposed = await proposeLanes(unmatched, KEY)

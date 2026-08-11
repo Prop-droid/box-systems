@@ -57,6 +57,39 @@ export async function tagAds(ads, canon, key, fetchImpl = fetch) {
 }
 
 /**
+ * Pass 3 (spec 2026-06-25): one-line suggestedBrief per actionable lane.
+ * Only gap/emerging lanes get suggestions; others stay null. Never throws;
+ * errors leave every lane's suggestedBrief null.
+ * @param {Array} lanes - assembled+classified lanes (mutated in place)
+ * @param {string} key - Gemini API key
+ * @param {Function} fetchImpl - Injected fetch
+ * @returns {Promise<Array>} the same lanes array
+ */
+export async function suggestBriefs(lanes, key, fetchImpl = fetch) {
+  const actionable = lanes.filter(l => l.classification === 'gap' || l.classification === 'emerging')
+  if (!actionable.length) return lanes
+  const list = actionable
+    .map(l => {
+      const ev = (l.evidence || []).slice(0, 3).map(e => `${e.brand}: "${e.title}"`).join('; ')
+      return `- ${l.id} (${l.classification}, ${l.competitorValidation.advertisers} advertisers, ${l.competitorValidation.variants} variants): ${l.label}. Evidence: ${ev || 'none'}`
+    })
+    .join('\n')
+  const prompt =
+    `Shameless Snacks (low-sugar high-fiber gummy candy) has these untested or rising competitor ad lanes:\n${list}\n\n` +
+    `For each lane, write ONE line a creative strategist could brief from: "Test <specific angle> for <persona>" — concrete, grounded in the evidence, no hype. ` +
+    `Return STRICT JSON mapping lane id to the line: {"<laneId>":"<one line>"}. No prose.`
+  try {
+    const map = await geminiJSON(key, prompt, fetchImpl)
+    for (const l of actionable) {
+      if (typeof map[l.id] === 'string' && map[l.id].trim()) l.suggestedBrief = map[l.id].trim()
+    }
+  } catch (e) {
+    console.error('suggestBriefs failed:', e.message)
+  }
+  return lanes
+}
+
+/**
  * Cluster unmatched ads into candidate new lane proposals.
  * Returns [] if fewer than 3 ads; filters to clusters with >=3 distinct brands.
  * @param {Array<{brand: string, title?: string, body?: string, variantCount?: number}>} unmatchedAds

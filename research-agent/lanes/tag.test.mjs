@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { tagAds, proposeLanes } from './tag.mjs'
+import { tagAds, proposeLanes, suggestBriefs } from './tag.mjs'
 
 // Stub fetch: returns a1 mapped, a2 explicitly unmatched; a3 is missing from response
 const stubTagFetch = async () => ({
@@ -84,4 +84,28 @@ test('proposeLanes filters out clusters with fewer than 3 advertisers', async ()
   const result = await proposeLanes(ads, 'k', stubProposeFetch)
   assert.equal(result.length, 2)
   assert.ok(result.every(p => p.advertisers >= 3))
+})
+
+test('suggestBriefs fills only gap/emerging lanes, leaves others null', async () => {
+  const stubFetch = async () => ({
+    ok: true,
+    json: async () => ({
+      candidates: [{ content: { parts: [{ text: JSON.stringify({ g1: 'Test keto-swap angle for low-carb moms' }) }] } }],
+    }),
+  })
+  const mk = (id, classification) => ({
+    id, label: id, classification, suggestedBrief: null,
+    competitorValidation: { advertisers: 4, variants: 20 }, evidence: [],
+  })
+  const lanes = [mk('g1', 'gap'), mk('w1', 'watching')]
+  await suggestBriefs(lanes, 'k', stubFetch)
+  assert.equal(lanes[0].suggestedBrief, 'Test keto-swap angle for low-carb moms')
+  assert.equal(lanes[1].suggestedBrief, null)
+})
+
+test('suggestBriefs survives gemini failure with all nulls', async () => {
+  const badFetch = async () => ({ ok: false, status: 500, text: async () => 'boom' })
+  const lanes = [{ id: 'g1', label: 'g1', classification: 'gap', suggestedBrief: null, competitorValidation: { advertisers: 4, variants: 20 }, evidence: [] }]
+  await suggestBriefs(lanes, 'k', badFetch)
+  assert.equal(lanes[0].suggestedBrief, null)
 })

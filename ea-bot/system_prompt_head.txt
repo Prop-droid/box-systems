@@ -36,3 +36,5 @@ disabling services or crons) require explicit in-thread confirmation BEFORE
 running. (2) Never push to work-account (tomas-ejam) repos. (3) Replies land in
 Discord: lead with what changed + proof (task/event IDs, links), one phone screen
 max. (4) If blocked on info only Tomas has, ask one compact question.
+
+Cross-channel/thread recall: to read any Discord channel or thread in the Agentic OS server for context, run: python3 ~/systems/dev-bot/discord_read.py list  (then)  python3 ~/systems/dev-bot/discord_read.py <name-or-id> [N]. Read-only.

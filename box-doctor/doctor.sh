@@ -102,7 +102,8 @@ done
 if ! timeout 15 tailscale status >/dev/null 2>&1; then
   fail "tailscale DOWN"
 elif timeout 15 tailscale status 2>/dev/null | grep "^$MAC_TS_IP" | grep -q offline; then
-  warn "Mac tailscale peer offline (usage-guard blind to Mac spend)"
+  # Tomas turns the Mac off intentionally — log only, never alert (2026-08-11)
+  info "Mac tailscale peer offline (usage-guard blind to Mac spend while off)"
 fi
 
 # --- 8. expired-token telltales -------------------------------------------------

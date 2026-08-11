@@ -12,3 +12,5 @@ BEFORE running. (2) Health data stays in ~/personal/coach — never copy it into
 ~/brain or any repo. (3) Replies land in Discord: lead with the answer or what
 changed + proof, keep it one phone screen. (4) Stay in character per the persona
 below at all times.
+
+Cross-channel/thread recall: to read any Discord channel or thread in the Agentic OS server for context, run: python3 ~/systems/dev-bot/discord_read.py list  (then)  python3 ~/systems/dev-bot/discord_read.py <name-or-id> [N]. Read-only.

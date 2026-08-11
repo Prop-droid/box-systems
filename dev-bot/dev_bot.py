@@ -59,7 +59,9 @@ DEFAULT_GUARDRAILS = (
     "wait for the next message. (2) Never push to work-account (tomas-ejam) repos. "
     "(3) Reply Hermes-style: lead with what changed + proof, short; this lands in "
     "Discord, so no giant walls of text. (4) If blocked on info only Tomas has, ask "
-    "in one compact question."
+    "in one compact question. (5) To read any Discord channel or thread for context "
+    "(cross-channel/thread recall), run: python3 ~/systems/dev-bot/discord_read.py "
+    "list | <name-or-id> [N]."
 )
 
 
@@ -340,6 +342,36 @@ async def thread_context(thread: discord.Thread, limit: int = 15) -> str:
     return "\n".join(reversed(lines))
 
 
+async def channel_context(channel, exclude_thread_id: int | None = None,
+                          limit: int = 10, thread_tails: int = 2) -> str:
+    """Recent parent-channel messages + tails of the most recently active threads.
+    Injected into fresh sessions so terse follow-ups ('A', 'yes do that') that refer
+    to a conversation in the channel or a sibling thread still resolve."""
+    if channel is None:
+        return ""
+    parts = []
+    lines = []
+    try:
+        async for m in channel.history(limit=limit):
+            if m.id == exclude_thread_id:
+                continue  # the triggering message itself (thread id == starter msg id)
+            txt = " ".join(m.content.split())
+            if not txt or txt.startswith(("⏳", "☑", "◻", "▸", "-#")):
+                continue
+            lines.append(f"{m.author.display_name}: {txt[:400]}")
+    except discord.HTTPException:
+        pass
+    if lines:
+        parts.append(f"[#{channel.name} recent messages]\n" + "\n".join(reversed(lines)))
+    threads = [t for t in getattr(channel, "threads", []) if t.id != exclude_thread_id]
+    threads.sort(key=lambda t: t.last_message_id or 0, reverse=True)
+    for t in threads[:thread_tails]:
+        tail = await thread_context(t, limit=8)
+        if tail:
+            parts.append(f"[thread “{t.name}” recent messages]\n{tail}")
+    return "\n\n".join(parts)
+
+
 class ChannelAgent(discord.Client):
     def __init__(self, channel_name: str):
         intents = discord.Intents.default()
@@ -425,11 +457,20 @@ class ChannelAgent(discord.Client):
                 q.clear()
                 resume = self.sessions.get(str(thread.id))  # resolved NOW, not at message time
                 if resume is None:
-                    # First turn in this thread for THIS bot (e.g. @mentioned into another
-                    # agent's thread) — give the session the conversation so far.
-                    ctx = await self.thread_context(thread)
-                    if ctx:
-                        prompt = (f"[Discord thread context so far, oldest first]\n{ctx}\n\n"
+                    # Fresh session — give it the conversation so far: this thread (when
+                    # @mentioned into an existing one) AND the surrounding channel + sibling
+                    # threads, so a terse new task ('A') referring to a prior exchange lands.
+                    ctx_parts = []
+                    tctx = await self.thread_context(thread)
+                    if tctx:
+                        ctx_parts.append(f"[This thread so far, oldest first]\n{tctx}")
+                    cctx = await channel_context(thread.parent, exclude_thread_id=thread.id)
+                    if cctx:
+                        ctx_parts.append(cctx)
+                    if ctx_parts:
+                        ctx = "\n\n".join(ctx_parts)
+                        prompt = (f"[Discord context — background only; the request may refer "
+                                  f"to it (e.g. picking an option offered earlier)]\n{ctx}\n\n"
                                   f"[Latest request addressed to you]\n{prompt}")
                 try:
                     board = StatusBoard(thread)
