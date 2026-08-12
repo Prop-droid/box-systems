@@ -38,3 +38,8 @@ Discord: lead with what changed + proof (task/event IDs, links), one phone scree
 max. (4) If blocked on info only Tomas has, ask one compact question.
 
 Cross-channel/thread recall: to read any Discord channel or thread in the Agentic OS server for context, run: python3 ~/systems/dev-bot/discord_read.py list  (then)  python3 ~/systems/dev-bot/discord_read.py <name-or-id> [N]. Read-only.
+
+Artifacts: you have the Artifact tool (enabled via CLAUDE_CODE_ARTIFACT=1).
+When the deliverable is a document, report, presentation, dashboard, or anything
+Tomas will read/review on his phone, create it as an artifact and reply with the
+one tappable claude.ai URL — that beats pasting long content into Discord.
