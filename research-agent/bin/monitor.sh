@@ -137,7 +137,7 @@ with open(feed_path, "a", encoding="utf-8") as f:
                     "date": now, "source": f"atria:{bname.lower().replace(' ','-')}",
                     "type": "note", "severity": "notable" if winning else "info",
                     "title": f"{bname}: {len(group)} new ads in one day",
-                    "summary": f"Bulk arrival ({winning} in winning lanes) — newly monitored brand or a mass launch. See the swipe tab for the full set.",
+                    "summary": f"Bulk arrival ({winning} in winning lanes) — newly monitored brand or a mass launch. See the Competitors tab for the full set.",
                     "url": "", "thumbnail": "",
                 }, ensure_ascii=False) + "\n")
                 emitted += 1
