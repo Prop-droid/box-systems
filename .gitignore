@@ -56,3 +56,6 @@ qa-bot/transcripts/
 qa-bot/memory/
 tg-dev-bot/.env
 tg-dev-bot/sessions.json
+
+# Tablet self-heal runtime state (IP cache, dead flag, settings dump)
+.state/

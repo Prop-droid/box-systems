@@ -124,8 +124,14 @@ command to prove a change works before the timer fires.
 - **lib/** — `hermes_fallback.sh`: shared retry-through-Hermes for failed headless
   claude runs (`hermes_fallback <prompt_file> <out> <err>`; spends paid tokens,
   only fires on actual failure).
-- **tablet-night-mode.sh** — day/night dashboard modes via Fully REST (22:00 night: motion-gated black screensaver, camera senses motion; 08:00 day: screen always on, motionDetection OFF so camera is on-demand only). tablet-screen.sh (raw adb off/on) kept as manual tool.
-  23:00/07:00 via tablet-screen-{off,on} units.
+- **tablet-night-mode.sh** — day/night dashboard modes + self-heal via Fully REST
+  (22:00 night: sensitivity 50, black screensaver; 08:00 day: sensitivity 90,
+  motion-wake). `rearm` (every 15 min) heals: Fully dead → adb relaunch when the
+  tablet is idle (never steals foreground mid-use; Discord #ops-log alert once
+  per outage if adb is down too); alive → re-asserts drifted motion settings.
+  IP discovered by probing REST on .160/.161 (cached in `.state/tablet-ip`) —
+  never derived from adb. tablet-screen.sh (raw adb off/on) kept as manual tool.
+  22:00/08:00 via tablet-screen-{off,on} units.
 
 ## systemd user-unit patterns
 

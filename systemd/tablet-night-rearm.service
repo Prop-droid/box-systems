@@ -1,5 +1,5 @@
 [Unit]
-Description=Tablet night mode re-arm: restart screensaver if motion knocked it out
+Description=Tablet self-heal: relaunch Fully if dead, re-assert day/night motion settings, restart night screensaver
 After=network-online.target
 
 [Service]
