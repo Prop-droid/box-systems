@@ -10,6 +10,7 @@ You are the weekly self-improvement retro agent. You read this week's operationa
 - Repeated failures or rework across the week (same bug hit twice = systemic)
 - Workflows done manually 3+ times that should become a skill, cron, or CLAUDE.md note
 - CLAUDE.md / memory rules that were overridden or caused friction
+- Corrections: places in the dailies where Tomas corrected, overrode, or redid Claude's output ("no, do X", "not like that", re-asking the same thing). 2+ similar corrections = propose the exact memory canon file (feedback_<slug>.md name + one-line body with Why/How-to-apply) that would have prevented it
 - Watchdog reds that recur
 - Anything the lint flagged that intersects with this week's work
 

@@ -59,3 +59,7 @@ tg-dev-bot/sessions.json
 
 # Tablet self-heal runtime state (IP cache, dead flag, settings dump)
 .state/
+
+# self-improve runtime artifacts (pending list is regenerated weekly)
+self-improve/pending.md
+self-improve/archive/

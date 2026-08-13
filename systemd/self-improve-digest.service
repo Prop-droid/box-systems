@@ -1,0 +1,5 @@
+[Unit]
+Description=self-improve-digest (merge agent proposals -> pending.md -> Discord)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/self-improve/run_digest.sh
