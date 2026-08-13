@@ -1,0 +1,7 @@
+[Unit]
+Description=skill-telemetry timer (Sun 04:00, before agents-weekly + self-improve digest)
+[Timer]
+OnCalendar=Sun *-*-* 04:00:00
+Persistent=true
+[Install]
+WantedBy=timers.target

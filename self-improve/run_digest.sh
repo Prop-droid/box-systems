@@ -52,6 +52,7 @@ add_block "SKILL GARDEN"       "$(newest_report "$SYS/agents/reports/skill-garde
 add_block "MEMORY HYGIENE"     "$(newest_report "$SYS/agents/reports/memory-hygiene")"
 add_block "CONSOLIDATION (monthly)" "$(newest_report "$SYS/agents/reports/consolidation" 32)"
 add_block "TOKEN AUDIT (monthly)"   "$(newest_report "$SYS/agents/reports/token-audit" 32)"
+add_block "SKILL TELEMETRY"         "$(newest_report "$SYS/skill-telemetry/reports")"
 add_block "TASK-LESSONS PROPOSALS"     "$SYS/task-lessons/proposals.md"
 add_block "CREATIVE-FEEDBACK PROPOSALS" "$SYS/creative-feedback/proposals.md"
 

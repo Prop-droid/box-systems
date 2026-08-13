@@ -1,0 +1,5 @@
+[Unit]
+Description=skill-telemetry (weekly skill/tool usage report from transcripts)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/skill-telemetry/run_telemetry.sh
