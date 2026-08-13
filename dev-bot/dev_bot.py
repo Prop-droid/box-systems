@@ -11,6 +11,7 @@ Instances are configured via .env in BOT_DIR (default: script dir):
   CLAUDE_CWD=/home/tomas                 # cwd for claude sessions
   SYSTEM_PROMPT_FILES=/path/a:/path/b    # optional, concatenated; else default guardrails
   MODEL=claude-fable-5
+  EFFORT=xhigh                           # reasoning effort (low|medium|high|xhigh|max)
 
 Messages that @mention a bot are ignored here — those belong to the agentic-bots
 persona runner (draft-and-approve), which answers DMs/@mentions. Plain channel
@@ -267,6 +268,7 @@ async def run_claude(prompt: str, resume: str | None, on_block=None,
     cmd = [
         CLAUDE_BIN, "-p", prompt,
         "--model", model or os.environ.get("MODEL", "claude-fable-5"),
+        "--effort", os.environ.get("EFFORT", "xhigh"),
         "--dangerously-skip-permissions",
         "--output-format", "stream-json",
         "--verbose",
