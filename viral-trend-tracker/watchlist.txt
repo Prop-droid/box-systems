@@ -1,0 +1,20 @@
+# Viral Trend Tracker watchlist — SHA-relevant ingredients / claims / formats / trends.
+# One term per line; '#' comments ignored. Keep terms specific enough to search cleanly.
+fibermaxxing
+high fiber snacks
+high fiber candy
+prebiotic soda
+protein candy
+low sugar candy
+gut health snacks
+cottage cheese chips
+creatine gummies
+fiber gummies
+dubai chocolate
+protein snacks
+sugar free candy
+functional candy
+gut healthy snacks
+fiber supplement
+prebiotic snacks
+GLP-1 snacks
