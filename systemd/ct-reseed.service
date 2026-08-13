@@ -1,0 +1,5 @@
+[Unit]
+Description=ct-reseed (keep twitter-cli x-client-transaction cache <1h warm)
+[Service]
+Type=oneshot
+ExecStart=%h/.local/share/uv/tools/twitter-cli/bin/python %h/systems/agent-reach/reseed_ct.py
