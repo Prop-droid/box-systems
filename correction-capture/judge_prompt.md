@@ -20,8 +20,10 @@ REJECT (by omitting) anything that is:
 
 ## Output format
 
-Output ONLY JSONL, one object per ACCEPTED candidate, nothing else. Empty
-output is valid if nothing qualifies. Each line exactly:
+Output ONLY JSONL, one object per ACCEPTED candidate, nothing else. If no
+candidate qualifies, output exactly this single line (it distinguishes a real
+empty verdict from a silent failure): {"candidate_id":"none"}
+Each accepted line exactly:
 
 {"candidate_id":"<id>","skill":"<area>","summary":"<one line: what the agent did wrong or what rule Tomas stated>","lesson":"<one-line reusable rule>","how_to_apply":"<one line: how the agent acts on it next time>","tags":["correction","source:<box|mac>"]}
 

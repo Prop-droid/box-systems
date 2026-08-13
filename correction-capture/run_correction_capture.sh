@@ -33,7 +33,7 @@ echo ">> judging $(wc -l < "$BATCH" | tr -d ' ') candidate(s), $(wc -l < "$REST"
 PROMPT_TMP="$(mktemp)"
 { cat judge_prompt.md; echo; echo "=== CANDIDATES ==="; cat "$BATCH"; } > "$PROMPT_TMP"
 OUT_TMP="$(mktemp)"; ok=0
-if claude -p --model claude-sonnet-4-6 --output-format text < "$PROMPT_TMP" > "$OUT_TMP" 2>"$DIR/_claude.err"; then
+if timeout 1800 /usr/local/bin/claude-max --print --model claude-sonnet-4-6 --output-format text < "$PROMPT_TMP" > "$OUT_TMP" 2>"$DIR/_claude.err" && [ -s "$OUT_TMP" ]; then
   ok=1
 elif command -v hermes_fallback >/dev/null 2>&1 && hermes_fallback "$PROMPT_TMP" "$OUT_TMP" "$DIR/_claude.err"; then
   ok=1; echo ">> recovered via hermes"
