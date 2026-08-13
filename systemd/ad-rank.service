@@ -1,0 +1,5 @@
+[Unit]
+Description=ad-rank (nightly Meta Ad Library impression-rank scrape, SCS Phase 2)
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/uv run --with camoufox python3 %h/systems/ad-rank/rank_scrape.py

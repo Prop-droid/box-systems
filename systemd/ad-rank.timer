@@ -1,0 +1,7 @@
+[Unit]
+Description=ad-rank timer (02:15, after the 01:45 research-monitor Atria pull)
+[Timer]
+OnCalendar=*-*-* 02:15:00
+Persistent=true
+[Install]
+WantedBy=timers.target
