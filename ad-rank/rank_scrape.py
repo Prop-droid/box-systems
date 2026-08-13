@@ -163,6 +163,21 @@ def main():
             if i < len(page_ids) - 1:
                 time.sleep(random.uniform(8, 15))
 
+    # Merge by brand: a partial/manual run (subset of brands) must not wipe the
+    # other brands' rows already written today. Keep existing rows for brands not
+    # in this run, replace those that are.
+    scraped_brands = {r["brand"] for r in records}
+    if out_path.exists():
+        for line in out_path.read_text().splitlines():
+            if not line.strip():
+                continue
+            try:
+                r = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if r.get("brand") not in scraped_brands:
+                records.append(r)
+    records.sort(key=lambda r: (r["brand"], r["rank"]))
     tmp = out_path.with_suffix(".tmp")
     tmp.write_text("".join(json.dumps(r) + "\n" for r in records))
     tmp.rename(out_path)
