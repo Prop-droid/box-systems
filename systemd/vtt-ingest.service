@@ -1,0 +1,5 @@
+[Unit]
+Description=vtt-ingest (Viral Trend Tracker — all ingest lanes: reddit/x/youtube/ads)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/viral-trend-tracker/run_all.sh

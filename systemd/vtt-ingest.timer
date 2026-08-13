@@ -1,5 +1,5 @@
 [Unit]
-Description=vtt-reddit timer (02:45, after ad-rank 02:15)
+Description=vtt-ingest timer (02:45, after ad-rank 02:15)
 [Timer]
 OnCalendar=*-*-* 02:45:00
 Persistent=true

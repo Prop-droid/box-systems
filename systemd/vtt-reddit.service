@@ -1,6 +1,0 @@
-[Unit]
-Description=vtt-reddit (Viral Trend Tracker — Reddit social-heat ingest)
-[Service]
-Type=oneshot
-Environment=VTT_DIR=%h/brain/projects/2026-08/viral-trend-tracker
-ExecStart=/usr/bin/python3 %h/systems/viral-trend-tracker/ingest_reddit.py
