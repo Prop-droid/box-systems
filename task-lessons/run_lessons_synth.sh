@@ -50,6 +50,19 @@ for l in sys.stdin:
     except Exception: continue
     print(l)' < "$OUT_TMP" > "$DIR/proposals.jsonl"
   python3 render_proposals_md.py < "$DIR/proposals.jsonl" > "$DIR/proposals.md"
+  # Rule-gate: annotate memory-target proposals with contradiction/redundancy/
+  # vagueness verdicts so the human approve step is informed (advisory, never
+  # blocks; a gate failure must not fail the synth).
+  GATE="$HOME/systems/rule-gate/gate.py"
+  if [ -f "$GATE" ] && grep -q '"kind": *"memory"\|"type": *"memory"' "$DIR/proposals.jsonl" 2>/dev/null; then
+    echo ">> rule-gate: checking memory-target proposals"
+    {
+      echo; echo "## Rule-gate verdicts (memory-target proposals)"; echo
+      echo '```'
+      python3 "$GATE" --proposals "$DIR/proposals.jsonl" 2>>"$LOG" || true
+      echo '```'
+    } >> "$DIR/proposals.md"
+  fi
   echo "=== done $TS — $(wc -l < "$DIR/proposals.jsonl" | tr -d ' ') proposal(s) ==="
 else
   echo "FAILED: claude -p and hermes fallback both failed (see _claude.err)"
