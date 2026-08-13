@@ -1,0 +1,7 @@
+[Unit]
+Description=correction-capture timer (weekly, before Tue task-lessons synth)
+[Timer]
+OnCalendar=Mon *-*-* 04:30:00
+Persistent=true
+[Install]
+WantedBy=timers.target

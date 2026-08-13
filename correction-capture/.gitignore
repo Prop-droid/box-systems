@@ -1,0 +1,5 @@
+staging/
+logs/
+state.json
+candidates.jsonl
+_claude.err

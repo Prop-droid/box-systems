@@ -1,0 +1,5 @@
+[Unit]
+Description=correction-capture (mine Tomas-corrections from transcripts -> task-lessons ledger)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/correction-capture/run_correction_capture.sh
