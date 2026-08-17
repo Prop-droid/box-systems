@@ -1,0 +1,5 @@
+[Unit]
+Description=vtt-digest (weekly 3 viral trends + 1 brief → Tomas Pod ClickUp chat)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/viral-trend-tracker/run_digest.sh
