@@ -260,6 +260,54 @@ def with_attachments(content: str, paths: list[str]) -> str:
             f"{listing}\nUse these files as part of the task.]")
 
 
+COMPACT_AT = 250_000  # tokens; ~300k+ contexts get 529-load-shed on every call (INTEL wedge, 2026-08-13)
+
+
+def session_context_tokens(session_id: str, cwd: str | None = None) -> int:
+    """Context the next resume of this session will carry, read from its transcript.
+    Last assistant usage after the most recent compact boundary; 0 if unknown."""
+    root = Path(os.path.expanduser(cwd or os.environ.get("CLAUDE_CWD", "~"))).resolve()
+    proj = str(root).replace("/", "-").replace(".", "-")
+    path = Path.home() / ".claude" / "projects" / proj / f"{session_id}.jsonl"
+    tokens = 0
+    try:
+        with open(path, "rb") as fh:
+            fh.seek(max(0, path.stat().st_size - 262_144))  # usage lives near the end
+            for raw in fh.read().decode("utf-8", "replace").splitlines():
+                try:
+                    d = json.loads(raw)
+                except ValueError:
+                    continue
+                if d.get("type") == "system" and d.get("subtype") == "compact_boundary":
+                    tokens = 0
+                elif d.get("type") == "assistant":
+                    u = (d.get("message") or {}).get("usage") or {}
+                    t = (u.get("input_tokens", 0) + u.get("cache_read_input_tokens", 0)
+                         + u.get("cache_creation_input_tokens", 0))
+                    if t:
+                        tokens = t
+    except OSError:
+        return 0
+    return tokens
+
+
+async def compact_session(session_id: str, cwd: str | None = None) -> bool:
+    """Run /compact on a session between turns, before it reaches 529-shed size."""
+    env = dict(os.environ)
+    env["PATH"] = os.path.expanduser("~/.local/bin") + ":" + env.get("PATH", "")
+    proc = await asyncio.create_subprocess_exec(
+        CLAUDE_BIN, "-p", "--resume", session_id, "/compact",
+        cwd=os.path.expanduser(cwd or os.environ.get("CLAUDE_CWD", "~")), env=env,
+        stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
+    )
+    try:
+        await asyncio.wait_for(proc.wait(), timeout=600)
+    except asyncio.TimeoutError:
+        proc.kill()
+        return False
+    return proc.returncode == 0
+
+
 async def run_claude(prompt: str, resume: str | None, on_block=None,
                      cwd: str | None = None, model: str | None = None,
                      sys_prompt: str | None = None) -> tuple[str, str | None]:
@@ -474,6 +522,15 @@ class ChannelAgent(discord.Client):
                         prompt = (f"[Discord context — background only; the request may refer "
                                   f"to it (e.g. picking an option offered earlier)]\n{ctx}\n\n"
                                   f"[Latest request addressed to you]\n{prompt}")
+                if resume and session_context_tokens(resume) > COMPACT_AT:
+                    try:
+                        note = await thread.send(
+                            "🗜️ Session context near the 529 wedge zone — compacting first (~1-2 min)…")
+                        ok = await compact_session(resume)
+                        await note.edit(content="🗜️ Session compacted." if ok else
+                                        "🗜️ Compaction failed — continuing on the full context.")
+                    except discord.HTTPException:
+                        pass
                 try:
                     board = StatusBoard(thread)
                     async with thread.typing():
