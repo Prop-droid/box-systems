@@ -25,7 +25,8 @@ msg += block("🎬 Top 3 videos · launched last 7 days", d["last7"]["videos"], 
 msg += block("🖼️ Top 3 images · launched last 7 days", d["last7"]["images"], 3)
 msg += block("🎬 Top 5 videos · launched last 30 days", d["last30"]["videos"], 5)
 msg += block("🖼️ Top 5 images · launched last 30 days", d["last30"]["images"], 5)
-msg += block(f"🏁 Quarter leaderboard · launched since {rg['quarter']['from']}", d["quarter"], 10)
+msg += block(f"🏁 Top 5 videos · launched since {rg['quarter']['from']}", d["quarter"]["videos"], 5)
+msg += block(f"🏁 Top 5 images · launched since {rg['quarter']['from']}", d["quarter"]["images"], 5)
 msg += [f"Full boards with thumbnails and margins: {boards_url}"]
 text = "\n".join(msg)
 
