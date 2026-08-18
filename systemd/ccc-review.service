@@ -1,0 +1,6 @@
+[Unit]
+Description=ccc-review (weekly multi-agent CCC surface scan, rotating slice → Discord)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/ccc-review/run_review.sh
+TimeoutStartSec=3900

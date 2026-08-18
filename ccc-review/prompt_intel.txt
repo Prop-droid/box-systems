@@ -1,0 +1,7 @@
+SLICE: intel — the /intel page and its five tabs.
+Areas (one subagent each):
+- Signals: app/components/research/SignalsView.tsx + shared.tsx + ActionButton.tsx, /api/research/today + dismiss, lib/lanesServer.ts, lib/signalLedger.ts. Verify lane transitions are non-zero when the lanes archive shows real transitions (diff the two newest dated files yourself to know the truth).
+- Momentum: app/components/research/TrendingView.tsx, /api/research/trending, lib/trending.ts, lib/competitorPatterns.ts. Verify accountAvailable/tagsAvailable are true and risers/faders non-empty on a weekday.
+- Viral (VTT): app/components/research/TrendsView.tsx, /api/research/trends, lib/vtt.ts, lib/vttServer.ts, data dir per VTT_DIR in .env.local. Verify daysBySource is advancing night over night and no configError.
+- Competitors: app/components/SwipeView.tsx + research/CompetitorsView.tsx + LanesView.tsx, /api/swipe/atria, lib/scs.ts, lib/scsServer.ts, lib/rank.ts. Verify the SCS join is non-zero and the newest curated Atria file is <36h old.
+- Comments: app/components/CommentsExplorer.tsx, /api/comments, /api/research/digest, lib/commentsDigest.ts, lib/commentsQueries.ts. Verify digest questions/ugcQuotes/sentiment all parse non-empty from the newest digest file (parser drift is the known failure mode).

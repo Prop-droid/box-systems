@@ -5,7 +5,7 @@ set -uo pipefail
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 NOTIFY="$HOME/systems/lib/discord-notify.sh"
-TIMERS="bq-clickup-perf winners-refresh comments-digest research-monitor ad-rank vtt-ingest vtt-digest research-deepdive sha-weekly-report creative-feedback-synth gbrain-weekly raw-ingest-scan agents-weekly agents-monthly box-doctor qa-smoke night-queue-resume self-improve-digest correction-capture skill-telemetry"
+TIMERS="bq-clickup-perf winners-refresh comments-digest research-monitor ad-rank vtt-ingest vtt-digest research-deepdive sha-weekly-report creative-feedback-synth gbrain-weekly raw-ingest-scan agents-weekly agents-monthly box-doctor qa-smoke night-queue-resume self-improve-digest correction-capture skill-telemetry ccc-review"
 WD_DIR="$HOME/systems/watchdog"; mkdir -p "$WD_DIR/reports"
 fails=(); oks=()
 for t in $TIMERS; do

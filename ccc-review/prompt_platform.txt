@@ -1,0 +1,7 @@
+SLICE: platform — app shell, navigation, and plumbing health.
+Areas (one subagent each):
+- Shell + nav: app/layout.tsx, TopNav.tsx, CommandPalette.tsx, ShCode.tsx deep links (every ?mode=/?sh= target must resolve), legacy pages (app/comments, app/swipe, app/research — do they still exist, do they redirect, should they die), middleware.
+- API hygiene: every route under app/api — zero-consumer routes (grep clients), missing force-dynamic/runtime declarations, error contracts ({error}+status vs silent empties), withCache keys/TTLs that can pin degraded data.
+- State + caching: useApi.ts (TTL, retry, invalidate coverage after POSTs), usePersistentState keys (orphaned ccc.v1.* keys no longer read), WeekProvider edges (Monday/first-of-month).
+- Cron-fed freshness: /api/cron-status vs the real timers (systemctl --user list-timers) — every data dir CCC reads should have a live producer; flag any feed whose newest file is stale vs its schedule.
+- Tests + docs drift: does tests/ still cover the parsers it claims (parser+fixture+vitest convention), does CLAUDE.md's branch/known-bugs section match reality, any TODO/ROADMAP items silently done or rotted.

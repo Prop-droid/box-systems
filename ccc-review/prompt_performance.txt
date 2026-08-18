@@ -1,0 +1,7 @@
+SLICE: performance — the ad-performance surfaces.
+Areas (one subagent each):
+- /work: app/work/page.tsx + app/components/WorkView.tsx, its APIs (/api/creatives*, /api/reconcile), lib/rules.ts verdicts + lib/verdictConfidence.ts. Verify verdicts render on live data and KILL/WATCH counts are sane; remember SCALE is advisory-only by design (docs/ROADMAP.md) — do not propose tuning it.
+- /performance: app/performance/page.tsx + app/components/CreativeDetail.tsx, /api/creatives/daily, /api/trends (per-ad fatigue), day-drill + sibling comparison. Verify a day-drill on a live ad returns rows and the date-range picker matches BQ freshness (BQ lags ~1 day).
+- /leaderboards: app/leaderboards/page.tsx + LeaderboardsView.tsx, /api/leaderboards, ~/systems/ccc-leaderboard cron output freshness.
+- /funnel + LPs: app/components/FunnelView.tsx + LpTable.tsx, /api/funnel, /api/landing-pages*. Verify LP spend joins are non-empty.
+- Cross-cutting: lib/queries.ts SQL builders (week boundaries, Monday edges, timezone), lib/bq.ts + lib/cache.ts TTLs (outage-cached-as-empty pattern), useApi retry semantics.

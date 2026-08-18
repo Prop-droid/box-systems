@@ -1,0 +1,7 @@
+[Unit]
+Description=ccc-review timer (Sun 07:15, before the Mon report/digest crons)
+[Timer]
+OnCalendar=Sun *-*-* 07:15:00
+Persistent=true
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,7 @@
+SLICE: winners — archive, reports, feedback, and the brief-action pipeline.
+Areas (one subagent each):
+- /winners: app/winners/page.tsx, /api/winners + /api/winners/patterns, WINNERS_JSONL freshness vs the winners-refresh cron, BQ-first re-key correctness.
+- /reports + /feedback: app/reports/page.tsx, /api/report/latest, app/feedback/* + /api/feedback/* (overrides, proposals, synth, promote). Verify the newest weekly report is <8 days old and the feedback ledger is being written.
+- Brief actions: /api/actions/brief + lib/clickup.ts + ActionButton flow. Verify CLICKUP_WRITE_ENABLED/DRY_RUN gating still works as documented, payloads match the locked 3-block template, and errors surface to the UI. Do NOT post any real ClickUp task — inspect code and dry-run paths only.
+- /brain: app/brain/page.tsx + BrainBrowser.tsx, /api/brain, lib/brain.ts traversal guard (path-escape attempts via curl are in scope — read-only probes).
+- Cross-cutting: overrides/decision logging (useOverrides, OVERRIDE_LOG) — is anything writing to ledgers that nothing reads?
