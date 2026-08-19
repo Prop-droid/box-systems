@@ -39,6 +39,10 @@ def bq(frm, to):
     return [r for r in rows if r["hook_pct"] is not None]
 
 
+def concept(sh):
+    return "-".join(sh.split("-")[:2])   # SH-16180-1 -> SH-16180
+
+
 def ctype(r):
     d = (r.get("descriptor") or "").upper()
     if "_WL" in d or d.startswith("WL") or "UGC" in d or "TIKTOK" in d:
@@ -48,6 +52,8 @@ def ctype(r):
 
 def desc_txt(r, width=55):
     t = (r.get("descriptor") or "").strip().replace("\n", " ")
+    if t.lower().startswith("http"):   # some ad_names carry the LP URL there
+        t = ""
     return (t[: width - 1] + "…") if len(t) > width else (t or "—")
 
 
@@ -94,8 +100,11 @@ def main():
     if not targets:
         L.append("Nothing to combine this window.")
     for t in targets:
-        same = [d for d in donors if ctype(d) == ctype(t)]
-        picks = (same + [d for d in donors if d not in same])[:N_SUGG]
+        # sibling variations of the same concept aren't transplant donors —
+        # the buyer would just shift budget to the sibling instead
+        pool = [d for d in donors if concept(d["sh"]) != concept(t["sh"])]
+        same = [d for d in pool if ctype(d) == ctype(t)]
+        picks = (same + [d for d in pool if d not in same])[:N_SUGG]
         L.append(f"**{t['sh']}** (${t['spend']:,.0f} · {t['cm_roas']:.2f} CM-ROAS · "
                  f"hook {t['hook_pct']:.1f}% · {ctype(t)} · {desc_txt(t)}):")
         for d in picks:

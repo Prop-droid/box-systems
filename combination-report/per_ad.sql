@@ -6,7 +6,9 @@
 -- of ad_name instead ("... - SH-#####_SHA_2026_S##_<descriptor> [- url]").
 WITH per_ad AS (
   SELECT
-    COALESCE(REGEXP_EXTRACT(ad_name, r"(SH-\d+)"), "unmapped") sh,
+    -- exact creative variation code first (SH-#####-#), bare concept as fallback
+    COALESCE(REGEXP_EXTRACT(ad_name, r"(SH-\d+(?:-\d+)+)"),
+             REGEXP_EXTRACT(ad_name, r"(SH-\d+)"), "unmapped") sh,
     ANY_VALUE(REGEXP_REPLACE(SPLIT(ad_name, ' - ')[SAFE_OFFSET(1)],
                              r'^SH-\d+_SHA_\d{4}_', '')) descriptor,
     ANY_VALUE(video_length) vlen,
