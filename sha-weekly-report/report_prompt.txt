@@ -9,6 +9,7 @@ BRAND CANON (use to inform recommendations):
 - CTAs push the daily-fiber habit, never discount/urgency
 - Allowed language: "prebiotic fiber", "food noise", "pooping every day"
 - Offer ceiling: 46% sub-gated, advertorial only. Never on organic ads.
+- Creative IDs: ALWAYS cite the exact creative variation code from the data (e.g. SH-16975-2), never the bare concept code (SH-16975), except in the concept-rollup section where the concept code plus its top_variant is correct.
 - Editor codes: AYC (Aicha), FER (Fernando), JDC (Juan David Chaparro), ANA, IGN, LEO, AGU, PAO, KAR
 
 DATA:
@@ -106,16 +107,16 @@ Markdown table from the funnel-stage data: Stage / Last wk / Prior wk, for Impre
 - Using the per-creative funnel data, flag 2-4 specific creatives that drive clicks (good CTR) but stall on the LP (low LP-to-ATC%). These are LP-CHANGE candidates. Name the SH creative, its CTR, its LP-to-ATC%, the LP it's on, and recommend testing it on a higher-converting LP.
 
 ## 9. Hook & Hold (attention vs your own baseline)
-Build a markdown table from the hook_hold data: Concept / Hook Rate % / Hold Rate % / Spend. Then compute the account average hook rate and hold rate from the same table (sum of 3s views / sum of impressions across all rows shown). Flag which concepts are above vs below the account average hook rate -- for a single brand account, the own average is the right benchmark, not a generic industry number. Call out 2-3 specific concepts by SH-#### that stand out (high hook + low hold = strong open, weak close; low hook = the creative is not stopping the scroll; high hold = the message lands when they do watch).
+Build a markdown table from the hook_hold data: Concept / Hook Rate % / Hold Rate % / Spend. Then compute the account average hook rate and hold rate from the same table (sum of 3s views / sum of impressions across all rows shown). Flag which concepts are above vs below the account average hook rate -- for a single brand account, the own average is the right benchmark, not a generic industry number. Call out 2-3 specific creatives by exact variation code (SH-####-#) that stand out (high hook + low hold = strong open, weak close; low hook = the creative is not stopping the scroll; high hold = the message lands when they do watch).
 
 ## 10. Fatigue watch (cascade)
-Build a markdown table from the fatigue data: Concept / Spend Last Wk / CTR Prior / CTR Last / CTR Change %. Then: identify the worst fatiguing creatives (biggest CTR drop on meaningful spend). Note that fatigue = spend held up but CTR declining -- the algorithm keeps buying but the audience has seen it. A 15%+ CTR drop on $1K+ spend is a refresh signal. A 25%+ drop is urgent. For the worst 2-3 cases, recommend: WATCH (flag, not yet critical), or ITERATE (build fresh variation on the same concept). Name specific SH-#### IDs.
+Build a markdown table from the fatigue data: Concept / Spend Last Wk / CTR Prior / CTR Last / CTR Change %. Then: identify the worst fatiguing creatives (biggest CTR drop on meaningful spend). Note that fatigue = spend held up but CTR declining -- the algorithm keeps buying but the audience has seen it. A 15%+ CTR drop on $1K+ spend is a refresh signal. A 25%+ drop is urgent. For the worst 2-3 cases, recommend: WATCH (flag, not yet critical), or ITERATE (build fresh variation on the same concept). Name specific exact variation codes (SH-####-#).
 
 ## 11. Concepts (not just ads)
-Build a markdown table from the concepts data: Concept / Spend / Revenue / ROAS / cmROAS / Margin % / Orders / Variations / Contrib Margin. Rank by contribution margin (already done in data). Then: identify which CONCEPTS are margin-positive (cmROAS > 1.0) vs margin-negative. Note how many variations each winning concept has -- a winner with only 1-2 variations is underexplored. Recommend which concepts to make more variations of (ITERATE) and which to stop funding (KILL). Name specific SH-#### IDs with their cmROAS and contrib margin.
+Build a markdown table from the concepts data: Concept / Spend / Revenue / ROAS / cmROAS / Margin % / Orders / Variations / Contrib Margin. Rank by contribution margin (already done in data). Then: identify which CONCEPTS are margin-positive (cmROAS > 1.0) vs margin-negative. Note how many variations each winning concept has -- a winner with only 1-2 variations is underexplored. Recommend which concepts to make more variations of (ITERATE) and which to stop funding (KILL). Name specific concepts with their top_variant code, cmROAS and contrib margin.
 
 ## 12. Recommendations for the upcoming days (this week)
-5-7 specific tactical actions for the next 1-7 days. Format each as a verdict tag followed by the action. Use EXACTLY these verdict tags: ITERATE (make more variations of a margin-positive concept), WATCH (fatiguing, refresh signal -- act within days), KILL (cmROAS well below 1.0 on meaningful spend -- stop funding now), SWITCH-LP (creative converts clicks but LP bleeds ATC), SCALE-BUDGET (cmROAS > 1.0 and underserved). Format: "ITERATE SH-#### (cmROAS X.X, margin +X%) -- [one-line rationale]". Each action MUST name a specific SH-#### or audience slug. Reference brand canon when relevant (26g fiber, daily-fiber CTA). No em-dashes or en-dashes -- use plain hyphens.
+5-7 specific tactical actions for the next 1-7 days. Format each as a verdict tag followed by the action. Use EXACTLY these verdict tags: ITERATE (make more variations of a margin-positive concept), WATCH (fatiguing, refresh signal -- act within days), KILL (cmROAS well below 1.0 on meaningful spend -- stop funding now), SWITCH-LP (creative converts clicks but LP bleeds ATC), SCALE-BUDGET (cmROAS > 1.0 and underserved). Format: "ITERATE SH-####-# (cmROAS X.X, margin +X%) -- [one-line rationale]". Each action MUST name a specific exact variation code (SH-####-#) or audience slug. Reference brand canon when relevant (26g fiber, daily-fiber CTA). No em-dashes or en-dashes -- use plain hyphens.
 
 ## 13. Recommendations for upcoming weeks (next 2-3 weeks)
 3-5 strategic moves. Each MUST:
@@ -126,6 +127,6 @@ Build a markdown table from the concepts data: Concept / Spend / Revenue / ROAS 
 ## 14. Data caveats
 3-5 bullets max. Standard caveats: paid-acquisition only, no LTV, channel coverage limits, tagging gaps. Also: add-to-cart isn't fired on direct-checkout LPs (e.g. the "shopify" slug) so their LP-to-ATC reads 0; LP views can exceed clicks (multi-source / refresh) so click-to-LP-view isn't a clean funnel step; LP slugs come from the URL in ad_name, so creatives with no URL fall into "(unmapped)". hook_rate and hold_rate are only computed for asset_type=VIDEO rows -- image ads show NULL.
 
-VOICE: senior creative-strategist. Direct, specific, performance-aware. No corporate filler. No em-dashes. Use contractions. Reference SH-#### IDs by name. Tables tight, paragraphs short.
+VOICE: senior creative-strategist. Direct, specific, performance-aware. No corporate filler. No em-dashes. Use contractions. Reference exact variation codes (SH-####-#) by name. Tables tight, paragraphs short.
 
 OUTPUT: just the markdown report, starting at "# Shameless Snacks". Nothing else.

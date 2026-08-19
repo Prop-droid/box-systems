@@ -1,6 +1,6 @@
 -- Top 15 spenders last week
 SELECT
-  clickup_project AS sh_ref,
+  COALESCE(REGEXP_EXTRACT(ad_name, r'(SH-\d+(?:-\d+)+)'), clickup_project) AS creative,
   SUBSTR(ad_name, 1, 60) AS ad_name,
   channel,
   ROUND(SUM(spend),0) AS spend,
@@ -10,6 +10,6 @@ SELECT
   ROUND(SAFE_DIVIDE(SUM(spend), NULLIF(SUM(orders),0)),2) AS cpa
 FROM `ejam-dwh.production.creative_dashboard`
 WHERE brand='SHA' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}' AND spend > 100
-GROUP BY clickup_project, ad_name, channel
+GROUP BY 1, 2, 3
 ORDER BY spend DESC
 LIMIT 15

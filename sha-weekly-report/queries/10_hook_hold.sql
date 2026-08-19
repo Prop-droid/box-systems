@@ -5,7 +5,7 @@
 
 WITH base AS (
   SELECT
-    clickup_project,
+    COALESCE(REGEXP_EXTRACT(ad_name, r'(SH-\d+(?:-\d+)+)'), clickup_project) AS creative,
     MAX(ad_name) AS ad_name,
     SUM(view_3s_count) AS sum_3s,
     SUM(video_play_count) AS sum_plays,
@@ -17,11 +17,11 @@ WITH base AS (
     brand = 'SHA'
     AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}'
     AND asset_type = 'VIDEO'
-  GROUP BY clickup_project
+  GROUP BY creative
   HAVING SUM(spend) > 500
 )
 SELECT
-  clickup_project,
+  creative,
   SUBSTR(ad_name, 1, 60) AS ad_name_short,
   ROUND(100.0 * sum_3s / NULLIF(sum_impressions, 0), 1) AS hook_rate,
   ROUND(100.0 * sum_p100 / NULLIF(sum_plays, 0), 1) AS hold_rate,

@@ -200,4 +200,16 @@ if [ ! -s "$OUTDIR/report.md.tmp" ] || ! grep -q "Shameless Snacks" "$OUTDIR/rep
 fi
 mv -f "$OUTDIR/report.md.tmp" "$OUTDIR/report.md"
 
+# Combination suggestion report (Tomas 2026-08-19): deterministic appendix, no LLM.
+# Failure here must not fail the weekly report.
+echo ">> combination-report appendix"
+if bash "$HOME/systems/combination-report/run.sh" "$LAST_TO" \
+    > "$OUTDIR/combination.md" 2>"$OUTDIR/_combination.err" \
+    && [ -s "$OUTDIR/combination.md" ]; then
+  printf '\n\n---\n\n' >> "$OUTDIR/report.md"
+  cat "$OUTDIR/combination.md" >> "$OUTDIR/report.md"
+else
+  echo "WARN: combination report failed (see _combination.err); appendix skipped"
+fi
+
 echo "[$(date)] DONE: $OUTDIR/report.md ($(wc -l <"$OUTDIR/report.md") lines)"
