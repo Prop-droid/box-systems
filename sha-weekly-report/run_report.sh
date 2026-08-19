@@ -106,7 +106,7 @@ done
 PROMPT_TEMPLATE="$SCRIPT_DIR/report_prompt.txt"
 python3 - "$PROMPT_TEMPLATE" "$OUTDIR/_assembled_prompt.txt" \
   "$LAST_FROM" "$LAST_TO" "$PRIOR_FROM" "$PRIOR_TO" "$ROLLING_FROM" "$ROLLING_TO" \
-  "$OUTDIR/01_topline.txt" "$OUTDIR/02_channels.txt" \
+  "$OUTDIR/01_topline.txt" \
   "$OUTDIR/03_top_spend.txt" "$OUTDIR/04_top_roas.txt" \
   "$OUTDIR/05_losers.txt" "$OUTDIR/06_angles.txt" \
   "$OUTDIR/07_landing_pages.txt" "$OUTDIR/08_funnel.txt" "$OUTDIR/09_creative_funnel.txt" \
@@ -114,7 +114,7 @@ python3 - "$PROMPT_TEMPLATE" "$OUTDIR/_assembled_prompt.txt" \
 import sys, pathlib
 (prompt_tpl, out_prompt,
  lf, lt, pf, pt, rf, rt,
- topline, channels, top_spend, top_roas, losers, angles,
+ topline, top_spend, top_roas, losers, angles,
  landing_pages, funnel, creative_funnel,
  hook_hold, fatigue, concepts) = sys.argv[1:]
 
@@ -129,7 +129,6 @@ subs = {
     "{{PRIOR_FROM}}": pf, "{{PRIOR_TO}}": pt,
     "{{ROLLING_FROM}}": rf, "{{ROLLING_TO}}": rt,
     "{{TOPLINE_TABLE}}": read(topline),
-    "{{CHANNELS_TABLE}}": read(channels),
     "{{TOP_SPEND_TABLE}}": read(top_spend),
     "{{TOP_ROAS_TABLE}}": read(top_roas),
     "{{LOSERS_TABLE}}": read(losers),
