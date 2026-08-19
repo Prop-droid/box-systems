@@ -63,3 +63,4 @@ tg-dev-bot/sessions.json
 # self-improve runtime artifacts (pending list is regenerated weekly)
 self-improve/pending.md
 self-improve/archive/
+combination-report/reports/
