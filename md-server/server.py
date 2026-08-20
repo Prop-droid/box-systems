@@ -19,6 +19,7 @@ Env: MD_ROOT (default ~/brain), MD_HOST (default 0.0.0.0), MD_PORT (default 8092
 import base64
 import hmac
 import html
+import mimetypes
 import os
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -147,10 +148,13 @@ class H(BaseHTTPRequestHandler):
             except Exception as e:  # noqa: BLE001
                 body = f"<pre>render error: {html.escape(str(e))}</pre>"
             return self.send_html(page(target.name, crumb(rel) + body))
-        # raw file
+        # raw file — serve with a real mimetype so html/images render in-browser
         data = target.read_bytes()
+        ctype = mimetypes.guess_type(target.name)[0] or "application/octet-stream"
+        if ctype.startswith("text/") or ctype in ("application/javascript", "application/json"):
+            ctype += "; charset=utf-8"
         self.send_response(200)
-        self.send_header("Content-Type", "application/octet-stream")
+        self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
         self.wfile.write(data)

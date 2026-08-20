@@ -1,2 +1,9 @@
 cookies.json
 *.json
+*.jsonl
+vids/
+frames/
+sheets/
+*.mp4
+cloak-venv/
+cloak-*.png

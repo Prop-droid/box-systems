@@ -1,0 +1,253 @@
+# SHA Long-Form Animated Story VSL — v3 FULL "The Parking Lot"
+
+Muse: Resilia 9:04 animated soap-opera VSL — https://app.tryatria.com/ad/m1012395555024834
+Local: ~/sha-longmusical/muse/muse.mp4 (+ sheet_hook / sheet_full_a / sheet_full_b)
+Locked hooks: 1 and 4 (two cuts, one variation each).
+Format: Pixar-style 3D, 9:16, 2-4s shots, static camera, burned-in line-level captions on every VO line.
+Rule: VO says only what the picture can't. Nothing showable is narrated.
+Runtime target 9:00 to 9:30.
+
+Cast: HER (49). DANIEL, husband (51). RITA, her sister (61). KATE, her friend. THE 29 YEAR OLD.
+
+---
+
+## REFRAIN (sung, 8 bars, female voice, sparse. Three returns: after CH3, after CH5, under CH7.)
+
+R1 — Ten minutes in a parking lot / Ten minutes nobody's got to know / Every plan I ever bought / Started with letting it go
+R2 — Ten minutes in a parking lot / Ten minutes and the window's down / Turns out it was never the sugar / It was the letting go
+R3 — Ten minutes and the window's down / Ten minutes and I'm not hiding now
+
+---
+
+## CH1 — THE CATCH (0:00 to 1:00)
+
+### Cut A opening (hook 1)
+
+SEE: Gym parking lot, late afternoon. Her car. She's in gym clothes, kit bag untouched on the back seat, eating out of a candy bag held low, below the window line.
+VO: I was forty nine years old and I had learned to eat below the window line.
+
+SEE: Knuckles on the glass. She jumps. Daniel, gym bag on his shoulder, looking in at her. A wrapper stuck to her lip.
+VO: nothing.
+
+SEE: He doesn't shout. He looks at her for three long seconds, turns, walks into the gym alone. She watches through the windshield until the door swings shut.
+VO: He didn't shout. That was the worst part.
+
+SEE: She sits. Peels the wrapper off her lip. Looks at it.
+VO: Six weeks later he moved in with a twenty nine year old.
+
+SEE: Front door. His suitcase. His hand on the handle. Her in the doorway.
+VO: He told me it was about discipline.
+
+SEE: Her face, close, holding it together and failing.
+VO: And the only reason I didn't crumble is my sister got on a plane.
+
+### Cut B opening (hook 4) — replaces the first 20 seconds, then joins at "Knuckles on the glass"
+
+SEE: Doctor's office. A printout slides across the desk. REDUCE SUGARY SNACKS. Her hand takes it.
+VO: My doctor gave me a piece of paper that said reduce sugary snacks.
+
+SEE: Her in the car in the medical center parking lot, engine off, printout on the passenger seat, eating.
+VO: In eleven years nobody has ever told me what to do with the part of me that wants it.
+
+SEE: Cut to gym parking lot, same posture, different day. Kit bag untouched on the back seat.
+VO: I was forty nine and I had learned to eat below the window line.
+
+---
+
+## CH2 — THE COLLAPSE (1:00 to 2:10)
+
+SEE: Half an empty closet. Bare hangers swinging. One shirt of his left behind on the rail.
+VO: Twenty two years.
+
+SEE: She sits on the end of the bed holding the shirt. She does not cry.
+VO: She's twenty nine. I'm forty nine. I did that math every night for a month.
+
+SEE: Phone in her hand, thumb scrolling a grid of the woman's photos. Gym, gym, gym.
+VO: He didn't leave because she was younger.
+
+SEE: Close on a photo. Then on her face.
+VO: He left because she was, and I'm quoting him, someone who finishes what she starts.
+
+SEE: Phone face down on the duvet. She opens the nightstand drawer. Candy bag.
+VO: I ate two bags of the gas station stuff that night.
+
+SEE: The drawer, wider. It's full of wrappers. More than should fit.
+VO: I want to be honest about that part. It got worse before anything got better.
+
+---
+
+## CH3 — THREE YEARS OF IT (2:10 to 3:40)
+
+SEE: Hard cut back. Same kitchen, three years earlier, brighter grade. She's fine. One bag, one evening, no big deal.
+VO: It started as a treat. It always does.
+
+SEE: Hiding montage, hard cuts, no VO. Glovebox. Coat pocket. Behind the paper towels. A zip pouch inside the gym bag inside the trunk.
+VO: nothing.
+
+SEE: Gym entrance from across the lot. She's in the car. She does not go in.
+VO: My gym membership was forty dollars a month for two years. I went eleven times.
+
+SEE: Gas station forecourt. Same pump, same slot, four quick repeats with the light changing across them. The guy at the register nods and stops asking.
+VO: I ate in the parking lot because a wrapper in my own trash was evidence.
+
+SEE: Bathroom scale. Her feet on it. She doesn't look down.
+VO: Thirty four pounds in three years. I could have told you exactly where every single one of them came from.
+
+SEE: The printout going into a kitchen drawer, under other paper.
+VO: My doctor gave me a piece of paper that said reduce sugary snacks.
+
+SEE: Her in the car in the medical center lot, eating, printout on the passenger seat.
+VO: In eleven years nobody has ever told me what to do with the part of me that wants it.
+
+[REFRAIN 1]
+
+---
+
+## CH4 — THE ALLY (3:40 to 5:00)
+
+SEE: Airport arrivals at night. RITA comes through the doors. Sixty one, upright, bright, moving fast.
+VO: My sister Rita is twelve years older than me.
+
+SEE: Kitchen, late. Rita drops her coat, opens her carry-on, and the first thing out of it is a candy bag. She puts it on the counter.
+VO: She got in at eleven at night and the first thing out of her bag was candy.
+
+SEE: Rita eating them, talking with her mouth full, completely unbothered. Her watching, not understanding.
+VO: I sat there watching my sixty one year old sister eat candy straight off a plane and I felt something I did not expect to feel, which was jealous.
+
+SEE: Rita catches the look. Slides the bag across the counter.
+VO: She said, sis. You don't have a discipline problem. You have a bag problem.
+
+SEE: Close on the bag. Then on her face, not buying it.
+VO: I said there's no way.
+
+SEE: Rita, deadpan, not selling: "Just watch."
+VO: nothing.
+
+SEE: Her taking one. Bracing. Chewing. Stopping mid-chew. Looking at the bag.
+VO: I'd eaten the healthy ones before. They taste like a scented candle. I had my mouth ready to spit it in the sink.
+
+SEE: She takes four more.
+VO: I did not spit it in the sink.
+
+---
+
+## CH5 — THE NUMBERS (5:00 to 6:00)
+
+SEE: The two bags side by side on the counter under the kitchen light. Hers from the gas station. Rita's.
+VO: So Rita turned both bags over.
+
+SEE: Macro on the two panels, slow push.
+VO: The one I'd been buying every day for three years. And this one. Twenty six grams of fiber. Three grams of sugar. Seventy calories.
+
+SEE: Her holding both, looking between them.
+VO: I read it three times because I assumed I had a decimal point wrong.
+
+SEE: Rita shrugging, pouring more into her hand, already bored of the conversation.
+VO: Rita said the fiber's the bonus. She said the point is I get to keep the ten minutes in the car.
+
+SEE: Her, quiet, holding the bag, taking that in.
+VO: Nobody had ever offered me the ten minutes. Every plan I'd ever been handed started by taking them away.
+
+[REFRAIN 2]
+
+---
+
+## CH6 — THE WEEKS (6:00 to 7:30)
+
+SEE: Gas station forecourt. Same pump, same slot, same time of day. She's in the car eating. Different bag.
+VO: Week two, I still stopped at the same gas station. Same time, same spot. I just brought my own.
+
+SEE: The guy at the register glancing at the empty counter where her order used to be, mildly confused.
+VO: nothing.
+
+SEE: Kitchen, week four, daylight. The bag sitting out on the counter. Nobody home to hide from and she leaves it out anyway.
+VO: Week four I stopped putting it away. Not because I quit. Because there was nothing left to hide.
+
+SEE: Closet, week seven. She pulls the green dress from the back, where it's been.
+VO: nothing.
+
+SEE: Her in it. The zipper goes all the way up.
+VO: Week seven.
+
+SEE: Bathroom, the scale. She steps on. This time she looks down.
+VO: Week nine I looked at the number instead of stepping straight off.
+
+SEE: The mirror. She stands there a second longer than she needs to.
+VO: I'm not going to tell you a new woman was standing in the mirror. It was me. It was the version of me that wasn't lying to anybody.
+
+SEE: The nightstand drawer opens. Candy bag inside. Same drawer as CH2.
+VO: Same drawer. Same time of night. Same ten minutes.
+
+SEE: Close on the bag in her hand.
+VO: I never gave it up. I swapped it.
+
+---
+
+## CH7 — THE RESTAURANT (7:30 to 8:30)
+
+SEE: Restaurant, evening. Her at a table by the window. Green dress. She looks up as the door opens.
+VO: I wasn't there for him. I want that on the record.
+
+SEE: Daniel comes in with the twenty nine year old. Coat off, chair pulled out. He hasn't seen her.
+VO: nothing.
+
+SEE: He scans the room the way you do. Stops. Comes back. Finds her.
+VO: nothing. Hold it. Let his face do the work.
+
+SEE: His mouth opens slightly. The twenty nine year old follows his eyes and finds her too.
+VO: He left me over a bag of candy in a parking lot.
+
+SEE: Her hand moves to the table. An open bag of candy sitting there next to her wine. She takes one. Holds his eye. Eats it.
+VO: So I let him watch me eat one.
+
+SEE: She turns back to her conversation. He's still standing.
+VO: nothing.
+
+[REFRAIN 3 under]
+
+---
+
+## CH8 — AFTERMATH AND OBJECTIONS (8:30 to 9:10)
+
+SEE: Restroom, later. KATE at the sink beside her, staring at her.
+VO: Kate followed me to the restroom and asked me what I was on.
+
+SEE: She opens her purse. The candy bag is in it, obviously, unhidden.
+VO: I showed her my purse.
+
+SEE: Kate's face.
+VO: She said that's it. That's the whole thing.
+
+SEE: Kate on her phone in bed that night, ordering.
+VO: Two weeks later she sent me a photo of her own bag on her own passenger seat.
+
+SEE: Three quick portraits, each holding a bag, each in a different everyday spot: a woman in a car, a man at a desk, a woman on a couch.
+VO: Every woman I've told this to has the same piece of paper in a drawer somewhere. And the same nine day plan behind her. And the same memory of spitting a healthy candy into a sink.
+
+SEE: Back to her, close.
+VO: It was never the sugar I couldn't beat. It was the ten minutes I wasn't allowed to have.
+
+---
+
+## CH9 — CLOSE (9:10 to 9:30)
+
+SEE: Her car, evening, parked outside her own house. Window down. Interior light on. Bag on the passenger seat.
+VO: I still eat candy in the car.
+
+SEE: She takes one. Unhurried. Nobody watching and she wouldn't care if they were.
+VO: I just don't park where nobody can see me anymore.
+
+SEE: End card. Pack. Guarantee badge. No spoken offer.
+VO: You don't have to give it up. You have to swap it.
+
+---
+
+## Compliance notes for the brief (editor-facing, never spoken)
+- Structure-function disclaimer rides in the ad copy alongside the CH5 numbers chapter.
+- Stats are canon and bare-factual: 26g fiber, 3g sugar, 70 calories. No "only" before any of them.
+- No gut, digestive, regularity, prebiotic, natural, real-fruit, sugar-free or appetite language anywhere.
+- Never show reduced intake or a refused meal. She eats candy in every single chapter. That is the mechanism of the story.
+- "Sugar addiction" is protagonist characterisation only. The product is never positioned as treating it.
+- Body-transformation arc (34 lbs, the dress, the scale) is an explicit Tomas override of the MARS
+  guardrail, 2026-08-12. Grace/Mike sign-off required before launch.
+- CH4 "the healthy ones taste like a scented candle" refers to unnamed prior products, never a named competitor.
