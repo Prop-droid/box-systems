@@ -4,6 +4,7 @@
 # The harness itself (guard.py: minimal MCP, loadavg gate, checkpoints) lives in
 # ~/brain/systems/needle-test — this is just the run+notify wrapper.
 set -u
+export PATH="$HOME/.local/bin:$PATH"   # timers/cron get no login env; run.py execs `claude`
 NT="$HOME/brain/systems/needle-test"
 LOG="$HOME/systems/needle-report/last_run.log"
 NOTIFY="$HOME/systems/lib/discord-notify.sh"

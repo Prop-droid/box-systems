@@ -16,8 +16,9 @@ NTFY_TOPIC="tomas-ph-1ea8ac8e"
 
 rc=$?
 if [ $rc -ne 0 ] || grep -qE "FAIL|NO WRITE GRANT" "$LOG"; then
+  cp "$LOG" "${LOG%.log}-fail-$(date +%F).log"   # next run overwrites $LOG; keep the forensics
   tail -5 "$LOG" | curl -s -H "Title: brain-push failed" -d @- "https://ntfy.sh/$NTFY_TOPIC" >/dev/null
-  echo "brain-push FAILED (rc=$rc) — see $LOG"
+  echo "brain-push FAILED (rc=$rc) — see ${LOG%.log}-fail-$(date +%F).log"
   exit 1
 fi
 echo "brain-push ok — $(grep -oE 'pass 1: [0-9]+ ok, [0-9]+ failed' "$LOG" | tail -1)"
