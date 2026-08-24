@@ -1,0 +1,8 @@
+[Unit]
+Description=Tablet: relaunch Fully Kiosk at 09:00 if it was exited (movie night)
+After=network-online.target
+
+[Service]
+Type=oneshot
+Environment=HOME=/home/tomas
+ExecStart=/home/tomas/systems/tablet-night-mode.sh relaunch

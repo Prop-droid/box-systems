@@ -2,6 +2,8 @@
 # Dashboard tablet day/night mode + self-heal via Fully Kiosk REST.
 #   night: motion detection ON (low sensitivity), black screensaver, motion wakes
 #   day:   motion detection ON (high sensitivity), screen blanks after idle, motion wakes
+#   relaunch: 09:00 daily — relaunch Fully if it was exited (movie night);
+#          needs Wireless debugging ON on the tablet for the adb path
 #   rearm: every-15-min self-heal —
 #          Fully dead   -> relaunch over adb if the tablet is idle (never steals
 #                          foreground while Tomas is using another app);
@@ -135,15 +137,24 @@ ensure_alive() { # rc 0 = Fully reachable (possibly after relaunch)
 
 case "${1:-}" in
   night)
-    ensure_alive || exit 1
+    # Fully down is tolerated here (Tomas exits it to watch movies) — the
+    # 09:00 relaunch unit / rearm restore it; only they treat down as notable.
+    ensure_alive || { echo "fully down — tolerated, relaunch/rearm will restore"; exit 0; }
     apply_settings night
     f "cmd=startScreensaver"
     ;;
   day)
-    ensure_alive || exit 1
+    ensure_alive || { echo "fully down — tolerated, relaunch/rearm will restore"; exit 0; }
     apply_settings day
     f "cmd=stopScreensaver"
     f "cmd=screenOn"
+    ;;
+  relaunch)
+    # 09:00 daily: bring Fully back after an evening of movie-watching.
+    # ensure_alive does the whole job (adb relaunch, settings resync, alert
+    # once per outage if adb is unreachable); in-use/no-adb is not a unit
+    # failure — rearm keeps retrying every 15 min.
+    ensure_alive || exit 0
     ;;
   rearm)
     ensure_alive || exit 0

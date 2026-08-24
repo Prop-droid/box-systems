@@ -131,7 +131,10 @@ command to prove a change works before the timer fires.
   per outage if adb is down too); alive → re-asserts drifted motion settings.
   IP discovered by probing REST on .160/.161 (cached in `.state/tablet-ip`) —
   never derived from adb. tablet-screen.sh (raw adb off/on) kept as manual tool.
-  22:00/08:00 via tablet-screen-{off,on} units.
+  22:00/08:00 via tablet-screen-{off,on} units; `relaunch` (09:00 via
+  tablet-fully-relaunch units) brings Fully back after Tomas exits it for
+  movies — day/night modes exit 0 when Fully is down (intentional exits are
+  not failures; 2026-08-24). adb relaunch needs Wireless debugging ON.
 
 ## systemd user-unit patterns
 
