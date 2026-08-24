@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# vtt-digest — weekly "3 viral trends + 1 suggested brief" → Tomas Pod (ClickUp chat).
+# vtt-digest — weekly "3 viral trends + 1 suggested brief" → Discord #creative.
 # Reads the CCC /api/research/trends endpoint (the Trends tab's own data),
-# drafts via headless claude, posts via chat API v3 (iteration-suggestions pattern).
+# drafts via headless claude, posts via the Creative bot (launch-details-scan pattern).
+# Switched from ClickUp Tomas Pod chat per Tomas 2026-08-24.
 # DRY_RUN=1 = draft + print, no post. Scheduled Mon 07:00 via vtt-digest.timer.
 set -uo pipefail
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin"
@@ -9,8 +10,8 @@ export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin"
 BASE="$HOME/systems/viral-trend-tracker"
 DROPS="$BASE/digests"
 LOG="$BASE/digest.log"
-CHANNEL_ID="8cj5bz5-125371"          # Tomas Pod
-WORKSPACE_ID="9011638245"
+DISCORD_CHANNEL_ID="1531648564932120737"   # #creative
+BOTS_ENV="$HOME/agentic-os/discord/bots.env"
 NOTIFY="$HOME/systems/lib/discord-notify.sh"
 API="http://localhost:3000/api/research/trends"
 
@@ -27,7 +28,7 @@ fail() {
 TODAY=$(date +%F)
 [ -s "$DROPS/$TODAY.md" ] && { echo "Already dropped today — exiting"; exit 0; }
 
-CLICKUP_TOKEN=$(cat "$HOME/.config/clickup/pk" 2>/dev/null) || fail "ClickUp token missing"
+grep -q "^CREATIVE_TOKEN=." "$BOTS_ENV" 2>/dev/null || fail "CREATIVE_TOKEN missing in bots.env"
 command -v claude >/dev/null || fail "claude CLI not on PATH"
 
 DATA=$(curl -sf --max-time 30 "$API") || fail "trends API unreachable"
@@ -49,25 +50,34 @@ if [ "${DRY_RUN:-0}" = "1" ]; then
   echo "--- DRY_RUN draft ---"; cat "$RAW"; exit 0
 fi
 
-CLICKUP_TOKEN="$CLICKUP_TOKEN" WORKSPACE_ID="$WORKSPACE_ID" CHANNEL_ID="$CHANNEL_ID" RAW_FILE="$RAW" \
-python3 - <<'PY' || fail "chat post failed"
-import json, os, sys, urllib.request
-tok = os.environ["CLICKUP_TOKEN"]
-ws, ch = os.environ["WORKSPACE_ID"], os.environ["CHANNEL_ID"]
+BOTS_ENV="$BOTS_ENV" CHANNEL_ID="$DISCORD_CHANNEL_ID" RAW_FILE="$RAW" \
+python3 - <<'PY' || fail "discord post failed"
+import json, os, re, sys, time, urllib.request
+tok = re.search(r"^CREATIVE_TOKEN=(\S+)", open(os.environ["BOTS_ENV"]).read(), re.M).group(1)
+ch = os.environ["CHANNEL_ID"]
 text = open(os.environ["RAW_FILE"]).read().strip()
 i = text.find("📈")
 if i > 0:
     text = text[i:]
-body = json.dumps({"type": "message", "content_format": "text/md", "content": text}).encode()
-req = urllib.request.Request(
-    f"https://api.clickup.com/api/v3/workspaces/{ws}/chat/channels/{ch}/messages",
-    data=body, method="POST",
-    headers={"Authorization": tok, "Content-Type": "application/json"})
-with urllib.request.urlopen(req, timeout=30) as r:
-    if r.status not in (200, 201):
-        sys.exit(1)
-    d = json.loads(r.read().decode() or "{}")
-print(f"posted message id={d.get('data', {}).get('id') or d.get('id')}")
+# Discord caps messages at 2000 chars — chunk on line boundaries.
+chunks, cur = [], ""
+for line in text.splitlines(True):
+    if len(cur) + len(line) > 1900:
+        chunks.append(cur); cur = ""
+    cur += line
+chunks.append(cur)
+for n, chunk in enumerate(chunks):
+    req = urllib.request.Request(
+        f"https://discord.com/api/v10/channels/{ch}/messages",
+        data=json.dumps({"content": chunk}).encode(), method="POST",
+        headers={"Authorization": f"Bot {tok}", "Content-Type": "application/json",
+                 # Discord 403s the default Python-urllib UA
+                 "User-Agent": "vtt-digest/1.0"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        d = json.loads(r.read().decode() or "{}")
+    print(f"posted discord #creative message {n+1}/{len(chunks)} id={d.get('id')}")
+    if n + 1 < len(chunks):
+        time.sleep(1)
 PY
 
 cp "$RAW" "$DROPS/$TODAY.md"
