@@ -25,14 +25,16 @@ def table(rows):
     head = "| # | creative | spend | cmROAS | contrib |\n|---|---|---|---|---|"
     return "\n".join([head] + [line(i + 1, r) for i, r in enumerate(rows)]) if rows else "_none above floor_"
 rg = d['ranges']
+# quarter went flat-list -> {images, videos} in the top-10/20/30 expansion; headings track actual row counts
 md = [f"# CCC Leaderboards — {rg['last7']['to']}", ""]
-md += [f"## Top 5 images · last 7 days ({rg['last7']['from']} → {rg['last7']['to']})", table(d['last7']['images']), ""]
-md += ["## Top 5 videos · last 7 days", table(d['last7']['videos']), ""]
-md += [f"## Top 10 images · last 30 days ({rg['last30']['from']} → {rg['last30']['to']})", table(d['last30']['images']), ""]
-md += ["## Top 10 videos · last 30 days", table(d['last30']['videos']), ""]
-md += [f"## Quarter leaderboard ({rg['quarter']['from']} → {rg['quarter']['to']})", table(d['quarter']), ""]
+md += [f"## Top {len(d['last7']['images'])} images · last 7 days ({rg['last7']['from']} → {rg['last7']['to']})", table(d['last7']['images']), ""]
+md += [f"## Top {len(d['last7']['videos'])} videos · last 7 days", table(d['last7']['videos']), ""]
+md += [f"## Top {len(d['last30']['images'])} images · last 30 days ({rg['last30']['from']} → {rg['last30']['to']})", table(d['last30']['images']), ""]
+md += [f"## Top {len(d['last30']['videos'])} videos · last 30 days", table(d['last30']['videos']), ""]
+md += [f"## Top {len(d['quarter']['images'])} images · quarter ({rg['quarter']['from']} → {rg['quarter']['to']})", table(d['quarter']['images']), ""]
+md += [f"## Top {len(d['quarter']['videos'])} videos · quarter", table(d['quarter']['videos']), ""]
 open(out, "w").write("\n".join(md))
-q = d['quarter'][:3]
+q = sorted(d['quarter']['images'] + d['quarter']['videos'], key=lambda r: r['contribution'], reverse=True)[:3]
 print(" / ".join(f"{i+1}. {(r.get('cre') or r.get('sh') or r['title'])} {money(r['contribution'])}" for i, r in enumerate(q)) or "no qualifiers")
 PY
 )"
