@@ -3,7 +3,7 @@
 context from another channel or thread ("read between channels and threads").
 
 Usage:
-  discord_read.py list                    # all text channels + active threads
+  discord_read.py list                    # ALL channels (text/forum) + ALL threads (active + archived)
   discord_read.py <name-or-id> [limit]    # last N messages (default 30), oldest first
 
 Name matching is case-insensitive substring over channel and thread names.
@@ -36,14 +36,31 @@ def get(path: str):
         return json.loads(r.read())
 
 
-def targets() -> list[dict]:
-    """Text channels + active threads, each {'id', 'name', 'kind'}."""
-    out = []
-    for c in get(f"/guilds/{GUILD_ID}/channels"):
-        if c.get("type") in (0, 5):  # text / announcement
-            out.append({"id": c["id"], "name": c["name"], "kind": "channel"})
+def targets(include_archived: bool = True) -> list[dict]:
+    """All channels + all threads (active AND archived), each {'id', 'name', 'kind'}."""
+    out, seen = [], set()
+
+    def add(cid, name, kind):
+        if cid not in seen:
+            seen.add(cid)
+            out.append({"id": cid, "name": name, "kind": kind})
+
+    chans = get(f"/guilds/{GUILD_ID}/channels")
+    for c in chans:
+        if c.get("type") in (0, 5, 15, 16):  # text / announcement / forum / media
+            add(c["id"], c["name"], "channel" if c["type"] in (0, 5) else "forum")
     for t in get(f"/guilds/{GUILD_ID}/threads/active").get("threads", []):
-        out.append({"id": t["id"], "name": t["name"], "kind": "thread"})
+        add(t["id"], t["name"], "thread")
+    if include_archived:
+        for c in chans:
+            if c.get("type") not in (0, 5, 15, 16):
+                continue
+            try:
+                arch = get(f"/channels/{c['id']}/threads/archived/public?limit=100")
+                for t in arch.get("threads", []):
+                    add(t["id"], t["name"], "archived")
+            except Exception:
+                pass  # channel without thread support / missing history perm
     return out
 
 
