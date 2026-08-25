@@ -12,6 +12,8 @@ Discord REST from urllib needs a real User-Agent or Cloudflare 403s (error 1010)
 """
 import json
 import sys
+import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -27,13 +29,20 @@ def token() -> str:
     sys.exit("DISCORD_TOKEN missing in dev-bot/.env")
 
 
-def get(path: str):
+def get(path: str, _tries: int = 4):
     req = urllib.request.Request(f"{API}{path}", headers={
         "Authorization": f"Bot {token()}",
         "User-Agent": "DiscordBot (box, 1.0)",
     })
-    with urllib.request.urlopen(req, timeout=15) as r:
-        return json.loads(r.read())
+    for attempt in range(_tries):
+        try:
+            with urllib.request.urlopen(req, timeout=15) as r:
+                return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < _tries - 1:
+                time.sleep(float(e.headers.get("Retry-After") or 2) + 0.5)
+                continue
+            raise
 
 
 def targets(include_archived: bool = True) -> list[dict]:
@@ -82,13 +91,13 @@ def main():
         sys.exit(__doc__.strip())
     query = sys.argv[1]
     limit = int(sys.argv[2]) if len(sys.argv) > 2 else 30
+    if query.isdigit():  # direct id: skip the (expensive) target listing entirely
+        show(query, limit)
+        return
     ts = targets()
     if query == "list":
         for t in ts:
             print(f"{t['kind']:7}  {t['id']}  {t['name']}")
-        return
-    if query.isdigit():
-        show(query, limit)
         return
     hits = [t for t in ts if query.lower() in t["name"].lower()]
     exact = [t for t in hits if t["name"].lower() == query.lower().lstrip("#")]
