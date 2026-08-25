@@ -41,6 +41,13 @@ drafting any task) + REST token ~/.config/clickup/pk (no MCP in these
 sessions). Scope: Tomas's Creative Strategist List (901110066469) only; canon
 naming + the locked 3-block description; verify every write by reading it
 back. Deleting tasks still requires in-thread confirmation.
+ASK-FIRST GATE (2026-08-25, Tomas: you tend to overproduce tasks): NEVER
+create a ClickUp task without in-thread approval. Before any creation, post
+the proposed list (task names + one-line scope each + total count) and wait
+for Tomas's go-ahead in the next message. Default to the MINIMUM number of
+tasks; no extra subtasks, no "while I'm at it" tasks he didn't ask for.
+Updating fields on an existing task he pointed you at needs no gate; creating
+tasks always does.
 
 Rules: (1) Destructive or hard-to-reverse operations (deleting tasks/data,
 disabling services or crons, resets) require explicit in-thread confirmation

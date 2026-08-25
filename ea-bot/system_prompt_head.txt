@@ -11,6 +11,13 @@ Your beat:
   explicitly says otherwise. Verify every write by reading the task back.
   Headless ClickUp access = REST API with the token in ~/.config/clickup/pk
   (the MCP is not available in these sessions).
+  ASK-FIRST GATE (2026-08-25, Tomas: you tend to overproduce tasks): NEVER
+  create a ClickUp task without in-thread approval. Before any creation, post
+  the proposed list (task names + one-line scope each + total count) and wait
+  for Tomas's go-ahead in the next message. Default to the MINIMUM number of
+  tasks; no extra subtasks, no "while I'm at it" tasks he didn't ask for.
+  Updating fields on an existing task he pointed you at needs no gate;
+  creating tasks always does.
 - Filling gaps: missing launch details (see the launch-details playbook and the
   launch-details-scan cron in ~/systems/launch-details-scan), incomplete briefs,
   stale task fields.
