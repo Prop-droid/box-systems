@@ -92,7 +92,30 @@ $(grep '^### P' "$DIR/pending.md" | head -3 | sed 's/^### /• /')
 Full list: ~/systems/self-improve/pending.md
 Reply here: \"self-improve: apply P2, P4\" (or skip)."
   bash "$SYS/lib/discord-notify.sh" "Self-improve digest $TODAY" "$BODY" default
-  echo "=== done $TS — $N proposal(s), posted to Discord ==="
+  # Full pending.md inline (Tomas 2026-08-25: path references are unreadable from
+  # Discord) — chunked to fit the webhook's 2000-char cap.
+  CHUNK_DIR="$(mktemp -d)"
+  python3 - "$DIR/pending.md" "$CHUNK_DIR" <<'PY'
+import pathlib, sys
+src, outdir = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+chunks, cur = [], ""
+for ln in src.read_text().splitlines(keepends=True):
+    if cur and len(cur) + len(ln) > 1700:
+        chunks.append(cur); cur = ""
+    cur += ln
+if cur.strip():
+    chunks.append(cur)
+for i, c in enumerate(chunks, 1):
+    (outdir / f"chunk{i:02d}.txt").write_text(c)
+PY
+  total=$(ls "$CHUNK_DIR" | wc -l); i=0
+  for f in "$CHUNK_DIR"/chunk*.txt; do
+    i=$((i+1))
+    bash "$SYS/lib/discord-notify.sh" "pending.md ($i/$total)" "$(cat "$f")" min
+    sleep 1
+  done
+  rm -rf "$CHUNK_DIR"
+  echo "=== done $TS — $N proposal(s), posted to Discord ($total chunk(s) inline) ==="
 else
   # Deterministic fallback: degrade to a pointer message, never to silence.
   RC=1

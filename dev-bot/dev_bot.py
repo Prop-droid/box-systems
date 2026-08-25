@@ -12,6 +12,9 @@ Instances are configured via .env in BOT_DIR (default: script dir):
   SYSTEM_PROMPT_FILES=/path/a:/path/b    # optional, concatenated; else default guardrails
   MODEL=claude-fable-5
   EFFORT=xhigh                           # reasoning effort (low|medium|high|xhigh|max)
+  EXTRA_CHANNELS=ops-log                 # optional, extra home channels: plain human
+                                         # messages there dispatch tasks too (bot/webhook
+                                         # posts still ignored unless trusted + mention)
 
 Messages that @mention a bot are ignored here — those belong to the agentic-bots
 persona runner (draft-and-approve), which answers DMs/@mentions. Plain channel
@@ -40,7 +43,7 @@ TIMEOUT_S = 30 * 60
 # Channels where channel-agent executors (not the persona runner) own @mentions.
 # Must stay in sync with the same default in agentic-os/discord/agent_bots.py.
 EXEC_CHANNELS = set(os.environ.get(
-    "EXECUTOR_CHANNELS", "dev,coach,assistant,creative,qa").split(","))
+    "EXECUTOR_CHANNELS", "dev,coach,assistant,creative,qa,ops-log").split(","))
 # Fleet bot user-ids (name -> id). A message AUTHORED by one of these bots that
 # @mentions this bot dispatches a real run — inter-agent communication. Regenerate
 # via /users/@me per token if bots are added.
@@ -433,6 +436,9 @@ class ChannelAgent(discord.Client):
         self.queues: dict[int, list[str]] = {}
         self.bot_dispatches: dict[int, list[float]] = {}
         self.channel_id: int | None = None
+        self.extra_names = {c.strip() for c in os.environ.get(
+            "EXTRA_CHANNELS", "").split(",") if c.strip()}
+        self.extra_ids: set[int] | None = None
 
     def resolve_channel(self) -> int | None:
         if self.channel_id is None:
@@ -442,6 +448,18 @@ class ChannelAgent(discord.Client):
                 self.channel_id = chan.id
                 print(f"channel-agent: watching #{chan.name} ({chan.id})", flush=True)
         return self.channel_id
+
+    def home_channel_ids(self) -> set[int]:
+        """Main channel + EXTRA_CHANNELS — plain human messages in any of these dispatch."""
+        ids = {cid} if (cid := self.resolve_channel()) is not None else set()
+        if self.extra_ids is None and self.extra_names:
+            guild = self.get_guild(GUILD_ID)
+            if guild:
+                found = {c.id for c in guild.text_channels if c.name in self.extra_names}
+                if found:
+                    self.extra_ids = found
+                    print(f"channel-agent: extra channels {sorted(self.extra_names)} -> {sorted(found)}", flush=True)
+        return ids | (self.extra_ids or set())
 
     async def on_ready(self):
         print(f"channel-agent ready as {self.user}; #{self.channel_name} found: "
@@ -577,9 +595,8 @@ class ChannelAgent(discord.Client):
             return
         if other_bot and not mentions_me:
             return
-        chan_id = self.resolve_channel()
         parent = msg.channel.parent if isinstance(msg.channel, discord.Thread) else msg.channel
-        home = chan_id is not None and getattr(parent, "id", None) == chan_id
+        home = getattr(parent, "id", None) in self.home_channel_ids()
         if not home and not (mentions_me and getattr(parent, "name", None) in EXEC_CHANNELS):
             return
         content = msg.content
