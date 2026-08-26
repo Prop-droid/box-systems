@@ -40,6 +40,48 @@ def relevant(term, title, context=""):
     return any(w for w in term.lower().split() if len(w) >= 4 and w in tl)
 
 
+def write_receipts(source, platform, receipts):
+    """Receipts = the actual example posts behind a term's heat scalar
+    ({date, source, platform, term, title, url, score}), read by the CCC Viral
+    tab. Merge-by-term like write_merged so partial re-runs never wipe the day.
+    """
+    today = date.today().isoformat()
+    VTT_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = VTT_DIR / f"{source}-{platform}-receipts-{today}.jsonl"
+    scraped = {r["term"] for r in receipts}
+    if out_path.exists():
+        for line in out_path.read_text().splitlines():
+            if not line.strip():
+                continue
+            try:
+                r = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if r.get("term") not in scraped:
+                receipts.append(r)
+    receipts.sort(key=lambda r: (r["term"], -r.get("score", 0)))
+    tmp = out_path.with_suffix(".tmp")
+    tmp.write_text("".join(json.dumps(r) + "\n" for r in receipts))
+    tmp.rename(out_path)
+    print(f"{out_path}: {len(receipts)} receipts", file=sys.stderr)
+
+
+def top_receipts(source, platform, term, posts, cap=3):
+    """posts = [(title, url, score)] -> receipt rows for the term, best first."""
+    today = date.today().isoformat()
+    rows = []
+    seen = set()
+    for title, url, score in sorted(posts, key=lambda p: -p[2]):
+        if not url or url in seen or not title:
+            continue
+        seen.add(url)
+        rows.append({"date": today, "source": source, "platform": platform,
+                     "term": term, "title": str(title)[:160], "url": url, "score": int(score)})
+        if len(rows) == cap:
+            break
+    return rows
+
+
 def write_merged(source, platform, rows, term_count):
     """Merge-by-term write; return count of terms with data (for the exit gate)."""
     today = date.today().isoformat()

@@ -11,7 +11,7 @@ import sys
 import time
 from datetime import date
 
-from vtt_common import load_watchlist, relevant, write_merged
+from vtt_common import load_watchlist, relevant, write_merged, write_receipts, top_receipts
 
 TW = os.path.expanduser("~/.local/bin/tw")
 PER_TERM = 25
@@ -29,31 +29,37 @@ def heat(term):
     if not data.get("ok"):
         print(f"FAIL {term}: tw not ok", file=sys.stderr)
         return None
-    total, kept = 0, 0
+    total, kept, posts = 0, 0, []
     for tw in data.get("data", []):
         if not relevant(term, tw.get("text", "")):
             continue
         m = tw.get("metrics", {})
-        total += int(m.get("likes", 0)) + int(m.get("retweets", 0)) + int(m.get("replies", 0))
+        score = int(m.get("likes", 0)) + int(m.get("retweets", 0)) + int(m.get("replies", 0))
+        total += score
         kept += 1
-    return total, kept
+        if tw.get("id"):
+            title = " ".join(str(tw.get("text", "")).split())
+            posts.append((title, f"https://x.com/i/web/status/{tw['id']}", score))
+    return total, kept, posts
 
 
 def main():
-    rows, ok = [], 0
+    rows, receipts, ok = [], [], 0
     today = date.today().isoformat()
     for t in load_watchlist():
         h = heat(t)
         if h is None:
             continue
-        value, posts = h
+        value, posts, kept = h
         rows.append({"date": today, "source": "x", "platform": "x",
                      "term": t, "value": value, "posts": posts})
+        receipts.extend(top_receipts("x", "x", t, kept))
         if posts > 0:
             ok += 1
         print(f"{t}: heat={value} ({posts} tweets)", file=sys.stderr)
         time.sleep(1)
     write_merged("x", "x", rows, ok)
+    write_receipts("x", "x", receipts)
     if ok < MIN_OK_TERMS:
         sys.exit(1)
 

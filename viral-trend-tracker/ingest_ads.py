@@ -12,7 +12,7 @@ import sys
 from datetime import date
 from pathlib import Path
 
-from vtt_common import load_watchlist, write_merged
+from vtt_common import load_watchlist, write_merged, write_receipts, top_receipts
 
 ATRIA_DIR = Path(os.environ.get("ATRIA_DIR", "/home/tomas/brain/projects/2026-06/competitor-ads-scrape/atria"))
 
@@ -39,25 +39,29 @@ def main():
         except json.JSONDecodeError:
             continue
         text = (str(r.get("title", "")) + " " + str(r.get("body", ""))).lower()
-        ads.append((text, int(r.get("variant_count", 0) or 0)))
+        label = f"{r.get('brand_name', '?')}: {r.get('title') or str(r.get('body', ''))[:80]}"
+        ads.append((text, int(r.get("variant_count", 0) or 0), label, str(r.get("ad_library_url", ""))))
 
     today = date.today().isoformat()
-    rows, ok = [], 0
+    rows, receipts, ok = [], [], 0
     for t in load_watchlist():
         words = term_words(t)
         if not words:
             continue
-        heat, matches = 0, 0
-        for text, vc in ads:
+        heat, matches, hits = 0, 0, []
+        for text, vc, label, url in ads:
             if all(w in text for w in words):
                 heat += vc
                 matches += 1
+                hits.append((label, url, vc))
         rows.append({"date": today, "source": "ads", "platform": "meta",
                      "term": t, "value": heat, "posts": matches})
+        receipts.extend(top_receipts("ads", "meta", t, hits))
         if matches > 0:
             ok += 1
         print(f"{t}: ad-heat={heat} ({matches} ads)", file=sys.stderr)
     write_merged("ads", "meta", rows, ok)
+    write_receipts("ads", "meta", receipts)
     # ads lane can legitimately be sparse (rivals may not run a given concept);
     # only fail if the whole Atria pull was empty/unreadable.
     if not ads:

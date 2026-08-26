@@ -11,7 +11,7 @@ import sys
 import time
 from datetime import date
 
-from vtt_common import load_watchlist, relevant, write_merged
+from vtt_common import load_watchlist, relevant, write_merged, write_receipts, top_receipts
 
 PER_TERM = 20
 MIN_OK_TERMS = 5
@@ -25,7 +25,7 @@ def heat(term):
     except Exception as e:
         print(f"FAIL {term}: {e}", file=sys.stderr)
         return None
-    total, kept = 0, 0
+    total, kept, posts = 0, 0, []
     for line in r.stdout.splitlines():
         if not line.strip():
             continue
@@ -34,26 +34,31 @@ def heat(term):
         except json.JSONDecodeError:
             continue
         if relevant(term, d.get("title", ""), d.get("channel", "")):
-            total += int(d.get("view_count") or 0)
+            views = int(d.get("view_count") or 0)
+            total += views
             kept += 1
-    return total, kept
+            url = d.get("url") or (f"https://www.youtube.com/watch?v={d['id']}" if d.get("id") else "")
+            posts.append((d.get("title", ""), url, views))
+    return total, kept, posts
 
 
 def main():
-    rows, ok = [], 0
+    rows, receipts, ok = [], [], 0
     today = date.today().isoformat()
     for t in load_watchlist():
         h = heat(t)
         if h is None:
             continue
-        value, vids = h
+        value, vids, kept = h
         rows.append({"date": today, "source": "youtube", "platform": "youtube",
                      "term": t, "value": value, "posts": vids})
+        receipts.extend(top_receipts("youtube", "youtube", t, kept))
         if vids > 0:
             ok += 1
         print(f"{t}: views={value} ({vids} videos)", file=sys.stderr)
         time.sleep(0.3)
     write_merged("youtube", "youtube", rows, ok)
+    write_receipts("youtube", "youtube", receipts)
     if ok < MIN_OK_TERMS:
         sys.exit(1)
 
