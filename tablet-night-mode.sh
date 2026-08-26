@@ -90,6 +90,8 @@ mode_for_hour() {
   local h; h=$(date +%H)
   if [ "$h" -ge 22 ] || [ "$h" -lt 8 ]; then echo night; else echo day; fi
 }
+# 23:00–08:00 Tomas isn't using the tablet — down alerts are noise (2026-08-26).
+quiet_hours() { local h; h=$(date +%H); [ "$h" -ge 23 ] || [ "$h" -lt 8 ]; }
 apply_settings() { # apply_settings day|night — settings only, no screen commands
   local sens=90
   [ "$1" = night ] && sens=50
@@ -125,11 +127,19 @@ ensure_alive() { # rc 0 = Fully reachable (possibly after relaunch)
       return 1
       ;;
   esac
-  if [ ! -f "$DEAD_FLAG" ]; then
-    touch "$DEAD_FLAG"
-    [ -x "$NOTIFY" ] && "$NOTIFY" "Tablet dashboard down" \
-      "Fully Kiosk is not running and adb can't relaunch it (Wireless debugging off?). Motion detection is OFF until Fully is reopened on the tablet." \
-      high || true
+  # Alert once per outage; quiet hours write "suppressed" into the flag so an
+  # outage persisting past 08:00 still posts on the next rearm.
+  FLAG_STATE="$(cat "$DEAD_FLAG" 2>/dev/null)"
+  if [ ! -f "$DEAD_FLAG" ] || { [ "$FLAG_STATE" = suppressed ] && ! quiet_hours; }; then
+    if quiet_hours; then
+      echo suppressed > "$DEAD_FLAG"
+      echo "fully down — alert suppressed (quiet hours)" >&2
+    else
+      echo notified > "$DEAD_FLAG"
+      [ -x "$NOTIFY" ] && "$NOTIFY" "Tablet dashboard down" \
+        "Fully Kiosk is not running and adb can't relaunch it (Wireless debugging off?). Motion detection is OFF until Fully is reopened on the tablet." \
+        high || true
+    fi
   fi
   echo "fully unreachable and no adb relaunch path" >&2
   return 1
