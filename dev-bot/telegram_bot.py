@@ -327,6 +327,14 @@ class TgAgent:
                 prompt = "\n\n".join(q)
                 q.clear()
                 resume = self.sessions.get(ctx.key)
+                if resume and dev_bot.session_context_tokens(resume) > dev_bot.COMPACT_AT:
+                    # compaction fires the PreCompact memory-flush hook, so nothing is lost
+                    try:
+                        await self.send_reply(
+                            ctx, "🗜️ Session context near the 529 wedge zone — compacting first (~1-2 min)…")
+                        await dev_bot.compact_session(resume)
+                    except (RuntimeError, OSError):
+                        pass
                 try:
                     board = Board(ctx)
                     reply, session_id = await dev_bot.run_claude(

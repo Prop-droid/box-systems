@@ -153,6 +153,17 @@ async def handle_task(shared: Shared, key: str, thread: discord.Thread,
                     prompt = (f"[Discord thread context so far, oldest first]\n{ctx}\n\n"
                               f"[Latest request addressed to you]\n{prompt}")
             runner = codex_bot.run_codex if p.get("engine") == "codex" else run_claude
+            if (resume and runner is run_claude
+                    and dev_bot.session_context_tokens(resume, cwd=p["cwd"]) > dev_bot.COMPACT_AT):
+                # compaction fires the PreCompact memory-flush hook, so nothing is lost
+                try:
+                    note = await thread.send(
+                        "🗜️ Session context near the 529 wedge zone — compacting first (~1-2 min)…")
+                    ok = await dev_bot.compact_session(resume, cwd=p["cwd"])
+                    await note.edit(content="🗜️ Session compacted." if ok else
+                                    "🗜️ Compaction failed — continuing on the full context.")
+                except discord.HTTPException:
+                    pass
             board = StatusBoard(thread)
             async with thread.typing():
                 reply, session_id = await runner(prompt, resume, on_block=board.on_block,
