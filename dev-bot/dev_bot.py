@@ -294,13 +294,42 @@ def session_context_tokens(session_id: str, cwd: str | None = None) -> int:
     return tokens
 
 
+PRE_COMPACT_FLUSH_PROMPT = (
+    "[Pre-compression memory flush — Tomas's standing rule, 2026-08-27] This session's "
+    "context is about to be compacted. Before it is: persist anything durable from this "
+    "session that is NOT yet saved — decisions Tomas made, corrections he gave, canon/"
+    "product facts, task state and open threads, gotchas learned — to your memory "
+    "directory per your memory instructions (one fact per file, MEMORY.md pointer). "
+    "Skip anything already recorded in memory, canon, or a repo. If nothing qualifies, "
+    "save nothing. Reply with one line: what you saved, or 'nothing new'."
+)
+
+COMPACT_PRESERVE = (
+    "Preserve in full: outstanding tasks and their exact state, decisions made and their "
+    "reasons, file paths and IDs touched, facts Tomas asked to remember, and any "
+    "instructions he gave for future turns."
+)
+
+
 async def compact_session(session_id: str, cwd: str | None = None) -> bool:
-    """Run /compact on a session between turns, before it reaches 529-shed size."""
+    """Run /compact on a session between turns, before it reaches 529-shed size.
+    First gives the agent one turn to persist unsaved knowledge to memory, so
+    nothing durable is lost to the summary; then compacts with preserve rules."""
     env = dict(os.environ)
     env["PATH"] = os.path.expanduser("~/.local/bin") + ":" + env.get("PATH", "")
+    workdir = os.path.expanduser(cwd or os.environ.get("CLAUDE_CWD", "~"))
+    flush = await asyncio.create_subprocess_exec(
+        CLAUDE_BIN, "-p", "--resume", session_id, PRE_COMPACT_FLUSH_PROMPT,
+        cwd=workdir, env=env,
+        stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
+    )
+    try:
+        await asyncio.wait_for(flush.wait(), timeout=600)
+    except asyncio.TimeoutError:
+        flush.kill()  # compaction still runs — avoiding the wedge beats a perfect flush
     proc = await asyncio.create_subprocess_exec(
-        CLAUDE_BIN, "-p", "--resume", session_id, "/compact",
-        cwd=os.path.expanduser(cwd or os.environ.get("CLAUDE_CWD", "~")), env=env,
+        CLAUDE_BIN, "-p", "--resume", session_id, "/compact " + COMPACT_PRESERVE,
+        cwd=workdir, env=env,
         stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
     )
     try:
@@ -543,9 +572,10 @@ class ChannelAgent(discord.Client):
                 if resume and session_context_tokens(resume) > COMPACT_AT:
                     try:
                         note = await thread.send(
-                            "🗜️ Session context near the 529 wedge zone — compacting first (~1-2 min)…")
+                            "🗜️ Session context near the 529 wedge zone — saving durable "
+                            "knowledge to memory, then compacting (~2-4 min)…")
                         ok = await compact_session(resume)
-                        await note.edit(content="🗜️ Session compacted." if ok else
+                        await note.edit(content="🗜️ Memory saved, session compacted." if ok else
                                         "🗜️ Compaction failed — continuing on the full context.")
                     except discord.HTTPException:
                         pass

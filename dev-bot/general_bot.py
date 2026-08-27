@@ -158,9 +158,10 @@ async def handle_task(shared: Shared, key: str, thread: discord.Thread,
                 # compaction fires the PreCompact memory-flush hook, so nothing is lost
                 try:
                     note = await thread.send(
-                        "🗜️ Session context near the 529 wedge zone — compacting first (~1-2 min)…")
+                        "🗜️ Session context near the 529 wedge zone — saving durable "
+                        "knowledge to memory, then compacting (~2-4 min)…")
                     ok = await dev_bot.compact_session(resume, cwd=p["cwd"])
-                    await note.edit(content="🗜️ Session compacted." if ok else
+                    await note.edit(content="🗜️ Memory saved, session compacted." if ok else
                                     "🗜️ Compaction failed — continuing on the full context.")
                 except discord.HTTPException:
                     pass

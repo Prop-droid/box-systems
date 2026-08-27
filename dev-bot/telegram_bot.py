@@ -331,7 +331,8 @@ class TgAgent:
                     # compaction fires the PreCompact memory-flush hook, so nothing is lost
                     try:
                         await self.send_reply(
-                            ctx, "🗜️ Session context near the 529 wedge zone — compacting first (~1-2 min)…")
+                            ctx, "🗜️ Session context near the 529 wedge zone — saving durable "
+                                 "knowledge to memory, then compacting (~2-4 min)…")
                         await dev_bot.compact_session(resume)
                     except (RuntimeError, OSError):
                         pass
