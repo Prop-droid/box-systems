@@ -92,7 +92,15 @@ mode_for_hour() {
   if [ "$h" -ge 22 ] || [ "$h" -lt 8 ]; then echo night; else echo day; fi
 }
 # 23:00–08:00 Tomas isn't using the tablet — down alerts are noise (2026-08-26).
-quiet_hours() { local h; h=$(date +%H); [ "$h" -ge 23 ] || [ "$h" -lt 8 ]; }
+# A future epoch in SNOOZE_FILE mutes ALL tablet alerts until then ("ignore tablet
+# for a week", 2026-08-28). Delete the file to unmute early.
+SNOOZE_FILE="$STATE_DIR/tablet-alerts-snooze-until"
+quiet_hours() {
+  local h until
+  until=$(cat "$SNOOZE_FILE" 2>/dev/null)
+  [ -n "$until" ] && [ "$(date +%s)" -lt "$until" ] 2>/dev/null && return 0
+  h=$(date +%H); [ "$h" -ge 23 ] || [ "$h" -lt 8 ]
+}
 apply_settings() { # apply_settings day|night — settings only, no screen commands
   local sens=90
   [ "$1" = night ] && sens=50
