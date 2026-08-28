@@ -21,9 +21,10 @@ DEAD_FLAG="$STATE_DIR/tablet-fully-dead"
 IP_CACHE="$STATE_DIR/tablet-ip"
 NOTIFY="$HOME/systems/lib/discord-notify.sh"
 
-# Tablet DHCP IP drifts between .160/.161. Probe Fully REST directly — the old
-# adb-derived IP broke exactly when adb was disconnected (silent-fail mode).
-CANDIDATES="192.168.0.160 192.168.0.161"
+# Tablet DHCP IP drifts (router subnet changed 2026-08-28: 192.168.0.x → .1.x).
+# Probe Fully REST directly — the old adb-derived IP broke exactly when adb was
+# disconnected (silent-fail mode).
+CANDIDATES="192.168.1.89 192.168.0.160 192.168.0.161"
 discover_ip() {
   IP=""
   local cand
@@ -56,7 +57,7 @@ fetch_settings() {
 }
 
 adb_serial() { # tablet only — never match the Pixel, which is also LAN adb
-  adb devices 2>/dev/null | awk '$2=="device" && ($1 ~ /192\.168\.0\.160/ || $1 ~ /192\.168\.0\.161/) {print $1; exit}'
+  adb devices 2>/dev/null | awk '$2=="device" && ($1 ~ /192\.168\.1\.89/ || $1 ~ /192\.168\.0\.160/ || $1 ~ /192\.168\.0\.161/) {print $1; exit}'
 }
 tablet_idle() { # safe to steal foreground: screen off/dozing, or Fully/launcher focused
   local s="$1" awake focus
