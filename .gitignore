@@ -69,3 +69,4 @@ tg-*-bot/sessions.json
 tg-*-bot/transcripts/
 dev-bot/tg_archive/
 lib/.tg-ops-topic
+creative-feedback/.mine_state.json

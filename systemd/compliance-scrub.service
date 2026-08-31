@@ -1,0 +1,5 @@
+[Unit]
+Description=compliance-scrub (nightly banned-claims scan of changed copy -> #creative on hits)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/compliance-scrub/run_scrub.sh

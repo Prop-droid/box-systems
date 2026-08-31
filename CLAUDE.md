@@ -34,6 +34,10 @@ command to prove a change works before the timer fires.
   (CCC serves it at `/api/comments/digest`). Schedule: Tue 04:00.
   Entry: `run_digest.sh`. No flag; a manual run only writes a local md (needs BQ).
   Exits 0 on no data by design (upstream feed was dead; don't "fix" that).
+- **compliance-scrub/** — daily 05:45 deterministic banned-claims scan
+  (compliance-eval policy.json) over *.md changed <25h in ~/brain shippable-copy
+  surfaces; digest to Discord #creative on hits, silent when clean.
+  Dry run: `SCRUB_DRY=1 python3 scan.py`.
 - **fatigue-sentinel/** — daily creative fatigue watch: winning ads whose hook
   rate/ROAS decays vs 7-day baseline → one ntfy alert; Mon heartbeat.
   Schedule: daily 08:30 (enabled 2026-07-05). Entry: `run_sentinel.sh` →
@@ -43,6 +47,10 @@ command to prove a change works before the timer fires.
   NEW-ads diff (deterministic python diff as fallback). Complementary to the daily
   brand-filtered research-monitor. Schedule: Mon 07:30 (enabled 2026-07-05).
   Entry: `run_atria_weekly.sh`. No dry-run; it's read-only pulls + local files.
+
+- **viral-trend-tracker/trend_gap.py** — Mon 10:30 (`trend-gap.timer`): joins
+  VTT digests 7-28d old against ClickUp tasks created since; unbriefed trends
+  → #creative with a "go <term>" gate. Dry run: `GAP_DRY=1 python3 trend_gap.py`.
 
 ### Research agent
 
