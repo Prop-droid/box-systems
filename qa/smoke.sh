@@ -75,8 +75,8 @@ check usage-guard      "usage-guard run + window JSON parses" 120 \
   'bash usage-guard/guard.sh >/dev/null 2>&1; python3 -c "import json,os;d=json.load(open(os.path.expanduser(chr(126)+\"/.claude/usage-window.json\")));assert isinstance(d,dict)"'
 check fable-resume     "fable-resume no-op / launch" 60 \
   'bash fable-resume/resume.sh >/dev/null 2>&1'
-check md-server        "md-server serving :8092" 15 \
-  'curl -sf localhost:8092 >/dev/null 2>&1 || { a=$(ss -ltnH "sport = :8092" 2>/dev/null | awk "{print \$4}" | head -1); [ -n "$a" ] && curl -sf "http://$a" >/dev/null 2>&1; }'
+check md-server        "md-server serving :8092 (401 = up, Basic auth)" 15 \
+  'c=$(curl -s -o /dev/null -w "%{http_code}" localhost:8092 2>/dev/null); [ "$c" != "000" ] && [ "$c" -lt 500 ]'
 
 # Read-only dry-runs that touch BQ/ClickUp (no writes) ------------------------
 check bq-clickup-perf  "bq-clickup-perf PERF_DRY_RUN (writes nothing)" 240 \

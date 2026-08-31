@@ -1,24 +1,17 @@
 # ~/systems QA smoke report
 
-- Run: 2026-08-23 08:00:00 EEST
+- Run: 2026-08-31 10:37:20 EEST
 - Host: tomas-agent-box
-- Checks: 8 pass, 2 fail, 16 gaps (no safe dry-run)
-
-## FAIL — subsystem findings (report, not auto-fixed)
-
-- **compliance-eval** — compliance-eval scorer test (rc=1)
-  - `RESULT: FAIL — fix the scorer/policy before trusting it`
-  - log: `qa/logs/compliance-eval.log`
-- **md-server** — md-server serving :8092 (rc=22)
-  - ``
-  - log: `qa/logs/md-server.log`
+- Checks: 10 pass, 0 fail, 16 gaps (no safe dry-run)
 
 ## PASS
 
 - research-lanes — research-agent lanes unit tests
+- compliance-eval — compliance-eval scorer test
 - creative-feedback — creative-feedback gate/promote tests
 - usage-guard — usage-guard run + window JSON parses
 - fable-resume — fable-resume no-op / launch
+- md-server — md-server serving :8092 (401 = up, Basic auth)
 - bq-clickup-perf — bq-clickup-perf PERF_DRY_RUN (writes nothing)
 - launch-autofill — launch-autofill convention lint (reads only)
 - iteration-sugg — iteration-suggestions DRY_RUN (no post)
