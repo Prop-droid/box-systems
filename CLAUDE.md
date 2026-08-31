@@ -80,7 +80,14 @@ command to prove a change works before the timer fires.
 
 ### Feedback / lessons loops (write proposals, never canon)
 
-- **creative-feedback/** — Tue 05:00 synthesis of unpromoted creative feedback +
+- **creative-feedback/** — TWO jobs. (1) verdict-miner, daily 04:15: mines
+  Tomas's Discord conversations for shipped/edited/killed creative verdicts →
+  `ledger.jsonl` (per his 2026-08-31 decision: capture decisions from
+  conversations, not manual /feedback). Entry: `run_verdict_miner.sh` →
+  `mine_verdicts.py`. Dry run: `DRY_RUN=1 python3 mine_verdicts.py`.
+  Checkpoint `.mine_state.json`; extraction is intentionally conservative —
+  borderline flicker is absorbed by the ≥3-consistent-records synth gate.
+  (2) Tue 05:00 synthesis of unpromoted creative feedback +
   decision disagreements → `proposals.jsonl` + `proposals.md`. Promotion is a
   separate human-gated step (`mark_promoted.py`, `keep_best_gate.py`).
   Entry: `run_feedback_synth.sh`. Tests: `python3 test_keep_best_gate.py

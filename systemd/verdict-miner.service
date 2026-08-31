@@ -1,0 +1,5 @@
+[Unit]
+Description=verdict-miner (mine creative verdicts from Discord conversations -> feedback ledger)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/creative-feedback/run_verdict_miner.sh

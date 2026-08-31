@@ -15,7 +15,7 @@ This is the highest-leverage gap in Tomas's existing agentic stack (persistent c
 **In scope (v1):** creative outputs only — the artifacts produced by `shameless-script`, `dr-script`, `creative-brief-builder`, `email-copy`, `landing-page-copy`, `micro-scripts`, and hook batches. Signal = shipped-as-is / edited / killed, plus the edit diff.
 
 **Out of scope (v1, YAGNI):**
-- Auto-inference of verdicts from ClickUp status or the approved-scripts SHA Doc (phase 2).
+- ~~Auto-inference of verdicts~~ SHIPPED 2026-08-31 as conversation mining (mine_verdicts.py, daily 04:15): Tomas decided the loop should read his conversations and capture decisions there. ClickUp-status inference still out of scope.
 - ROAS / winners.jsonl performance coupling (winners archive already covers performance; join later).
 - Any UI.
 - Logging of drafts that never receive a verdict.
