@@ -37,6 +37,7 @@ import fcntl
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 import urllib.parse
@@ -94,6 +95,49 @@ def load_fleet() -> dict:
                 for k, v in json.loads(FLEET_FILE.read_text()).items()}
     except (OSError, ValueError):
         return {}
+
+
+# --- misroute guard (Tomas 2026-08-31: "I am human, I do mistakes") ---------
+# New General-topic tasks are pre-classified with a cheap haiku call; a task
+# that clearly belongs to another agent is HELD (no session spawned) until the
+# user confirms with a go-word or reposts it in the right group. Explicit
+# @mentions of this bot bypass the guard.
+AGENT_DOMAINS = {
+    "tg-dev-bot":      ("Developer", "code, infra, servers, systemd/cron, box administration, "
+                                     "debugging, automations, the Telegram agent fleet itself"),
+    "tg-ea-bot":       ("Assistant", "executive-assistant work: ClickUp launch details, scheduling, "
+                                     "docs, admin chores, data entry"),
+    "tg-creative-bot": ("Creative Lead", "Shameless marketing: ad briefs, scripts, hooks, landing "
+                                         "pages, creative strategy, trends and creative reports"),
+    "tg-coach-bot":    ("Coach", "health, fitness, sleep, Garmin data, habits, personal briefings"),
+    "tg-qa-bot":       ("QA", "reviewing and critiquing code changes, diffs and pull requests"),
+}
+GO_WORDS = {"here", "go", "run", "run it", "run here", "yes", "do it", "proceed"}
+MISROUTE_TTL = 900  # seconds a held task stays runnable via a go-word
+
+
+def agent_key(instance: str) -> str:
+    return instance.removeprefix("tg-").removesuffix("-bot")
+
+
+def classify_agent(text: str) -> str:
+    """Best-fleet-agent guess for a task ('dev'/'ea'/... or 'unsure'); fail-open."""
+    menu = "\n".join(f"{agent_key(k)} — {desc}" for k, (_, desc) in AGENT_DOMAINS.items())
+    keys = {agent_key(k) for k in AGENT_DOMAINS} | {"unsure"}
+    try:
+        p = subprocess.run(
+            [dev_bot.CLAUDE_BIN, "-p", "--model", "claude-haiku-4-5-20251001"],
+            input=("You route incoming tasks to a 5-agent fleet:\n" + menu +
+                   "\n\nReply with exactly one word: the agent key that should handle the "
+                   "message below, or unsure if it could reasonably belong to several.\n\n"
+                   f"MESSAGE:\n{text[:500]}"),
+            capture_output=True, text=True, timeout=25, cwd=str(Path.home()))
+        words = (p.stdout or "").strip().lower().split()
+        if words and words[-1].strip('."\'`') in keys:
+            return words[-1].strip('."\'`')
+    except Exception as e:
+        print(f"[route] classify error: {e}", flush=True)
+    return "unsure"
 
 
 def _topics(mutate=None) -> dict:
@@ -369,6 +413,7 @@ class TgAgent:
         self.username: str | None = None          # set from getMe in run()
         self.default_owner = os.environ.get("GROUP_DEFAULT") == "1"
         self.fleet = load_fleet()
+        self.pending_misroute: tuple[str, str, float] | None = None  # (text, content, ts)
 
     # --- helpers -----------------------------------------------------------
     def lock_for(self, key: str) -> asyncio.Lock:
@@ -616,7 +661,27 @@ class TgAgent:
             await self.enqueue(Ctx(self.chat_id, thread_id, str(thread_id)), content,
                                msg["message_id"])
             return
-        # General topic = new task -> create a forum topic
+        # General topic = new task -> misroute guard first, then a forum topic
+        tl_go = text.strip().lower().rstrip("!.")
+        if self.pending_misroute and tl_go in GO_WORDS:
+            held_text, held_content, ts = self.pending_misroute
+            self.pending_misroute = None
+            if time.time() - ts > MISROUTE_TTL:
+                await api("sendMessage", chat_id=self.chat_id,
+                          text="⌛ That held task expired — repost it, please.")
+                return
+            text, content = held_text, held_content
+        elif len(text.strip()) >= 20 and not mentioned_me:
+            guess = await asyncio.to_thread(classify_agent, text)
+            if guess not in ("unsure", agent_key(self.instance)):
+                inst = f"tg-{guess}-bot"
+                uname = next((u for u, i in self.fleet.items() if i == inst), None)
+                who = AGENT_DOMAINS[inst][0] + (f" (@{uname})" if uname else "")
+                self.pending_misroute = (text, content, time.time())
+                await api("sendMessage", chat_id=self.chat_id,
+                          text=(f'🚧 This looks like a job for {who} — wrong group? '
+                                f'Repost it there, or reply "here" and I\'ll run it anyway.'))
+                return
         fallback = (text.strip().replace("\n", " ")[:80]
                     or (Path(files[0]).name[:80] if files else "task"))
         name = await asyncio.to_thread(dev_bot.thread_title, text or fallback, fallback)
