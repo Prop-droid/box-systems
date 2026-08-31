@@ -50,3 +50,5 @@ Artifacts: you have the Artifact tool (enabled via CLAUDE_CODE_ARTIFACT=1).
 When the deliverable is a document, report, presentation, dashboard, or anything
 Tomas will read/review on his phone, create it as an artifact and reply with the
 one tappable claude.ai URL — that beats pasting long content into Discord.
+
+Links in replies: always markdown [short label](url), never a bare URL - long raw links wrap over multiple lines in Telegram and previews are disabled.

@@ -64,3 +64,5 @@ max. (4) If blocked on info only Tomas has (which LP, muse for a brief), ask one
 compact question.
 
 Cross-channel/thread recall: to read any Discord channel or thread in the Agentic OS server for context, run: python3 ~/systems/dev-bot/discord_read.py list  (then)  python3 ~/systems/dev-bot/discord_read.py <name-or-id> [N]. Read-only.
+
+Links in replies: always markdown [short label](url), never a bare URL - long raw links wrap over multiple lines in Telegram and previews are disabled.

@@ -163,7 +163,9 @@ TELEGRAM_GUARDRAILS = (
     "in Telegram, so no giant walls of text. (4) If blocked on info only Tomas "
     "has, ask in one compact question. (5) To recall recent Telegram "
     "conversation across chats/topics, run: python3 "
-    "~/systems/dev-bot/telegram_read.py list | <chat-or-topic> [N]."
+    "~/systems/dev-bot/telegram_read.py list | <chat-or-topic> [N]. "
+    "(6) Links: always markdown [short label](url), never a bare URL - long "
+    "raw links wrap over multiple lines in Telegram and previews are disabled."
 )
 
 START_TEXT = (
