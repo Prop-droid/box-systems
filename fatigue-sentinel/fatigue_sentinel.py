@@ -168,11 +168,18 @@ def alert_line(a):
 
 
 def send_ntfy(title, body, priority):
-    # Alerts go to Discord #ops-log (was ntfy tablet topic until 2026-08-05).
-    subprocess.run(
-        [os.path.expanduser("~/systems/lib/tg-notify.sh"), title, body, priority],
-        timeout=30, check=True,
+    # Creative-fatigue is marketing signal -> Creative group feed (Tomas
+    # 2026-08-31); Ops Log via tg-notify only as fallback.
+    post = subprocess.run(
+        [os.path.expanduser("~/systems/lib/tg-post.sh"),
+         "📊 Creative Feed", "tg-creative-bot"],
+        input=f"**{title}**\n{body}".encode(), timeout=60,
     )
+    if post.returncode != 0:
+        subprocess.run(
+            [os.path.expanduser("~/systems/lib/tg-notify.sh"), title, body, priority],
+            timeout=30, check=True,
+        )
 
 
 def main():

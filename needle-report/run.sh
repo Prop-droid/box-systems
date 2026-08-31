@@ -18,7 +18,11 @@ if [ -f "$rep" ]; then
   summary="$(sed -n 2p "$rep")"
   fails="$(awk -F'|' '$3 ~ /FAIL/ {gsub(/ /,"",$2); print $2}' "$rep" | paste -sd', ' -)"
   if [ -n "$fails" ]; then prio=high; else prio=low; fi
-  "$NOTIFY" "Needle test $(date +%F)" "$summary
+  # content -> Creative group feed (Tomas 2026-08-31: marketing reports go to Creative);
+  # Ops Log keeps only the no-report failure branch below.
+  printf '%s\n' "**Needle test $(date +%F)** — $summary" "Failing: ${fails:-none}" "Report: $rep" \
+    | bash "$HOME/systems/lib/tg-post.sh" "📊 Creative Feed" tg-creative-bot \
+    || "$NOTIFY" "Needle test $(date +%F) (feed post failed)" "$summary
 Failing: ${fails:-none}
 Report: $rep" "$prio"
 else
