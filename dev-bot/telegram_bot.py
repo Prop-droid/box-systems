@@ -106,7 +106,8 @@ AGENT_DOMAINS = {
     "tg-dev-bot":      ("Developer", "code, infra, servers, systemd/cron, box administration, "
                                      "debugging, automations, the Telegram agent fleet itself"),
     "tg-ea-bot":       ("Assistant", "executive-assistant work: ClickUp launch details, scheduling, "
-                                     "docs, admin chores, data entry"),
+                                     "docs, admin chores, data entry, online postings (marketplace "
+                                     "listings, web forms, submissions)"),
     "tg-creative-bot": ("Creative Lead", "Shameless marketing: ad briefs, scripts, hooks, landing "
                                          "pages, creative strategy, trends and creative reports"),
     "tg-coach-bot":    ("Coach", "health, fitness, sleep, Garmin data, habits, personal briefings"),
