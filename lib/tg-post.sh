@@ -72,8 +72,14 @@ for line in text.splitlines(True):
     cur += line
 if cur:
     chunks.append(cur)
+sys.path.insert(0, f"{home}/systems/lib")
+from tg_md import md_to_html
 for n, chunk in enumerate(chunks):
-    api("sendMessage", chat_id=chat, message_thread_id=tid, text=chunk)
+    try:
+        api("sendMessage", chat_id=chat, message_thread_id=tid,
+            text=md_to_html(chunk), parse_mode="HTML")
+    except RuntimeError:
+        api("sendMessage", chat_id=chat, message_thread_id=tid, text=chunk)
     print(f"posted {n + 1}/{len(chunks)} topic={name}")
     if n + 1 < len(chunks):
         time.sleep(1)

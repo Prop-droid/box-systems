@@ -46,6 +46,9 @@ from pathlib import Path
 
 import dev_bot  # engine reuse; BOT_DIR env must point at THIS instance's dir
 
+sys.path.insert(0, str(Path.home() / "systems" / "lib"))
+from tg_md import md_to_html  # markdown -> Telegram HTML for rendered replies
+
 DROPS_DIR = Path.home() / "Downloads" / "telegram-drops"
 MSG_LIMIT = 4000        # hard cap 4096; headroom for safety
 DOC_THRESHOLD = 12000   # > ~3 messages -> send a .md document instead
@@ -388,6 +391,15 @@ class TgAgent:
         return (f"{content}\n\n[Attachments from this Telegram message, saved on the box:\n"
                 f"{listing}\nUse these files as part of the task.]")
 
+    async def _send_rendered(self, ctx: Ctx, chunk: str):
+        """One chunk, markdown rendered as Telegram HTML; plain on parse reject."""
+        try:
+            await api("sendMessage", chat_id=ctx.chat_id, message_thread_id=ctx.thread_id,
+                      text=md_to_html(chunk), parse_mode="HTML")
+        except RuntimeError:
+            await api("sendMessage", chat_id=ctx.chat_id,
+                      message_thread_id=ctx.thread_id, text=chunk)
+
     async def send_reply(self, ctx: Ctx, text: str):
         text = text.strip() or "(no output)"
         archive(ctx.chat_id, ctx.thread_id, 0, f"bot:{dev_bot.BASE.name}", text)
@@ -398,8 +410,7 @@ class TgAgent:
             return
         while text:
             if len(text) <= MSG_LIMIT:
-                await api("sendMessage", chat_id=ctx.chat_id,
-                          message_thread_id=ctx.thread_id, text=text)
+                await self._send_rendered(ctx, text)
                 break
             window = text[:MSG_LIMIT]
             cut = window.rfind("\n\n")
@@ -409,8 +420,7 @@ class TgAgent:
                 cut = window.rfind(" ")
             if cut < MSG_LIMIT // 2:
                 cut = MSG_LIMIT
-            await api("sendMessage", chat_id=ctx.chat_id,
-                      message_thread_id=ctx.thread_id, text=text[:cut].rstrip())
+            await self._send_rendered(ctx, text[:cut].rstrip())
             text = text[cut:].lstrip()
 
     # --- task flow ---------------------------------------------------------

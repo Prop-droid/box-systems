@@ -32,6 +32,16 @@ TEXT="$ICON $TITLE"
 $BODY"
 # Telegram hard cap 4096; leave headroom.
 TEXT=$(printf '%s' "$TEXT" | head -c 4000)
+HTML=$(printf '%s' "$TEXT" | python3 "$HOME/systems/lib/tg_md.py" 2>/dev/null)
+if [ -n "$HTML" ]; then
+  OK=$(curl -sS -m 15 "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+    --data-urlencode "chat_id=${CHAT}" \
+    ${TOPIC:+--data-urlencode "message_thread_id=${TOPIC}"} \
+    --data-urlencode "parse_mode=HTML" \
+    --data-urlencode "text=${HTML}" 2>/dev/null | head -c 12)
+  case "$OK" in '{"ok":true'*) exit 0;; esac
+fi
+# fallback: plain text (bad HTML or converter unavailable)
 curl -sS -m 15 "https://api.telegram.org/bot${TOKEN}/sendMessage" \
   --data-urlencode "chat_id=${CHAT}" \
   ${TOPIC:+--data-urlencode "message_thread_id=${TOPIC}"} \
