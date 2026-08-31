@@ -50,6 +50,62 @@ MSG_LIMIT = 4000        # hard cap 4096; headroom for safety
 DOC_THRESHOLD = 12000   # > ~3 messages -> send a .md document instead
 QUEUED_REACTION = "✍"   # Telegram only allows emoji from its fixed reaction set
 
+# The Bot API has NO history fetch (getUpdates is live-only), so every instance
+# archives what it sees/sends as it happens — this is the only source for
+# cross-chat recall (telegram_read.py) and fresh-session context injection.
+# Shared across instances; readers dedupe inbound by (chat, mid) since all
+# bots in one group archive the same human messages.
+ARCHIVE_DIR = Path(__file__).resolve().parent / "tg_archive"
+
+
+def archive(chat_id: int, thread_id: int | None, message_id: int,
+            sender: str, text: str, topic: str | None = None):
+    if not text.strip():
+        return
+    try:
+        ARCHIVE_DIR.mkdir(exist_ok=True)
+        rec = {"ts": int(time.time()), "chat": chat_id, "thread": thread_id,
+               "mid": message_id, "from": sender, "text": text[:4000]}
+        if topic:
+            rec["topic"] = topic
+        with open(ARCHIVE_DIR / f"{chat_id}.jsonl", "a", encoding="utf-8") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    except OSError as e:
+        print(f"WARN: archive failed: {e}", flush=True)
+
+
+def archive_context(chat_id: int, exclude_thread: int | None = None,
+                    limit: int = 20) -> str:
+    """Recent archived lines for a chat (topic-labeled), for fresh sessions —
+    parity with dev_bot.channel_context so terse follow-ups still resolve."""
+    path = ARCHIVE_DIR / f"{chat_id}.jsonl"
+    try:
+        raw = path.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return ""
+    topics, lines, seen = {}, [], set()
+    for ln in raw:
+        try:
+            r = json.loads(ln)
+        except ValueError:
+            continue
+        if r.get("topic"):
+            topics[r.get("thread")] = r["topic"]
+        key = (r.get("mid"), r.get("from"))
+        if r.get("mid") and key in seen:
+            continue
+        seen.add(key)
+        lines.append(r)
+    out = []
+    for r in lines[-200:]:
+        if exclude_thread and r.get("thread") == exclude_thread:
+            continue
+        label = topics.get(r.get("thread"))
+        where = f" [{label}]" if label else ""
+        out.append(f"{r.get('from', '?')}{where}: "
+                   + " ".join(str(r.get('text', '')).split())[:300])
+    return "\n".join(out[-limit:])
+
 TELEGRAM_GUARDRAILS = (
     "You are dispatched from Tomas's Agentic OS Telegram bot for development, "
     "system-fix and infra tasks across his fleet (see the fleet-control skill). "
@@ -59,7 +115,9 @@ TELEGRAM_GUARDRAILS = (
     "the next message. (2) Never push to work-account (tomas-ejam) repos. "
     "(3) Reply Hermes-style: lead with what changed + proof, short; this lands "
     "in Telegram, so no giant walls of text. (4) If blocked on info only Tomas "
-    "has, ask in one compact question."
+    "has, ask in one compact question. (5) To recall recent Telegram "
+    "conversation across chats/topics, run: python3 "
+    "~/systems/dev-bot/telegram_read.py list | <chat-or-topic> [N]."
 )
 
 START_TEXT = (
@@ -285,6 +343,7 @@ class TgAgent:
 
     async def send_reply(self, ctx: Ctx, text: str):
         text = text.strip() or "(no output)"
+        archive(ctx.chat_id, ctx.thread_id, 0, f"bot:{dev_bot.BASE.name}", text)
         if len(text) > DOC_THRESHOLD:
             head = dev_bot.snippet(text, 900)
             await asyncio.to_thread(_send_document, ctx.chat_id, ctx.thread_id,
@@ -327,6 +386,12 @@ class TgAgent:
                 prompt = "\n\n".join(q)
                 q.clear()
                 resume = self.sessions.get(ctx.key)
+                if resume is None:
+                    cctx = archive_context(ctx.chat_id, exclude_thread=ctx.thread_id)
+                    if cctx:
+                        prompt = ("[Telegram context — background only; the request may "
+                                  "refer to it (e.g. picking an option offered earlier)]\n"
+                                  f"{cctx}\n\n[Latest request addressed to you]\n{prompt}")
                 if resume and dev_bot.session_context_tokens(resume) > dev_bot.COMPACT_AT:
                     # compaction fires the PreCompact memory-flush hook, so nothing is lost
                     try:
@@ -367,6 +432,10 @@ class TgAgent:
               f"text={dev_bot.snippet(text, 40)!r}", flush=True)
         if (msg.get("from") or {}).get("is_bot"):
             return
+        sender = ((msg.get("from") or {}).get("first_name")
+                  or (msg.get("from") or {}).get("username") or str(uid))
+        archive(chat.get("id"), msg.get("message_thread_id"),
+                msg["message_id"], sender, text)
         # Setup mode: no allowed users configured — echo the ids for .env, once per chat.
         if not self.allowed:
             if chat.get("id") not in self.setup_replied:
@@ -442,6 +511,8 @@ class TgAgent:
         try:
             topic = await api("createForumTopic", chat_id=self.chat_id, name=name[:128])
             thread_id = topic["message_thread_id"]
+            archive(self.chat_id, thread_id, 0, "system",
+                    f"topic created: {name[:128]}", topic=name[:128])
             await api("sendMessage", chat_id=self.chat_id, message_thread_id=thread_id,
                       text=f"📋 {dev_bot.snippet(text, 300) or fallback}")
         except (RuntimeError, OSError) as e:

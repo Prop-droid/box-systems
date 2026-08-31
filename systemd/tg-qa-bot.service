@@ -1,0 +1,14 @@
+[Unit]
+Description=tg-qa-bot: Telegram forum group -> Codex CLI sessions
+After=network-online.target
+
+[Service]
+WorkingDirectory=%h/systems/dev-bot
+Environment=BOT_DIR=%h/systems/tg-qa-bot
+Environment=HOME=%h
+ExecStart=%h/systems/dev-bot/venv/bin/python %h/systems/dev-bot/tg_codex_bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target
