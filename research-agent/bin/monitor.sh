@@ -39,9 +39,19 @@ TODAY="$(date +%F)"
 LOG="$LOGDIR/monitor-$TODAY.log"
 exec > >(tee -a "$LOG") 2>&1
 TEE_PID=$!
-# Close stdout/stderr on exit so tee gets EOF, then wait — otherwise the last
-# log lines race the shell exit and vanish from the log.
-trap 'exec 1>&- 2>&-; [ -n "${TEE_PID:-}" ] && wait "$TEE_PID" 2>/dev/null || true' EXIT
+# On failure, alert #ops-log BEFORE fd teardown (Atria hard-failed 2026-08-28
+# with no alert and the feed silently went stale). Then close stdout/stderr so
+# tee gets EOF, and wait — otherwise the last log lines race the shell exit
+# and vanish from the log.
+finish() {
+  local rc=$?
+  if [ "$rc" -ne 0 ]; then
+    bash "$HOME/systems/lib/discord-notify.sh" "research-monitor FAILED (rc=$rc)" \
+      "Competitor feed NOT updated today. See $LOG or: journalctl --user -u research-monitor.service" high || true
+  fi
+  exec 1>&- 2>&-; [ -n "${TEE_PID:-}" ] && wait "$TEE_PID" 2>/dev/null || true
+}
+trap finish EXIT
 
 echo "=================================================="
 echo "[$(date)] competitor monitor"
@@ -55,8 +65,12 @@ command -v python3 >/dev/null || { echo "FAIL: python3 not on PATH"; exit 2; }
 #    (e.g. "m107585658730958 m112448499199569"). Unset = all followed brands.
 echo ">> atria pull ${MONITOR_BRAND_IDS:+(brands: $MONITOR_BRAND_IDS)} ..."
 if ! python3 "$ATRIA_SCRIPT" ${MONITOR_BRAND_IDS:-} >>"$LOG" 2>&1; then
-  echo "FAIL: atria pull errored (see log). Aborting without touching state."
-  exit 3
+  echo "atria pull errored — retrying once in 60s ..."
+  sleep 60
+  if ! python3 "$ATRIA_SCRIPT" ${MONITOR_BRAND_IDS:-} >>"$LOG" 2>&1; then
+    echo "FAIL: atria pull errored twice (see log). Aborting without touching state."
+    exit 3
+  fi
 fi
 
 # 2) Find the newest swipe JSONL
