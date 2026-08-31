@@ -2,4 +2,4 @@
 Description=trend-gap (weekly flagged-trends vs created-briefs join -> #creative)
 [Service]
 Type=oneshot
-ExecStart=/bin/bash -lc 'cd %h/systems/viral-trend-tracker && timeout 300 python3 trend_gap.py >> digest.log 2>&1 || %h/systems/lib/discord-notify.sh "trend-gap FAILED" "see ~/systems/viral-trend-tracker/digest.log" high'
+ExecStart=/bin/bash -lc 'cd %h/systems/viral-trend-tracker && timeout 300 python3 trend_gap.py >> digest.log 2>&1 || %h/systems/lib/tg-notify.sh "trend-gap FAILED" "see ~/systems/viral-trend-tracker/digest.log" high'

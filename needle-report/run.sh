@@ -7,7 +7,7 @@ set -u
 export PATH="$HOME/.local/bin:$PATH"   # timers/cron get no login env; run.py execs `claude`
 NT="$HOME/brain/systems/needle-test"
 LOG="$HOME/systems/needle-report/last_run.log"
-NOTIFY="$HOME/systems/lib/discord-notify.sh"
+NOTIFY="$HOME/systems/lib/tg-notify.sh"
 
 cd "$NT" || exit 1
 python3 run.py "$@" >"$LOG" 2>&1

@@ -28,7 +28,7 @@ fail() {
 TODAY=$(date +%F)
 [ -s "$DROPS/$TODAY.md" ] && { echo "Already dropped today — exiting"; exit 0; }
 
-grep -q "^CREATIVE_TOKEN=." "$BOTS_ENV" 2>/dev/null || fail "CREATIVE_TOKEN missing in bots.env"
+grep -q "^TELEGRAM_TOKEN=." "$HOME/systems/tg-creative-bot/.env" 2>/dev/null || fail "TELEGRAM_TOKEN missing in tg-creative-bot/.env"
 command -v claude >/dev/null || fail "claude CLI not on PATH"
 
 DATA=$(curl -sf --max-time 30 "$API") || fail "trends API unreachable"

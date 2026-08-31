@@ -9,7 +9,7 @@ export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
 # NOTIFY="" (env override) is an explicit silence-for-testing override
-NOTIFY="${NOTIFY-$HOME/systems/lib/discord-notify.sh}"
+NOTIFY="${NOTIFY-$HOME/systems/lib/tg-notify.sh}"
 DOC_DIR="$HOME/systems/box-doctor"
 MEM_DIR="$HOME/.claude/projects/-home-tomas/memory"
 SKILLS_DIR="$HOME/.claude/skills"

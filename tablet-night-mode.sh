@@ -19,7 +19,7 @@ STATE_DIR="$HOME/systems/.state"
 mkdir -p "$STATE_DIR"
 DEAD_FLAG="$STATE_DIR/tablet-fully-dead"
 IP_CACHE="$STATE_DIR/tablet-ip"
-NOTIFY="$HOME/systems/lib/discord-notify.sh"
+NOTIFY="$HOME/systems/lib/tg-notify.sh"
 
 # Tablet DHCP IP drifts (router subnet changed 2026-08-28: 192.168.0.x → .1.x).
 # Probe Fully REST directly — the old adb-derived IP broke exactly when adb was

@@ -91,7 +91,7 @@ if [ "$ok" = 1 ]; then
 $(grep '^### P' "$DIR/pending.md" | head -3 | sed 's/^### /• /')
 Full list: ~/systems/self-improve/pending.md
 Reply here: \"self-improve: apply P2, P4\" (or skip)."
-  bash "$SYS/lib/discord-notify.sh" "Self-improve digest $TODAY" "$BODY" default
+  bash "$SYS/lib/tg-notify.sh" "Self-improve digest $TODAY" "$BODY" default
   # Full pending.md inline (Tomas 2026-08-25: path references are unreadable from
   # Discord) — chunked to fit the webhook's 2000-char cap.
   CHUNK_DIR="$(mktemp -d)"
@@ -111,7 +111,7 @@ PY
   total=$(ls "$CHUNK_DIR" | wc -l); i=0
   for f in "$CHUNK_DIR"/chunk*.txt; do
     i=$((i+1))
-    bash "$SYS/lib/discord-notify.sh" "pending.md ($i/$total)" "$(cat "$f")" min
+    bash "$SYS/lib/tg-notify.sh" "pending.md ($i/$total)" "$(cat "$f")" min
     sleep 1
   done
   rm -rf "$CHUNK_DIR"
@@ -120,7 +120,7 @@ else
   # Deterministic fallback: degrade to a pointer message, never to silence.
   RC=1
   echo "FAILED: claude and hermes both failed (see _claude.err)"
-  bash "$SYS/lib/discord-notify.sh" "Self-improve digest $TODAY: synth FAILED" \
+  bash "$SYS/lib/tg-notify.sh" "Self-improve digest $TODAY: synth FAILED" \
     "LLM digest failed; $blocks raw report(s) ready under ~/systems/agents/reports/ and */proposals.md. See $LOG" high
   rm -f "$OUT_TMP"
 fi

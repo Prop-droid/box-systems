@@ -17,7 +17,7 @@ echo "=== verdict miner $(date +%Y-%m-%d_%H%M%S) ==="
 rc=0
 timeout 1200 python3 "$DIR/mine_verdicts.py" || rc=$?
 if [ "$rc" -ne 0 ]; then
-  bash "$HOME/systems/lib/discord-notify.sh" "verdict-miner FAILED (rc=$rc)" \
+  bash "$HOME/systems/lib/tg-notify.sh" "verdict-miner FAILED (rc=$rc)" \
     "Conversation->ledger mining did not run. See $LOG" || true
 fi
 

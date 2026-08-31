@@ -203,7 +203,7 @@ def discord_push(content):
         import subprocess
         subprocess.run(
             ["bash", str(Path.home() / "systems/lib/tg-post.sh"),
-             "📋 EA Feed", "tg-ea-bot"],
+             "📋 Launch Details", "tg-ea-bot"],
             input=content.encode(), timeout=60, check=True,
             stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
         log("pushed telegram EA Feed")

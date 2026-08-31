@@ -22,7 +22,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS:-$HOME/.
 export RTK_HOOK_OFF=1
 
 # NOTIFY="" (env override) is an explicit silence-for-testing override.
-NOTIFY="${NOTIFY-$HOME/systems/lib/discord-notify.sh}"
+NOTIFY="${NOTIFY-$HOME/systems/lib/tg-notify.sh}"
 
 SYS="$HOME/systems"
 QA="$SYS/qa"

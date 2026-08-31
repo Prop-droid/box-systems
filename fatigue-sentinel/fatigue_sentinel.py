@@ -30,7 +30,7 @@ heartbeat ("sentinel alive, N ads watched") regardless.
 
 Env:
   GOOGLE_APPLICATION_CREDENTIALS  BQ service account json (for the `bq` CLI)
-  (alerts post to Discord #ops-log via ~/systems/lib/discord-notify.sh)
+  (alerts post to the Telegram Ops Log topic via ~/systems/lib/tg-notify.sh)
 """
 import argparse
 import datetime
@@ -170,7 +170,7 @@ def alert_line(a):
 def send_ntfy(title, body, priority):
     # Alerts go to Discord #ops-log (was ntfy tablet topic until 2026-08-05).
     subprocess.run(
-        [os.path.expanduser("~/systems/lib/discord-notify.sh"), title, body, priority],
+        [os.path.expanduser("~/systems/lib/tg-notify.sh"), title, body, priority],
         timeout=30, check=True,
     )
 

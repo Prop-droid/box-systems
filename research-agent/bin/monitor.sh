@@ -46,7 +46,7 @@ TEE_PID=$!
 finish() {
   local rc=$?
   if [ "$rc" -ne 0 ]; then
-    bash "$HOME/systems/lib/discord-notify.sh" "research-monitor FAILED (rc=$rc)" \
+    bash "$HOME/systems/lib/tg-notify.sh" "research-monitor FAILED (rc=$rc)" \
       "Competitor feed NOT updated today. See $LOG or: journalctl --user -u research-monitor.service" high || true
   fi
   exec 1>&- 2>&-; [ -n "${TEE_PID:-}" ] && wait "$TEE_PID" 2>/dev/null || true

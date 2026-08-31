@@ -12,7 +12,7 @@ BASE="$HOME/systems/ccc-review"
 REPORTS="$BASE/reports"
 LOG="$BASE/review.log"
 CCC="$HOME/creative-command-center"
-NOTIFY="$HOME/systems/lib/discord-notify.sh"
+NOTIFY="$HOME/systems/lib/tg-notify.sh"
 MODEL="${MODEL:-claude-sonnet-4-6}"
 
 mkdir -p "$REPORTS"

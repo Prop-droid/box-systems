@@ -3,7 +3,7 @@
 # v2: usage-limit hits pause and retry (30 min, max 16 tries) instead of failing forward.
 set -u
 B="$HOME/fable-window"; CL="$HOME/.local/bin/claude"
-NOTIFY="$HOME/systems/lib/discord-notify.sh"
+NOTIFY="$HOME/systems/lib/tg-notify.sh"
 START_AT="${START_AT:-}"
 if [ -n "$START_AT" ] && [ ! -f "$B/START_NOW" ]; then
   target=$(date -d "today $START_AT" +%s)

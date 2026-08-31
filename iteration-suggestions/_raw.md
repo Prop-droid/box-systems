@@ -1,27 +1,27 @@
-🔁 **Iteration Suggestions — wk Jul 6–12** *(auto-generated)*
+🔁 **Iteration Suggestions — wk Aug 24–30** *(auto-generated)*
 
-Pick what you want to take — comment on the suggestion + tag yourself, then spawn the brief.
+Reply "go <n>" (optionally with edits) to brief one. Nothing is created without your go.
 
 **VIDEO**
 
-**1. {{SH-16361}} (Chandler Ashcraft WL) — HOOK_SWAP** 🟢
-Hold 9.3% — 2nd highest in the dataset — but hook only 35.5% on $893 spend. The body is excellent; the hook is bleeding impressions before viewers ever land there. → New hook, body and CTA untouched. Metric to beat: hook rate > 42%.
+**1. {{SH-16975-2}} (16975 Vid) — HOOK_SWAP** 🟢
+Only profitable video concept this week: ROAS 1.48, CM-ROAS 1.02 on $3,468 spend. Hook sits at 12.6% — the body converts when viewers land, but most never do. → New hook, body and CTA untouched. Metric to beat: hook rate > 18%.
 
-**2. {{SH-16302}} (Janssen Bradshaw WL) — CREATOR_SWAP** 🟢
-ROAS 1.44, hook 40.5%, hold 6.0% on $2,541 spend. Body edit and length variant covered in prior drops; CTR now -13.1% WoW signals the cut is fatiguing fast. → New creator on the same proven angle/script before it flatlines. Metric to beat: ROAS > 1.3.
+**2. {{SH-15611-1}} (15611 Vid) — INTRO_SWAP** 🟢
+ROAS 1.25, $1,262 spend, one variation ever tested. Hook 25.2% pulls them in; hold collapses to 0.6% = viewers exiting in the opening seconds after the hook. → Rebuild 5–8s post-hook, hook and CTA locked. Metric to beat: hold rate > 3%.
 
-**3. {{SH-15477}} (GLP1 Unproven Fiber) — INTRO_SWAP** 🟡
-Hook 46.8% — top of the dataset — but hold crashes to 5.2% on $992 spend. Scroll-stop is there; the opening seconds of the body are losing everyone immediately. → Rebuild the first 5–8s of content, hook untouched. Metric to beat: hold rate > 8%.
+**3. {{SH-17338-1}} (S32 AffordableSpoon AI) — BODY_EDIT** 🟡
+Best hook in the dataset at 62.3%, hold 7.8% — content genuinely retains people. ROAS 0.65, CM-ROAS 0.42 — the offer section isn't closing despite the engagement. → Rewrite the conversion section; hook untouched. Metric to beat: ROAS > 1.0.
 
 **IMAGE**
 
-**4. {{SH-16450}} (SS Launch Image Test) — headline variants** 🟢
-ROAS 1.61 — strongest image ROAS this week. Scale + variants went out last drop; now isolate the headline as a single clean variable across 3 options. Metric to beat: ROAS > 1.5.
+**4. {{SH-13376-6}} (JDC Mar-16) — headline variants** 🟢
+ROAS 1.38, $1,882 spend — top image ROAS this week. Visual refresh and layout variant both shipped in prior drops; headlines are the one clean axis remaining. → 3 headline options on the proven layout. Metric to beat: ROAS > 1.4.
 
-**5. {{SH-9428}} (HealthGLP1 Broad) — visual refresh** 🟡
-ROAS 1.07, $2,910 spend, CTR -6.4% early fatigue continuing. Headline variants ran last drop. → New product shot or background with the GLP-1 consequence frame intact; one clean axis before the concept stalls. Metric to beat: ROAS > 1.2.
+**5. {{SH-13376-9}} (JDC Mar-16 v9) — scale + variants** 🟡
+ROAS 1.21, $2,473 spend; paired with -6 the concept is holding across both variants. Validate -9 at higher spend before the headline test on -6 absorbs the budget. → Stepped-up spend test alongside the headline run. Metric to beat: ROAS > 1.2 at 2× spend.
 
-**6. {{SH-3028}} (WK22 Images Broad) — layout variant** 🟡
-ROAS 1.20, single variation, CTR -16.6% — steepest image fatigue this week. Scale + variants and visual refresh covered in prior drops. → One comparison-table or split-panel layout treatment; if it can't clear ROAS 1.0, make the kill call. Metric to beat: ROAS > 1.1.
+**6. {{SH-14498-8}} (JDC Apr-16 CTV) — visual refresh** 🟡
+ROAS 1.07, $2,488 spend, 6 variations in concept, never in a drop. CM-ROAS 0.69 — marginal; a fresh visual is the lowest-friction path past the margin line. → New product visual, current headline intact. Metric to beat: ROAS > 1.2.
 
-**Watchlist ⚠️:** {{SH-15957}} ($38k, ROAS 0.52) and {{SH-16180}} ($26.9k, ROAS 0.84) are the account's two biggest cash burns — both need an iterate-vs-kill decision this week, not another drop mention. {{SH-15238}} (hold 0.5%, CTR -18%) — if the INTRO_SWAP from last drop hasn't run yet, pause the ad now.
+**Watchlist ⚠️:** {{SH-17273}} ($5,973 spend, ROAS 0.84, CM-ROAS 0.53, CTR -8% on -4) — 10 variations tested, still underwater; iterate-vs-kill call overdue. Unmapped UGC video ($4,792 spend, ROAS 0.69, CTR -15% WoW) — biggest unlinked account drain; assign to a task or pause.

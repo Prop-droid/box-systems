@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Mine creative verdicts from Discord conversations into ledger.jsonl.
+"""Mine creative verdicts from Discord + Telegram conversations into ledger.jsonl.
 
 Phase-2 auto-inference (design.md): Tomas decided 2026-08-31 that the feedback
 loop should read his conversations and capture the decisions he makes there,
@@ -32,6 +32,50 @@ THREAD_MAX_AGE_DAYS = 14   # threads older than this (by creation) are skipped
 MSGS_PER_SOURCE = 40
 DISCORD_EPOCH_MS = 1420070400000
 MSG_RE = re.compile(r"^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2})\] ")
+TG_ARCHIVE = os.path.expanduser("~/systems/dev-bot/tg_archive")
+
+
+def telegram_chunks(since, newest):
+    """Fresh Telegram messages (fleet group + DMs) as discord-format chunks.
+
+    Reads the tg_archive jsonl directly (epoch ts beats telegram_read's
+    yearless display format), dedupes by (mid, from) like telegram_read,
+    groups per topic, keeps a 10-line context tail before the first fresh line.
+    """
+    chunks = []
+    if not os.path.isdir(TG_ARCHIVE):
+        return chunks, newest
+    for fname in sorted(os.listdir(TG_ARCHIVE)):
+        if not fname.endswith(".jsonl"):
+            continue
+        by_thread, topics, seen = {}, {}, set()
+        for ln in open(os.path.join(TG_ARCHIVE, fname), encoding="utf-8"):
+            try:
+                r = json.loads(ln)
+            except ValueError:
+                continue
+            if r.get("topic"):
+                topics[r.get("thread")] = r["topic"]
+            key = (r.get("mid"), r.get("from"))
+            if r.get("mid") and key in seen:
+                continue
+            seen.add(key)
+            by_thread.setdefault(r.get("thread"), []).append(r)
+        for tid, msgs in by_thread.items():
+            lines, fresh_idx = [], None
+            for i, r in enumerate(msgs):
+                stamp = datetime.fromtimestamp(r.get("ts", 0)).strftime("%Y-%m-%d %H:%M")
+                lines.append(f"[{stamp}] {r.get('from', '?')}: {r.get('text', '')}")
+                if stamp > since and fresh_idx is None:
+                    fresh_idx = i
+                if stamp > newest:
+                    newest = stamp
+            if fresh_idx is None:
+                continue
+            label = topics.get(tid) or fname[:-6]
+            start = max(0, fresh_idx - 10)
+            chunks.append(f"=== telegram:{label} ===\n" + "\n".join(lines[start:]))
+    return chunks, newest
 
 
 def read_source(name_or_id, limit=MSGS_PER_SOURCE):
@@ -95,6 +139,9 @@ def main():
             continue
         start = max(0, fresh_idx - 10)
         chunks.append(f"=== {name} ===\n" + "\n".join(lines[start:]))
+
+    tg, newest = telegram_chunks(since, newest)
+    chunks.extend(tg)
 
     if not chunks:
         print(f"nothing new since {since}")

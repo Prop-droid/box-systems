@@ -1,11 +1,11 @@
-# Verdict miner — extract creative decisions from Discord conversations
+# Verdict miner — extract creative decisions from fleet conversations
 
-You are reading recent Discord messages from Tomas's Agentic OS server (channels
-and threads, oldest first, format `[YYYY-MM-DD HH:MM] Author: text`). Your job:
+You are reading recent Discord and Telegram messages from Tomas's Agentic OS
+fleet (channels, threads, and topics — `=== telegram:...` sources, oldest first, format `[YYYY-MM-DD HH:MM] Author: text`). Your job:
 find CREATIVE VERDICTS Tomas made and emit them as ledger records, one JSON
 object per line. Nothing else on stdout — no prose, no code fences.
 
-A creative verdict = Tomas (author `Tomas_Saltis`) accepting, editing, or
+A creative verdict = Tomas (author `Tomas_Saltis` on Discord, `Tomas` on Telegram) accepting, editing, or
 rejecting a specific creative ARTIFACT that appears in the conversation:
 a script, brief, ad copy, email, landing-page copy, or hook batch.
 

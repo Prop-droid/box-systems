@@ -11,7 +11,7 @@ set -u
 NQ_HOME="$HOME/systems/night-queue"
 Q="${NQ_DIR:-$NQ_HOME/queue}"
 CL="$HOME/.local/bin/claude"
-NOTIFY="$HOME/systems/lib/discord-notify.sh"
+NOTIFY="$HOME/systems/lib/tg-notify.sh"
 LIMIT_RE="session limit|usage limit|rate limit|credit balance|reached your .*limit|usage-credits|limit (reached|hit)|hit your .*limit|5-hour limit|weekly limit|fable.*limit|resets at [0-9]"
 
 ntfy() { "$NOTIFY" "night-queue" "$1" || true; }

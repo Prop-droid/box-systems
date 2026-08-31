@@ -16,7 +16,7 @@ echo "=== compliance scrub $(date +%F_%H%M) ==="
 rc=0
 timeout 600 python3 "$DIR/scan.py" || rc=$?
 if [ "$rc" -ne 0 ]; then
-  bash "$HOME/systems/lib/discord-notify.sh" "compliance-scrub FAILED (rc=$rc)" "See $LOG" high || true
+  bash "$HOME/systems/lib/tg-notify.sh" "compliance-scrub FAILED (rc=$rc)" "See $LOG" high || true
 fi
 source "$HOME/systems/task-lessons/lib.sh" 2>/dev/null && lessons_capture --skill compliance-scrub --exit "$rc" --log "$LOG" || true
 exit "$rc"

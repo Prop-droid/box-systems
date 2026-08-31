@@ -70,3 +70,6 @@ tg-*-bot/transcripts/
 dev-bot/tg_archive/
 lib/.tg-ops-topic
 creative-feedback/.mine_state.json
+lib/.tg-topics
+lib/.tg-topic-*
+dev-bot/tg_topics.json

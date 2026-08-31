@@ -13,7 +13,7 @@ DROPS="$BASE/drops"
 LOG="$BASE/run.log"
 WORKSPACE_ID="9011638245"
 DISCORD_CHANNEL_ID="1531648564932120737"   # #creative
-NOTIFY="$HOME/systems/lib/discord-notify.sh"
+NOTIFY="$HOME/systems/lib/tg-notify.sh"
 POST="$HOME/systems/lib/discord-post.sh"
 
 mkdir -p "$DROPS"
