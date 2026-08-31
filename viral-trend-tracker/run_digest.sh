@@ -58,7 +58,7 @@ text = open(sys.argv[1]).read().strip()
 i = text.find("📈")
 print(text[i:] if i > 0 else text)
 PY
-bash "$HOME/systems/lib/tg-post.sh" "📊 Creative Feed" tg-creative-bot "$TRIMMED" || fail "telegram post failed"
+bash "$HOME/systems/lib/tg-post.sh" "📈 Viral Trends" tg-creative-bot "$TRIMMED" || fail "telegram post failed"
 rm -f "$TRIMMED"
 
 cp "$RAW" "$DROPS/$TODAY.md"

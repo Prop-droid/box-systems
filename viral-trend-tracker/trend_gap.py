@@ -25,8 +25,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 DIGESTS = HERE / "digests"
 LIST_ID = "901110066469"
-CREATIVE_CH = "1531648564932120737"
-POST = Path.home() / "systems/lib/discord-post.sh"
+POST = Path.home() / "systems/lib/tg-post.sh"
+TOPIC, TG_BOT = "📈 Viral Trends", "tg-creative-bot"
 DRY = os.environ.get("GAP_DRY") == "1"
 STOP = {"the", "and", "for", "with", "candy", "snack", "snacks"}
 
@@ -116,7 +116,7 @@ def main():
     if DRY:
         print("--- DRY ---\n" + body)
         return 0
-    subprocess.run(["bash", str(POST), CREATIVE_CH, "CREATIVE_TOKEN"],
+    subprocess.run(["bash", str(POST), TOPIC, TG_BOT],
                    input=body, text=True, check=False)
     return 0
 
