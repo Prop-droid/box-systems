@@ -33,6 +33,7 @@ inter-agent mention dispatch does NOT work over this transport — bot-to-bot
 handoffs stay on the box / on Discord.
 """
 import asyncio
+import fcntl
 import json
 import os
 import re
@@ -72,6 +73,48 @@ def archive(chat_id: int, thread_id: int | None, message_id: int,
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
     except OSError as e:
         print(f"WARN: archive failed: {e}", flush=True)
+
+
+# --- shared-group routing (all fleet bots live in ONE forum group) ----------
+# Bots can't see each other's messages, so routing must be deterministic from
+# Tomas's message alone: @<botusername> targets a bot; no mention = the group's
+# default owner (GROUP_DEFAULT=1, the Developer instance). Topic ownership is a
+# shared registry so replies inside a topic go only to the bot that owns it.
+FLEET_FILE = Path(__file__).resolve().parent / "tg_fleet.json"
+TOPICS_FILE = Path(__file__).resolve().parent / "tg_topics.json"
+
+
+def load_fleet() -> dict:
+    """username(lower) -> instance dir name."""
+    try:
+        return {k.lower().lstrip("@"): v
+                for k, v in json.loads(FLEET_FILE.read_text()).items()}
+    except (OSError, ValueError):
+        return {}
+
+
+def _topics(mutate=None) -> dict:
+    TOPICS_FILE.touch(exist_ok=True)
+    with open(TOPICS_FILE, "r+", encoding="utf-8") as f:
+        fcntl.flock(f, fcntl.LOCK_EX)
+        try:
+            data = json.loads(f.read() or "{}")
+        except ValueError:
+            data = {}
+        if mutate:
+            mutate(data)
+            f.seek(0)
+            f.truncate()
+            f.write(json.dumps(data, indent=1))
+        return data
+
+
+def topic_owner(chat_id: int, thread_id: int) -> str | None:
+    return _topics().get(f"{chat_id}:{thread_id}")
+
+
+def claim_topic(chat_id: int, thread_id: int, instance: str):
+    _topics(lambda d: d.setdefault(f"{chat_id}:{thread_id}", instance))
 
 
 def archive_context(chat_id: int, exclude_thread: int | None = None,
@@ -284,6 +327,10 @@ class TgAgent:
                         os.environ.get("ALLOWED_USER_IDS", "").replace(" ", "").split(",") if x}
         self.offset = 0
         self.setup_replied: set[int] = set()
+        self.instance = dev_bot.BASE.name
+        self.username: str | None = None          # set from getMe in run()
+        self.default_owner = os.environ.get("GROUP_DEFAULT") == "1"
+        self.fleet = load_fleet()
 
     # --- helpers -----------------------------------------------------------
     def lock_for(self, key: str) -> asyncio.Lock:
@@ -496,10 +543,30 @@ class TgAgent:
             await self.enqueue(ctx, content, msg["message_id"])
             return
 
-        # --- forum group: topic per task -----------------------------------
+        # --- forum group: route among fleet bots sharing this group --------
+        thread_id = msg.get("message_thread_id")
+        tl = text.lower()
+        mentioned_me = bool(self.username) and f"@{self.username}" in tl
+        mentioned_other = any(f"@{u}" in tl for u in self.fleet if u != self.username)
+        if mentioned_me:
+            text = re.sub(rf"@{re.escape(self.username)}", "", text,
+                          flags=re.IGNORECASE).strip() or text
+        if thread_id:
+            owner = topic_owner(self.chat_id, thread_id)
+            if not mentioned_me:
+                if owner is not None and owner != self.instance:
+                    return  # someone else's topic; @mention joins a panel
+                if owner is None:
+                    # manual/unclaimed topic — the default owner picks it up
+                    if mentioned_other or not self.default_owner:
+                        return
+                    claim_topic(self.chat_id, thread_id, self.instance)
+        elif not mentioned_me and (mentioned_other or not self.default_owner):
+            return  # General: no mention -> default owner only
+
+        # --- topic per task ------------------------------------------------
         files = await self.save_attachments(msg)
         content = self.with_attachments(text, files)
-        thread_id = msg.get("message_thread_id")
         if thread_id:  # inside an existing topic = follow-up (or fresh session in a manual topic)
             await self.enqueue(Ctx(self.chat_id, thread_id, str(thread_id)), content,
                                msg["message_id"])
@@ -513,6 +580,7 @@ class TgAgent:
             thread_id = topic["message_thread_id"]
             archive(self.chat_id, thread_id, 0, "system",
                     f"topic created: {name[:128]}", topic=name[:128])
+            claim_topic(self.chat_id, thread_id, self.instance)
             await api("sendMessage", chat_id=self.chat_id, message_thread_id=thread_id,
                       text=f"📋 {dev_bot.snippet(text, 300) or fallback}")
         except (RuntimeError, OSError) as e:
@@ -524,8 +592,10 @@ class TgAgent:
     # --- main loop ---------------------------------------------------------
     async def run(self):
         me = await api("getMe")
+        self.username = (me.get("username") or "").lower() or None
         mode = "SETUP MODE" if not self.allowed else \
-            f"dm={sorted(self.allowed)} group={self.chat_id or 'off'}"
+            f"dm={sorted(self.allowed)} group={self.chat_id or 'off'}" \
+            + (" [default-owner]" if self.default_owner else "")
         print(f"telegram-agent ready as @{me.get('username')}; {mode}", flush=True)
         while True:
             try:

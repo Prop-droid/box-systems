@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
-# tg-notify.sh "Title" "body" [priority] — box alert to the Agent OS Telegram
-# group's Ops Log topic. Drop-in signature-compatible with discord-notify.sh
+# tg-notify.sh "Title" "body" [priority] — box alert to the fleet Telegram
+# group's 🔔 Ops Log topic. Drop-in signature-compatible with discord-notify.sh
 # (priority only picks the icon). Token + chat from ~/systems/tg-dev-bot/.env;
-# topic id cached in ~/systems/lib/.tg-ops-topic (created once via
-# createForumTopic). Fail-open: never breaks the calling job.
+# topic cached in ~/systems/lib/.tg-ops-topic as <chat_id>:<topic_id> and
+# auto-recreated if the group changes. Fail-open: never breaks the calling job.
 set -u
 TITLE="${1:-alert}"; BODY="${2:-}"; PRIO="${3:-default}"
 ENV_FILE="$HOME/systems/tg-dev-bot/.env"
 TOPIC_FILE="$HOME/systems/lib/.tg-ops-topic"
 TOKEN=$(sed -n 's/^TELEGRAM_TOKEN=//p' "$ENV_FILE" 2>/dev/null)
 CHAT=$(sed -n 's/^CHAT_ID=//p' "$ENV_FILE" 2>/dev/null)
-TOPIC=$(cat "$TOPIC_FILE" 2>/dev/null)
 [ -n "$TOKEN" ] && [ -n "$CHAT" ] || exit 0
+CACHED=$(cat "$TOPIC_FILE" 2>/dev/null)
+TOPIC=""
+case "$CACHED" in "$CHAT:"*) TOPIC="${CACHED#*:}";; esac
+if [ -z "$TOPIC" ]; then
+  RES=$(curl -sS -m 15 "https://api.telegram.org/bot${TOKEN}/createForumTopic" \
+    --data-urlencode "chat_id=${CHAT}" --data-urlencode "name=🔔 Ops Log" 2>/dev/null)
+  TOPIC=$(printf '%s' "$RES" | python3 -c 'import json,sys
+try: print(json.load(sys.stdin)["result"]["message_thread_id"])
+except Exception: pass' 2>/dev/null)
+  [ -n "$TOPIC" ] && printf '%s:%s\n' "$CHAT" "$TOPIC" > "$TOPIC_FILE"
+fi
 case "$PRIO" in
   high|urgent|max) ICON="🚨" ;;
   min|low)         ICON="ℹ️" ;;
