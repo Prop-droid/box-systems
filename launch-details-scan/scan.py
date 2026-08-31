@@ -128,23 +128,10 @@ def empty(task, fid):
     return True
 
 
-def bare_fb_page(task):
-    # Drift class from 2026-08-30 (SH-17958): FB Page filled with the page NAME
-    # instead of the numeric page ID media buyers need. Real IDs are long digits.
-    for f in task.get("custom_fields", []):
-        if f["id"] == FIELDS["FB Page"]:
-            v = f.get("value")
-            return isinstance(v, str) and v.strip() != "" \
-                and not re.fullmatch(r"\d{8,}", v.strip())
-    return False
-
-
 def main():
     found = []
     for t in fetch():
         missing = [label for label, fid in FIELDS.items() if empty(t, fid)]
-        if bare_fb_page(t):
-            missing = missing + ["FB Page = bare name (needs numeric ID)"]
         if missing:
             found.append({
                 "id": t["id"],
