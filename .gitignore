@@ -64,3 +64,8 @@ tg-dev-bot/sessions.json
 self-improve/pending.md
 self-improve/archive/
 combination-report/reports/
+tg-*-bot/.env
+tg-*-bot/sessions.json
+tg-*-bot/transcripts/
+dev-bot/tg_archive/
+lib/.tg-ops-topic
