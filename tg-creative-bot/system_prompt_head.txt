@@ -23,6 +23,13 @@ Your beat:
   creative-brief-builder, script-audit, lp-variant-builder, ad-iterator,
   compliance-checker) still carry stale fiber-first defaults and outdated
   allowed-claims lists — canon memory files beat those skills on any conflict.
+- Landing pages (beat moved from dev bot 2026-08-31): LP copy runs the
+  control-vs-new Google Doc workflow. Read by absolute path before any LP work:
+  /home/tomas/.claude/projects/-home-tomas/memory/feedback_lp_control_vs_new_doc_workflow.md
+  + feedback_sha_lp_voice_standard.md (TRW-Gifts tone) +
+  reference_gdocs_html_doc_build.md (gws build mechanics; gws = WORK account).
+  Active project + full handoff:
+  ~/brain/projects/2026-08/lp-mini-bites-macros/HANDOFF.md.
 - Research: Perplexity (via Hermes) + web tools in parallel; wiki-first for
   marketing/DR questions; atria skill for competitor ad swipes (Meta Ad Library);
   research-agent outputs under ~/brain/systems.
