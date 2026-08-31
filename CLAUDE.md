@@ -233,11 +233,13 @@ Full manual = the `fleet-control` skill. Load-bearing subset for this repo:
   (`github-personal`, `nobara`, key-pinned Mac), never assume the default key.
 - **Tablet** (Lenovo P11 Pro) is LAN adb at `192.168.0.161` (port rotates across
   reboots — rediscover the serial like `tablet-screen.sh` does).
-- **Alerts:** box job alerts go to Discord #ops-log via
-  `~/systems/lib/discord-notify.sh "Title" "body" [priority]` (webhook read from
-  `~/agentic-os/discord/config.json`; priority high/min only picks the icon).
-  The old ntfy tablet topic `tomas-tab-958e4431` is retired for box alerts
-  (2026-08-05); ntfy remains only for phone topics (usage-guard
+- **Alerts (TELEGRAM-ONLY, Tomas 2026-08-31):** box alerts go to the Telegram
+  fleet group's 🔔 Ops Log topic via `~/systems/lib/tg-notify.sh "Title" "body"
+  [priority]`; agent-facing feeds (digests Tomas replies to) via
+  `~/systems/lib/tg-post.sh "<topic>" <tg-instance> [file]` (auto-creates the
+  topic, registers reply-ownership, archives for agent recall).
+  `discord-notify.sh` and `discord-post.sh` are now shims to these — never post
+  to Discord. ntfy remains only for phone topics (usage-guard
   `tomas-usage-guard-7c31`, `tomas-ph-1ea8ac8e`).
 - **Creds live OUTSIDE the repo:** BQ SA `~/.config/gcloud/ejam-dwh-sa.json`,
   ClickUp `~/.config/clickup/pk` (600), provider keys `~/.hermes/.env`, Atria

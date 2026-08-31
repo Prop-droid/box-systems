@@ -198,23 +198,17 @@ def main():
 
 
 def discord_push(content):
-    # mirror to #assistant with the EA bot token; fail-open like ntfy
+    # Telegram-only rule (2026-08-31): EA Feed topic via tg-post.sh; fail-open
     try:
-        m = re.search(r"^EA_TOKEN=(\S+)", BOTS_ENV.read_text(), re.M)
-        if not m:
-            log("discord push skipped: no EA_TOKEN")
-            return
-        req = urllib.request.Request(
-            f"https://discord.com/api/v10/channels/{DISCORD_CHANNEL_ID}/messages",
-            data=json.dumps({"content": content[:1900]}).encode(),
-            headers={"Authorization": f"Bot {m.group(1)}",
-                     "Content-Type": "application/json",
-                     # Discord 403s the default Python-urllib UA
-                     "User-Agent": "launch-details-scan/1.0"})
-        urllib.request.urlopen(req, timeout=20)
-        log("pushed discord #assistant")
+        import subprocess
+        subprocess.run(
+            ["bash", str(Path.home() / "systems/lib/tg-post.sh"),
+             "📋 EA Feed", "tg-ea-bot"],
+            input=content.encode(), timeout=60, check=True,
+            stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+        log("pushed telegram EA Feed")
     except Exception as e:
-        log(f"discord push failed: {e}")
+        log(f"telegram push failed: {e}")
 
 
 if __name__ == "__main__":

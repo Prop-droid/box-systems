@@ -6,6 +6,15 @@
 # AS a bot into working channels, so replies land where the channel agent reads.
 set -uo pipefail
 CH="${1:?channel id}"; VAR="${2:?token var}"; FILE="${3:-}"
+# TELEGRAM-ONLY RULE (Tomas 2026-08-31): shim to tg-post.sh — the TOKEN_VAR
+# picks the Telegram bot + feed topic; channel id is ignored. Callers unchanged.
+case "$VAR" in
+  CREATIVE_TOKEN) exec "$HOME/systems/lib/tg-post.sh" "📊 Creative Feed" tg-creative-bot ${FILE:+"$FILE"} ;;
+  EA_TOKEN)       exec "$HOME/systems/lib/tg-post.sh" "📋 EA Feed" tg-ea-bot ${FILE:+"$FILE"} ;;
+  QA_TOKEN)       exec "$HOME/systems/lib/tg-post.sh" "🧪 QA Feed" tg-qa-bot ${FILE:+"$FILE"} ;;
+  *)              exec "$HOME/systems/lib/tg-post.sh" "🔔 Ops Log" tg-dev-bot ${FILE:+"$FILE"} ;;
+esac
+# --- retired Discord path (unreachable) -------------------------------------
 BOTS_ENV="$HOME/agentic-os/discord/bots.env"
 [ -f "$BOTS_ENV" ] || { echo "discord-post: $BOTS_ENV missing" >&2; exit 2; }
 # Buffer stdin to a file: the python heredoc below owns the real stdin.

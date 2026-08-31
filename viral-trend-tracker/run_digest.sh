@@ -12,7 +12,7 @@ DROPS="$BASE/digests"
 LOG="$BASE/digest.log"
 DISCORD_CHANNEL_ID="1531648564932120737"   # #creative
 BOTS_ENV="$HOME/agentic-os/discord/bots.env"
-NOTIFY="$HOME/systems/lib/discord-notify.sh"
+NOTIFY="$HOME/systems/lib/tg-notify.sh"
 API="http://localhost:3000/api/research/trends"
 
 mkdir -p "$DROPS"
@@ -50,35 +50,16 @@ if [ "${DRY_RUN:-0}" = "1" ]; then
   echo "--- DRY_RUN draft ---"; cat "$RAW"; exit 0
 fi
 
-BOTS_ENV="$BOTS_ENV" CHANNEL_ID="$DISCORD_CHANNEL_ID" RAW_FILE="$RAW" \
-python3 - <<'PY' || fail "discord post failed"
-import json, os, re, sys, time, urllib.request
-tok = re.search(r"^CREATIVE_TOKEN=(\S+)", open(os.environ["BOTS_ENV"]).read(), re.M).group(1)
-ch = os.environ["CHANNEL_ID"]
-text = open(os.environ["RAW_FILE"]).read().strip()
+# Telegram-only rule (2026-08-31): digest goes to the Creative Feed topic.
+TRIMMED="$(mktemp)"
+python3 - "$RAW" > "$TRIMMED" <<'PY'
+import sys
+text = open(sys.argv[1]).read().strip()
 i = text.find("📈")
-if i > 0:
-    text = text[i:]
-# Discord caps messages at 2000 chars — chunk on line boundaries.
-chunks, cur = [], ""
-for line in text.splitlines(True):
-    if len(cur) + len(line) > 1900:
-        chunks.append(cur); cur = ""
-    cur += line
-chunks.append(cur)
-for n, chunk in enumerate(chunks):
-    req = urllib.request.Request(
-        f"https://discord.com/api/v10/channels/{ch}/messages",
-        data=json.dumps({"content": chunk}).encode(), method="POST",
-        headers={"Authorization": f"Bot {tok}", "Content-Type": "application/json",
-                 # Discord 403s the default Python-urllib UA
-                 "User-Agent": "vtt-digest/1.0"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        d = json.loads(r.read().decode() or "{}")
-    print(f"posted discord #creative message {n+1}/{len(chunks)} id={d.get('id')}")
-    if n + 1 < len(chunks):
-        time.sleep(1)
+print(text[i:] if i > 0 else text)
 PY
+bash "$HOME/systems/lib/tg-post.sh" "📊 Creative Feed" tg-creative-bot "$TRIMMED" || fail "telegram post failed"
+rm -f "$TRIMMED"
 
 cp "$RAW" "$DROPS/$TODAY.md"
 echo "[$(date)] DONE: posted + saved $DROPS/$TODAY.md"

@@ -1,13 +1,20 @@
 #!/usr/bin/env bash
-# Post a box alert to Discord #ops-log (Agentic OS server).
-# Usage: discord-notify.sh "Title" ["body"] [priority]   (body may come from stdin)
-# Priority maps to an icon only: high/urgent=red, min/low=green, else bell.
-# Replaces the old ntfy tablet topic (tomas-tab-958e4431) per Tomas 2026-08-05.
+# TELEGRAM-ONLY RULE (Tomas 2026-08-31): all box alerts go to the Telegram
+# 🔔 Ops Log topic via tg-notify.sh. This shim keeps every existing caller
+# working unchanged. Original Discord webhook body kept below for rollback.
+TITLE="${1:-Box alert}"; BODY="${2:-}"
+[ -z "$BODY" ] && [ ! -t 0 ] && BODY="$(cat)"
+exec "$HOME/systems/lib/tg-notify.sh" "$TITLE" "$BODY" "${3:-default}"
+
+# --- retired Discord path (unreachable) -------------------------------------
 set -u
 TITLE="${1:-Box alert}"
 BODY="${2:-}"
 [ -z "$BODY" ] && [ ! -t 0 ] && BODY="$(cat)"
 PRIO="${3:-default}"
+# Telegram migration parallel-run: mirror every alert to the 🔔 Ops Log topic.
+# Fail-open; the Discord leg below is removed in Phase 4.
+"$HOME/systems/lib/tg-notify.sh" "$TITLE" "$BODY" "$PRIO" || true
 HOOK="$(sed -n 's/.*"ops-log": *"\([^"]*\)".*/\1/p' "$HOME/agentic-os/discord/config.json" 2>/dev/null)"
 [ -n "$HOOK" ] || exit 0
 case "$PRIO" in
