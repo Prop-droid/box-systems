@@ -38,6 +38,7 @@ if [ -n "$HTML" ]; then
     --data-urlencode "chat_id=${CHAT}" \
     ${TOPIC:+--data-urlencode "message_thread_id=${TOPIC}"} \
     --data-urlencode "parse_mode=HTML" \
+    --data-urlencode 'link_preview_options={"is_disabled":true}' \
     --data-urlencode "text=${HTML}" 2>/dev/null | head -c 12)
   case "$OK" in '{"ok":true'*) exit 0;; esac
 fi
@@ -45,5 +46,6 @@ fi
 curl -sS -m 15 "https://api.telegram.org/bot${TOKEN}/sendMessage" \
   --data-urlencode "chat_id=${CHAT}" \
   ${TOPIC:+--data-urlencode "message_thread_id=${TOPIC}"} \
+  --data-urlencode 'link_preview_options={"is_disabled":true}' \
   --data-urlencode "text=${TEXT}" >/dev/null 2>&1 || true
 exit 0

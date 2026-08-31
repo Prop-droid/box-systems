@@ -175,6 +175,9 @@ START_TEXT = (
 
 def _api(method: str, params: dict, http_timeout: float = 35) -> dict:
     token = os.environ["TELEGRAM_TOKEN"]
+    if method in ("sendMessage", "editMessageText"):
+        # no preview cards: they cap the bubble at media width (Tomas 2026-08-31)
+        params.setdefault("link_preview_options", {"is_disabled": True})
     data = urllib.parse.urlencode(
         {k: v if isinstance(v, str) else json.dumps(v)
          for k, v in params.items() if v is not None}).encode()

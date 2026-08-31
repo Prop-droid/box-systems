@@ -77,9 +77,11 @@ from tg_md import md_to_html
 for n, chunk in enumerate(chunks):
     try:
         api("sendMessage", chat_id=chat, message_thread_id=tid,
-            text=md_to_html(chunk), parse_mode="HTML")
+            text=md_to_html(chunk), parse_mode="HTML",
+            link_preview_options='{"is_disabled":true}')
     except RuntimeError:
-        api("sendMessage", chat_id=chat, message_thread_id=tid, text=chunk)
+        api("sendMessage", chat_id=chat, message_thread_id=tid, text=chunk,
+            link_preview_options='{"is_disabled":true}')
     print(f"posted {n + 1}/{len(chunks)} topic={name}")
     if n + 1 < len(chunks):
         time.sleep(1)
