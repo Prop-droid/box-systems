@@ -271,8 +271,10 @@ class Board:
             return
         try:
             if self.msg_id is None:
+                # silent: the board is ambient progress, only the final reply should ping
                 m = await api("sendMessage", chat_id=self.ctx.chat_id,
-                              message_thread_id=self.ctx.thread_id, text=text)
+                              message_thread_id=self.ctx.thread_id, text=text,
+                              disable_notification=True)
                 self.msg_id = m["message_id"]
             else:
                 await api("editMessageText", chat_id=self.ctx.chat_id,
