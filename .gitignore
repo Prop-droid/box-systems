@@ -73,3 +73,5 @@ creative-feedback/.mine_state.json
 lib/.tg-topics
 lib/.tg-topic-*
 dev-bot/tg_topics.json
+tg-*-bot/tg_boards.json
+dev-bot/tg_boards.json

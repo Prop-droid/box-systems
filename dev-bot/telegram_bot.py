@@ -236,15 +236,36 @@ class Ctx:
         self.key = key
 
 
+BOARDS_FILE = dev_bot.BASE / "tg_boards.json"
+
+
+def _load_boards() -> dict:
+    try:
+        return json.loads(BOARDS_FILE.read_text())
+    except (OSError, ValueError):
+        return {}
+
+
+def _save_board(key: str, msg_id: int):
+    d = _load_boards()
+    d[key] = msg_id
+    BOARDS_FILE.write_text(json.dumps(d))
+
+
 class Board:
-    """One Telegram message per task, edited in place — port of dev_bot.StatusBoard."""
+    """One persistent status message per TOPIC, edited across tasks.
+
+    Reusing one message matters: even disable_notification sends still show a
+    banner on the phone; edits produce nothing. So a topic pings at most once
+    ever for status (its first task), then stays fully silent.
+    """
     MIN_EDIT_GAP = 3.0  # Telegram edit rate limits are tighter than Discord's
     MAX_TODOS = 8
     MARKS = {"completed": "☑", "in_progress": "▸", "pending": "◻"}
 
     def __init__(self, ctx: Ctx):
         self.ctx = ctx
-        self.msg_id: int | None = None
+        self.msg_id: int | None = _load_boards().get(ctx.key)
         self.current = "Starting…"
         self.todos: list[dict] = []
         self.steps = 0
@@ -278,15 +299,19 @@ class Board:
         if text == self._last_text:
             return
         try:
+            if self.msg_id is not None:
+                try:
+                    await api("editMessageText", chat_id=self.ctx.chat_id,
+                              message_id=self.msg_id, text=text)
+                except RuntimeError as e:
+                    if "not modified" not in str(e):
+                        self.msg_id = None  # deleted/uneditable — fall through to a fresh send
             if self.msg_id is None:
-                # silent: the board is ambient progress, only the final reply should ping
                 m = await api("sendMessage", chat_id=self.ctx.chat_id,
                               message_thread_id=self.ctx.thread_id, text=text,
                               disable_notification=True)
                 self.msg_id = m["message_id"]
-            else:
-                await api("editMessageText", chat_id=self.ctx.chat_id,
-                          message_id=self.msg_id, text=text)
+                _save_board(self.ctx.key, self.msg_id)
             self._last_text = text
             self._last_edit = time.monotonic()
         except (RuntimeError, OSError) as e:
