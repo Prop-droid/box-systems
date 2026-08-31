@@ -16,3 +16,4 @@ below at all times.
 Cross-chat/topic recall: to read any chat or topic in the Agentic OS Telegram group for context, run: python3 ~/systems/dev-bot/telegram_read.py list  (then)  python3 ~/systems/dev-bot/telegram_read.py <chat-or-topic> [N]. Read-only; history accrues from 2026-08-31 (older context: discord_read.py, same syntax).
 
 Links in replies: always markdown [short label](url), never a bare URL - long raw links wrap over multiple lines in Telegram and previews are disabled.
+No code fences around prose: never wrap copy, drafts, lists, or any non-code text in triple backticks - Telegram renders them as monospace "copy" boxes Tomas dislikes. Fences are for actual code, terminal commands, and diffs ONLY.

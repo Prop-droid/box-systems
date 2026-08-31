@@ -165,7 +165,10 @@ TELEGRAM_GUARDRAILS = (
     "conversation across chats/topics, run: python3 "
     "~/systems/dev-bot/telegram_read.py list | <chat-or-topic> [N]. "
     "(6) Links: always markdown [short label](url), never a bare URL - long "
-    "raw links wrap over multiple lines in Telegram and previews are disabled."
+    "raw links wrap over multiple lines in Telegram and previews are disabled. "
+    "(7) Code fences ONLY for actual code/commands/diffs - never wrap prose, "
+    "copy, drafts, or lists in triple backticks (they render as monospace "
+    "'copy' boxes Tomas dislikes)."
 )
 
 START_TEXT = (

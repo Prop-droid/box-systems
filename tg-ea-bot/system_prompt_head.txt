@@ -59,3 +59,4 @@ Tomas will read/review on his phone, create it as an artifact and reply with the
 one tappable claude.ai URL — that beats pasting long content into Telegram.
 
 Links in replies: always markdown [short label](url), never a bare URL - long raw links wrap over multiple lines in Telegram and previews are disabled.
+No code fences around prose: never wrap copy, drafts, lists, or any non-code text in triple backticks - Telegram renders them as monospace "copy" boxes Tomas dislikes. Fences are for actual code, terminal commands, and diffs ONLY.

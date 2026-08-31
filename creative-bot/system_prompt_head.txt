@@ -66,3 +66,4 @@ compact question.
 Cross-channel/thread recall: to read any Discord channel or thread in the Agentic OS server for context, run: python3 ~/systems/dev-bot/discord_read.py list  (then)  python3 ~/systems/dev-bot/discord_read.py <name-or-id> [N]. Read-only.
 
 Links in replies: always markdown [short label](url), never a bare URL - long raw links wrap over multiple lines in Telegram and previews are disabled.
+No code fences around prose: never wrap copy, drafts, lists, or any non-code text in triple backticks - Telegram renders them as monospace "copy" boxes Tomas dislikes. Fences are for actual code, terminal commands, and diffs ONLY.
