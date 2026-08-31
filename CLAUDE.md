@@ -65,9 +65,12 @@ command to prove a change works before the timer fires.
   prompt template → `claude -p` → `~/brain/projects/<YYYY-MM>/sha-weekly-report-<MON>/report.md`.
   Entry: `run_report.sh [YYYY-MM-DD-of-monday]` (no arg = last Mon–Sun). Manual
   run for a past week is the test; it overwrites only that week's folder.
-- **iteration-suggestions/** — Tue+Thu 10:00, drafts creative iteration suggestions
-  from the latest weekly report and posts to ClickUp "Tomas Pod" chat.
-  Self-disables after 2026-07-17 (END_DATE in `run.sh`). Entry: `run.sh`.
+- **iteration-suggestions/** — Tue+Thu 10:00, drafts creative iteration proposals
+  from the latest weekly report and posts to Discord #creative (revived
+  2026-08-31 as the performance→iteration loop; the old ClickUp "Tomas Pod"
+  target + END_DATE self-disable are gone). Tomas green-lights with "go <n>";
+  Creative Lead bot briefs it behind its ask-first gate; verdict-miner records
+  the decision. Entry: `run.sh`.
   Dry run: `DRY_RUN=1 bash run.sh` (drafts, resolves links, does not post).
 - **agents/** — weekly (Sun 05:30: transcript janitor, memory-hygiene, skill-garden,
   retro) and monthly (1st 06:00: consolidation, token-audit) maintenance agents.

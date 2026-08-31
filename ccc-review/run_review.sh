@@ -53,8 +53,14 @@ if [ "${DRY_RUN:-0}" = "1" ]; then
   echo "--- DRY_RUN report ---"; cat "$OUT"; exit 0
 fi
 
-# Discord gets the TL;DR block only; full report stays on disk.
+# TL;DR goes to #dev as the Developer bot — that is where Tomas replies and
+# where the "<path> proceed" pattern dispatches the fix session. Full report
+# stays on disk; #ops-log keeps failure alerts only.
 TLDR=$(awk '/^TL;DR/{f=1} f{print} f && NF==0 && NR>1 && ++blank>=1{exit}' "$OUT" | head -c 1500)
-"$NOTIFY" "CCC review · $SLICE · $TODAY" "$TLDR
-Full report: ~/systems/ccc-review/reports/$TODAY-$SLICE.md — say 'proceed' in #dev (with that path) to fix." default || true
+{ echo "🔎 **CCC review · $SLICE · $TODAY**"
+  echo "$TLDR"
+  echo
+  echo "Reply \`~/systems/ccc-review/reports/$TODAY-$SLICE.md proceed\` to implement."
+} | bash "$HOME/systems/lib/discord-post.sh" 1531564369672929290 DEV_TOKEN \
+  || "$NOTIFY" "CCC review · $SLICE · $TODAY (dev post failed)" "$TLDR" default || true
 echo "posted to Discord"

@@ -1,0 +1,7 @@
+[Unit]
+Description=iteration-suggestions (performance->iteration drop to Discord #creative)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash %h/systems/iteration-suggestions/run.sh
+TimeoutStartSec=20min

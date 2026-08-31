@@ -1,18 +1,20 @@
 #!/usr/bin/env bash
-# iteration-suggestions — twice-weekly creative iteration drop into Tomas Pod (ClickUp chat)
-# Reads the latest sha-weekly-report raw data, drafts suggestions via claude -p,
-# resolves {{SH-XXXXX}} refs to task links via ClickUp REST, posts via chat API v3.
-# Scheduled Tue+Thu via iteration-suggestions.timer; self-disables after END_DATE.
+# iteration-suggestions — twice-weekly creative iteration drop into Discord #creative.
+# Revived 2026-08-31 as the performance->iteration loop: reads the latest
+# sha-weekly-report raw data, drafts suggestions via claude -p, resolves
+# {{SH-XXXXX}} refs to task links via ClickUp REST, posts to #creative where
+# Tomas's "go N" reply is picked up by the Creative Lead bot (ask-first ClickUp
+# gate) and recorded by the verdict-miner. Scheduled Tue+Thu 10:00.
 set -uo pipefail
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 
 BASE="$HOME/systems/iteration-suggestions"
 DROPS="$BASE/drops"
 LOG="$BASE/run.log"
-CHANNEL_ID="8cj5bz5-125371"          # Tomas Pod
 WORKSPACE_ID="9011638245"
-END_DATE="2026-07-17"                # last scheduled drop is Thu 2026-07-16
+DISCORD_CHANNEL_ID="1531648564932120737"   # #creative
 NOTIFY="$HOME/systems/lib/discord-notify.sh"
+POST="$HOME/systems/lib/discord-post.sh"
 
 mkdir -p "$DROPS"
 exec >>"$LOG" 2>&1
@@ -25,12 +27,6 @@ fail() {
 }
 
 TODAY=$(date +%F)
-if [[ "$TODAY" > "$END_DATE" ]]; then
-  echo "Past end date $END_DATE — disabling timer"
-  systemctl --user disable --now iteration-suggestions.timer 2>/dev/null || true
-  exit 0
-fi
-
 if [[ -s "$DROPS/$TODAY.md" ]]; then
   echo "Already dropped today — exiting"
   exit 0
@@ -90,15 +86,15 @@ for attempt in 1 2 3; do
 done
 [[ $ok -eq 1 ]] || fail "claude output invalid after 3 attempts"
 
-# ---- Resolve {{SH-XXXXX}} -> task links, then post ----
+# ---- Resolve {{SH-XXXXX}} -> task links ----
 FINAL="$BASE/_final.md"
 CLICKUP_TOKEN="$TOK" RAW_FILE="$RAW" FINAL_FILE="$FINAL" \
-WORKSPACE_ID="$WORKSPACE_ID" CHANNEL_ID="$CHANNEL_ID" DRY_RUN="${DRY_RUN:-0}" \
-python3 - <<'PY' || fail "link resolution / post step errored"
+WORKSPACE_ID="$WORKSPACE_ID" \
+python3 - <<'PY' || fail "link resolution step errored"
 import json, os, re, sys, urllib.request
 
 tok = os.environ["CLICKUP_TOKEN"]
-ws, ch = os.environ["WORKSPACE_ID"], os.environ["CHANNEL_ID"]
+ws = os.environ["WORKSPACE_ID"]
 text = open(os.environ["RAW_FILE"]).read().strip()
 # strip any preamble before the drop header
 i = text.find("🔁")
@@ -125,16 +121,6 @@ if unresolved:
     print(f"WARN: unresolved refs: {unresolved}", file=sys.stderr)
 
 open(os.environ["FINAL_FILE"], "w").write(text)
-
-if os.environ.get("DRY_RUN") == "1":
-    print("DRY_RUN=1 — not posting")
-    sys.exit(0)
-
-body = json.dumps({"type": "message", "content_format": "text/md", "content": text}).encode()
-st, d = api(f"https://api.clickup.com/api/v3/workspaces/{ws}/chat/channels/{ch}/messages", body, "POST")
-if st not in (200, 201):
-    print(f"post failed: HTTP {st}", file=sys.stderr); sys.exit(1)
-print(f"posted message id={d.get('data', {}).get('id') or d.get('id')}")
 PY
 
 if [[ "${DRY_RUN:-0}" == "1" ]]; then
@@ -142,5 +128,6 @@ if [[ "${DRY_RUN:-0}" == "1" ]]; then
   exit 0
 fi
 
+bash "$POST" "$DISCORD_CHANNEL_ID" CREATIVE_TOKEN "$FINAL" || fail "discord post to #creative errored"
 cp "$FINAL" "$DROPS/$TODAY.md"
 echo "[$(date)] DONE: posted + saved $DROPS/$TODAY.md"

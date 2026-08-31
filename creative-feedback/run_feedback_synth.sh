@@ -52,7 +52,18 @@ for l in sys.stdin:
     except Exception: continue
     print(l)' < "$OUT_TMP" > "$DIR/proposals.jsonl"
   python3 render_proposals_md.py < "$DIR/proposals.jsonl" > "$DIR/proposals.md"
-  echo "=== done $TS — $(wc -l < "$DIR/proposals.jsonl" | tr -d ' ') proposal(s) ==="
+  N=$(wc -l < "$DIR/proposals.jsonl" | tr -d ' ')
+  echo "=== done $TS — $N proposal(s) ==="
+  # Close the loop: proposals used to land silently in proposals.md and rot.
+  # Post the digest where Tomas decides; verdict-miner records his reply.
+  if [ "$N" -gt 0 ]; then
+    { echo "🧪 **Feedback synth — $N pattern proposal(s) awaiting your verdict**"
+      head -c 1400 "$DIR/proposals.md"
+      echo
+      echo "Approve/reject: http://100.107.26.69:3000/feedback — or reply here."
+    } | bash "$HOME/systems/lib/discord-post.sh" 1531648564932120737 CREATIVE_TOKEN || \
+      echo "WARN: #creative digest post failed"
+  fi
 else
   echo "FAILED: claude -p (see _claude.err)"
   rm -f "$OUT_TMP" "$PROMPT_TMP"

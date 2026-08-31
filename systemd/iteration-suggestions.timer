@@ -1,0 +1,9 @@
+[Unit]
+Description=iteration-suggestions Tue+Thu 10:00 (revived 2026-08-31, no end date)
+
+[Timer]
+OnCalendar=Tue,Thu 10:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
