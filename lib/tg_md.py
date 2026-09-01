@@ -10,6 +10,48 @@ CLI: python3 tg_md.py  (stdin markdown -> stdout HTML)
 import html
 import re
 
+# Fence tags that always mean real code (kept as <pre> boxes).
+CODE_TAGS = {
+    "python", "py", "bash", "sh", "shell", "zsh", "console", "js", "javascript",
+    "ts", "typescript", "json", "yaml", "yml", "toml", "ini", "sql", "diff",
+    "patch", "html", "css", "xml", "c", "cpp", "go", "rust", "java", "rb",
+    "ruby", "php", "swift", "kotlin", "dockerfile", "makefile", "text", "txt",
+}
+
+_CODE_LINE = re.compile(
+    r"^\s*(\$ |>>> |#!|#|//|sudo |git |curl |ssh |cd |ls |cat |grep |echo "
+    r"|python|pip |npm |npx |node |docker |systemctl |journalctl |chmod |mkdir "
+    r"|rm |mv |cp |def |class |import |from |return |if |for |while )"
+    r"|[{}\[\];]{2}|[=<>!+-]=|=>|->|\|\||&&|::"
+    r"|^\s*[\w.]+\s*=\s*\S|^\s{4,}\S|^[+-](?![\d\s])"
+    r"|^\s*[{}\[\]();,]+\s*$|\"[\w-]+\"\s*:|'[\w-]+'\s*:"
+    r"|^\s*(Traceback |File \")|\w+(Error|Exception)\b")
+
+
+def _fence_is_code(tag: str, body: str) -> bool:
+    if tag.lower() in CODE_TAGS:
+        return True
+    lines = [l for l in body.splitlines() if l.strip()]
+    if not lines:
+        return True
+    codeish = sum(1 for l in lines if _CODE_LINE.search(l))
+    return codeish / len(lines) >= 0.5
+
+
+def unwrap_prose_fences(md: str) -> str:
+    """Un-fence blocks that are prose/copy, not code.
+
+    Models keep wrapping ad copy and drafts in ``` despite prompt rules; those
+    render as monospace 'copy' boxes in Telegram (Tomas 2026-09-01). Genuine
+    code (tagged, or majority code-shaped lines) keeps its fence.
+    """
+    def repl(m):
+        tag, body = m.group(1), m.group(2)
+        if _fence_is_code(tag, body):
+            return m.group(0)
+        return "\n" + body.strip("\n") + "\n"
+    return re.sub(r"```([\w+-]*)[ \t]*\n?(.*?)```", repl, md, flags=re.S)
+
 
 def md_to_html(md: str) -> str:
     fences: list[str] = []

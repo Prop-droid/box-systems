@@ -48,7 +48,7 @@ from pathlib import Path
 import dev_bot  # engine reuse; BOT_DIR env must point at THIS instance's dir
 
 sys.path.insert(0, str(Path.home() / "systems" / "lib"))
-from tg_md import md_to_html  # markdown -> Telegram HTML for rendered replies
+from tg_md import md_to_html, unwrap_prose_fences  # markdown -> Telegram HTML
 
 DROPS_DIR = Path.home() / "Downloads" / "telegram-drops"
 MSG_LIMIT = 4000        # hard cap 4096; headroom for safety
@@ -482,7 +482,9 @@ class TgAgent:
                       message_thread_id=ctx.thread_id, text=chunk)
 
     async def send_reply(self, ctx: Ctx, text: str):
-        text = text.strip() or "(no output)"
+        # models keep fencing prose/copy despite prompt rules (f514db6) —
+        # strip those deterministically so they never render as copy boxes
+        text = unwrap_prose_fences(text.strip()) or "(no output)"
         archive(ctx.chat_id, ctx.thread_id, 0, f"bot:{dev_bot.BASE.name}", text)
         if len(text) > DOC_THRESHOLD:
             head = dev_bot.snippet(text, 900)
