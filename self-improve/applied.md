@@ -24,3 +24,9 @@ Proof: `cap_index.py --dry-run` reports 0 further evictions; compile.py parses; 
 - P2 (skill-sync for 18 dead symlinks): ALREADY SATISFIED — deep scan found 0 dead symlinks under `~/.claude/skills` (in fact 0 symlinks at all; skills are real dirs now); all 9 named skills (firecrawl-*, comfyui, hermes-agent, ffmpeg-analyse-video) resolve. `~/.claude/skill-sync.sh` no longer exists. No action.
 - P3 (response-brevity memory): wrote `feedback-response-brevity.md` with the proposed body, indexed under "Working style", `mark_promoted.py tl_08e81602 tl_27b79840 tl_08d243b9` → OK promoted 3 of 3.
 Proof: grep wall_copy/brevity MEMORY.md hits; find -xtype l = 0.
+
+## 2026-09-01 — P1-P4 applied (Tomas: "Self improve p1 p2 p3 p4", Telegram migration topic)
+- P1: session-start.py now caps index summary cells at 80 chars — 19 rows visible per session (was 2-3), context steady at 6,000 chars. Verified by executing build_context().
+- P2: MEMORY.md hooks fixed (Telegram = Phases 1-3 shipped; SFF build = Route B AM5+9060XT ~€1,005; Linux-beginner line unbundled). project_sff_tv_gaming_build.md body + description marked DECIDED. project_telegram_migration.md body was already current (updated 08-31); only the index line was stale. feedback_linux_beginner_stepwise.md deleted; no matching gbrain page existed (verified via gbrain list) — nothing to delete there.
+- P3: both *.sync-conflict-* files deleted from memory dir (0 remaining).
+- P4: clickup-task-creator SKILL.md — new gotcha 6 (description PATCH silently drops due_date, SH-18111 ×2/SH-18113/SH-18159) + Step-7 line: re-read due_date after any description patch, re-set + re-verify on drop. Backup at SKILL.md.bak-2026-09-01.
