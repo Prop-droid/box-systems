@@ -186,6 +186,14 @@ case "${1:-}" in
       echo "settings drifted (motionDetection=$(setting motionDetection) sensitivity=$(setting motionSensitivity), want $MODE/$WANT) — re-applying"
       apply_settings "$MODE"
     fi
+    # startURL drift: a Fully relaunch after an outage can come back with a stale
+    # pre-subnet-change URL (2026-09-01: stuck on dead 192.168.0.107 error page).
+    DASH_URL="http://192.168.1.6:8765/"
+    if [ "$(setting startURL)" != "$DASH_URL" ]; then
+      echo "startURL drifted ($(setting startURL)) — repointing to $DASH_URL"
+      f "cmd=setStringSetting&key=startURL&value=http%3A%2F%2F192.168.1.6%3A8765%2F"
+      f "cmd=loadStartURL"
+    fi
     if [ "$MODE" = night ] || [ "${FORCE:-0}" = 1 ]; then
       in_screensaver || f "cmd=startScreensaver"
     fi
