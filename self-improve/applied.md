@@ -30,3 +30,11 @@ Proof: grep wall_copy/brevity MEMORY.md hits; find -xtype l = 0.
 - P2: MEMORY.md hooks fixed (Telegram = Phases 1-3 shipped; SFF build = Route B AM5+9060XT ~€1,005; Linux-beginner line unbundled). project_sff_tv_gaming_build.md body + description marked DECIDED. project_telegram_migration.md body was already current (updated 08-31); only the index line was stale. feedback_linux_beginner_stepwise.md deleted; no matching gbrain page existed (verified via gbrain list) — nothing to delete there.
 - P3: both *.sync-conflict-* files deleted from memory dir (0 remaining).
 - P4: clickup-task-creator SKILL.md — new gotcha 6 (description PATCH silently drops due_date, SH-18111 ×2/SH-18113/SH-18159) + Step-7 line: re-read due_date after any description patch, re-set + re-verify on drop. Backup at SKILL.md.bak-2026-09-01.
+
+## 2026-09-01 — P5-P10 applied (Tomas: "sil imrpoove p5-p10", Telegram migration topic)
+- P5: feedback_no_visual_direction.md written verbatim from prop_f1a76b08 + MEMORY.md pointer under Copy & script craft.
+- P6: patchright installed in ~/systems/ig-ingest/cloak-venv; import verified.
+- P7: tl_b9d16e97/tl_56f5e51a/tl_59156fa5 marked promoted (3/3); gbrain page lessons/clickup-task-creator/canon-no-excess-content written + read back. Both task-lessons proposals flipped to promoted, proposals.md re-rendered.
+- P8: session-end.py reconcile_memory_index() — watermark-gated (only files newer than last run auto-append, so hygiene-pruned files stay pruned), appends under '## Unfiled (auto-indexed)'. Self-tested end-to-end with a temp memory file: appended, then cleaned up.
+- P9: CCC .cache/rules-overrides.json SPEND_FLOOR 250 (default 500, source prop_b3a91f2c) — the engine's designed override path, verified live via loadOverrides()+threshold() = 250; no rebuild/restart needed. Compiled default in lib/rules.ts untouched. prop_b3a91f2c marked promoted.
+- P10: brand='SHA' trap documented in clickup-task-creator Step-1 (BQ pulls bullet) + reference_ejam_bigquery.md bolded — the skill had no literal "Step-0 BQ block", anchored where agents actually gather inputs.
