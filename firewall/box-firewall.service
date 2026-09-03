@@ -1,0 +1,15 @@
+[Unit]
+Description=Box LAN firewall (nft table inet fw)
+After=network-pre.target
+Wants=network-pre.target
+Before=network.target tailscaled.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/nft -f /etc/nftables.d/box-fw.nft
+ExecReload=/usr/sbin/nft -f /etc/nftables.d/box-fw.nft
+ExecStop=/usr/sbin/nft delete table inet fw
+
+[Install]
+WantedBy=multi-user.target
