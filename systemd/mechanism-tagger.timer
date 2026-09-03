@@ -1,0 +1,9 @@
+[Unit]
+Description=mechanism-tagger daily 02:15 (after the 01:45 Atria pull, before bq-clickup-perf 02:30)
+
+[Timer]
+OnCalendar=*-*-* 02:15:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

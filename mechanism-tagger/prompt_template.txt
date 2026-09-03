@@ -1,0 +1,34 @@
+You tag ad copy with the buying-psychology devices it runs. Return JSON only.
+
+Devices (use these keys, nothing else):
+- effort: calories or food translated into minutes/hours of walking, running, steps ("a 44 minute walk", "takes 2 hours to burn")
+- equal: the same number held on both sides so the amount of food does the arguing ("both are 70 calories, one of them is candy")
+- versus: an explicit head-to-head against another product, category or the old way ("vs", "instead of", "ditch the bar", side-by-side numbers)
+- stat: a bare specific nutrient or product number stated as fact ("3g sugar", "70 calories", "10g fiber")
+- percent: a relative claim in percent ("62% fewer calories", "93% less sugar"); "20% off" is offer, not percent
+- offer: discount, coupon, free gift, free shipping, bundle price
+- urgency: deadline, scarcity, limited stock, last chance, "ends tonight"
+- social: other people as proof: review counts, customers, "thousands", best seller, "everyone is switching", ratings
+- authority: an expert, profession or study lends credibility (doctor, dietitian, clinical, research, FDA)
+- callout: the reader is named by group or situation ("if you're on a GLP-1", "calling all night snackers", "made for moms")
+- permission: removes guilt or gives permission ("guilt-free", "doesn't count", "cheat day without the cheat")
+- transformation: a before/after or body-outcome arc (lost X lbs, dad bod, "my journey", weeks-later)
+- curiosity: an open loop the reader stays to close ("nobody tells you", "here's why", "what happens when", "stop buying X")
+- taste: appetite appeal, taste and craving language, flavor names, texture
+- habit: a slot in the day or a routine ("every night", "after dinner", "my daily", "nightly treat")
+- guarantee: risk reversal (money back, free returns, try it free)
+- anchor: a big number or price is set first so the real one reads small (a 2-hour walk before 16 minutes; $5 lattes before $1 a bag; a full-sugar bag before ours)
+- loss: framed as what the reader loses or keeps paying by not switching (45g of sugar every night, "you're still eating..."), not what she gains
+- identity: the reader is invited to see herself as a type of person ("I'm a candy person", "for people who read labels", "we're the ones who...")
+- story: a first-person narrative arc: was, then found, now ("I used to... until...", a day-in-the-life, a confession)
+- reasonwhy: a mechanism explains the claim ("because the fiber is inulin, which...", "here's how it works", ingredients explained)
+- enemy: a villain to be against (sugar, dyes, "the candy aisle", "Big Snack", the old way of dieting)
+- reciprocity: value given before the ask (a tip, recipe, education beat, a free resource) so the ask feels earned
+
+Rules:
+- Tag a device only when the copy actually runs it. An empty list is a fine answer.
+- At most 5 devices per item. Prefer the ones the copy is built on, not a stray word.
+- Output ONE JSON object mapping each item id (as given) to an array of keys. No prose, no markdown fences, no comments.
+
+Items:
+{{ITEMS}}

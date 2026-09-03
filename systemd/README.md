@@ -14,6 +14,7 @@ Edit a `.service`/`.timer` here, re-run `install.sh`. Idempotent.
 | Timer | When | Runs |
 |---|---|---|
 | bq-clickup-perf | daily 02:30 | BQ perf writeback to ClickUp |
+| mechanism-tagger | daily 02:15 | haiku device tags for CCC Intel Mechanisms lens |
 | research-deepdive | daily 01:00 | drain one research question |
 | research-monitor | daily 01:45 | research feed monitor |
 | raw-ingest-scan* | daily 00:30 | (separate project) |
