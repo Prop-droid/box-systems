@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """VTT lane: Amazon Best Sellers → `retail` source (.10).
 
-Nightly top-40 of Grocery & Gourmet Food + Candy & Chocolate via the Apify
-actor khadinakbar/amazon-bestsellers-scraper (M&S chart unsupported there, but
-M&S is just Amazon's precomputed rank delta — our scorer derives velocity from
-these nightly snapshots itself, same pattern as SCS variant growth).
+MONTHLY since 2026-09-07 (run_all.sh gates it to the 1st): nightly runs at
+~$0.40 exhausted the $5 Apify free-tier credit mid-cycle and 403'd the TikTok
+lane too. At one point/month the scorer can't derive velocity from it anymore —
+retail is now a slow presence/context signal only, and CCC laneStaleness gives
+it a 35-day cadence allowance.
+
+Top-40 of Grocery & Gourmet Food + Candy & Chocolate via the Apify
+actor khadinakbar/amazon-bestsellers-scraper (M&S chart unsupported there —
+M&S is just Amazon's precomputed rank delta).
 
 Watchlist-matching only (product titles aren't trend terms — no discovery):
 a term matches a title when ALL its significant words (len ≥4) appear; value =
