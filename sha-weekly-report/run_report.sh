@@ -167,10 +167,21 @@ for attempt in 1 2 3; do
   sleep 15
 done
 if [ "$CLAUDE_OK" != "1" ]; then
-  echo "FAIL: claude output invalid after 3 attempts — keeping previous report.md"
-  cp -f "$RAW_TMP" "$OUTDIR/_report_raw.md" 2>/dev/null || true
-  rm -f "$RAW_TMP"
-  exit 3
+  # Salvage: Sonnet sometimes writes the full report but skips the H1 (uses ##
+  # sections instead) — 2026-09-07 lost 3 valid ~25KB attempts this way. If the
+  # last attempt is substantial and clearly the report, prepend the canonical H1
+  # instead of discarding it. Truncated/garbage output still fails (size + "## "
+  # section check + the "Shameless Snacks" sanity gate below).
+  if [ "$(wc -c <"$RAW_TMP")" -ge 8000 ] && grep -q "Shameless Snacks" "$RAW_TMP" && grep -q "^## " "$RAW_TMP"; then
+    echo "WARN: salvaging H1-less output ($(wc -c <"$RAW_TMP") bytes) — prepending canonical H1"
+    sed -i '1i # Shameless Snacks Weekly Paid-Acquisition Report' "$RAW_TMP"
+    CLAUDE_OK=1
+  else
+    echo "FAIL: claude output invalid after 3 attempts — keeping previous report.md"
+    cp -f "$RAW_TMP" "$OUTDIR/_report_raw.md" 2>/dev/null || true
+    rm -f "$RAW_TMP"
+    exit 3
+  fi
 fi
 cp -f "$RAW_TMP" "$OUTDIR/_report_raw.md"
 rm -f "$RAW_TMP"

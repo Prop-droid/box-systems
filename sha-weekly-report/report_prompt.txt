@@ -123,4 +123,6 @@ Build a markdown table from the concepts data: Concept / Spend / Revenue / ROAS 
 
 VOICE: senior creative-strategist. Direct, specific, performance-aware. No corporate filler. No em-dashes. Use contractions. Reference exact variation codes (SH-####-#) by name. Tables tight, paragraphs short.
 
-OUTPUT: just the markdown report, starting at "# Shameless Snacks". Nothing else.
+OUTPUT: just the markdown report. Nothing else. HARD REQUIREMENT: the very first line of your output must be a markdown H1 that begins with the two characters "# " — exactly this line:
+# Shameless Snacks Weekly Paid-Acquisition Report
+Do not use bold text or "##" as a substitute for that H1. The report is rejected by an automated validator if no line starts with "# ".
