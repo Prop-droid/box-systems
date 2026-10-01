@@ -1,0 +1,12 @@
+TV PC remote setup (Tailscale + SSH + Claude Code)
+
+1. Plug this stick into the TV PC (Desktop mode).
+   Game Mode? Steam button → Power → Switch to Desktop first.
+2. Open the stick in Dolphin, right-click on empty space → "Open Terminal Here".
+   (Bazzite GNOME: open it in Files, right-click → "Open in Terminal".)
+3. Type:  bash pc-setup.sh   and press Enter.
+
+It asks for your PC password once, then shows a Tailscale login link (approve it),
+then opens Claude: log in with your Claude subscription, say yes to the two prompts, type /exit.
+When it says DONE, write "done" in Discord #dev.
+Safe to run again if anything fails halfway.

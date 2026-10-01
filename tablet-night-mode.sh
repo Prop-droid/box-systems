@@ -24,7 +24,7 @@ NOTIFY="$HOME/systems/lib/tg-notify.sh"
 # Tablet DHCP IP drifts (router subnet changed 2026-08-28: 192.168.0.x → .1.x).
 # Probe Fully REST directly — the old adb-derived IP broke exactly when adb was
 # disconnected (silent-fail mode).
-CANDIDATES="192.168.1.89 192.168.0.160 192.168.0.161"
+CANDIDATES="192.168.1.89 192.168.1.89 192.168.0.161"
 discover_ip() {
   IP=""
   local cand

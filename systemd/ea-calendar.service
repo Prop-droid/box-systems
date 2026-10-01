@@ -1,0 +1,5 @@
+[Unit]
+Description=ea-calendar (daily two-day calendar digest -> EA Telegram group)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/ea-calendar/run_digest.sh

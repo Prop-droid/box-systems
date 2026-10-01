@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=TV PC remote setup
+Comment=Tailscale + SSH + Claude Code (double-click, then Continue)
+Icon=utilities-terminal
+Terminal=true
+Exec=bash -c "curl -fsSL https://tomas-agent-box.tailb74909.ts.net:8443/pc/faiktf38jzthyxe/pc-setup.sh -o ~/pc-setup.sh && bash ~/pc-setup.sh; echo; read -rp 'Press Enter to close this window '"

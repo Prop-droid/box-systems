@@ -227,7 +227,7 @@
   },
   {
    "id": "offer_claim",
-   "why": "Numeric discount claim — review against the 46 percent sub-gated offer ceiling (2026-05-11); ad-spy figures like 58 percent are marketing math, not the real offer",
+   "why": "Numeric discount claim — verify the number against the live offer for THAT product: core gummies line = up to 46% off + 4 free gifts (sub-gated, 2026-05-11); Mini Bites = up to 58% off + 3 free gifts (off retail, gifts at 2 boxes and up, confirmed by Tomas 2026-09-21). Any other figure is ad-spy marketing math, not the real offer",
    "patterns": [
     "\\b\\d{2}\\s*(%|percent)\\s*off"
    ]

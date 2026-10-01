@@ -1,0 +1,128 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Claude Code Interfaces — Research 2026-09-01</title><style>
+:root{--ink:#1a1522;--mut:#6b6478;--line:#e6e2ec;--pur:#5b2d8e}
+*{box-sizing:border-box}body{margin:0;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Helvetica,Arial,sans-serif;color:var(--ink);background:#faf9fc}
+main{max-width:860px;margin:0 auto;padding:32px 20px 80px}
+h1,h2,h3{color:var(--pur);line-height:1.25}h1{font-size:1.7em}
+a{color:var(--pur)}code{background:#efecf5;padding:2px 5px;border-radius:4px;font-size:.9em}
+pre{background:#efecf5;padding:14px;border-radius:8px;overflow-x:auto}pre code{background:none;padding:0}
+table{border-collapse:collapse;width:100%;margin:16px 0}th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:#f1eef7}blockquote{border-left:3px solid var(--pur);margin:16px 0;padding:4px 16px;color:var(--mut)}
+hr{border:none;border-top:1px solid var(--line);margin:28px 0}
+</style></head><body><main><h1 id="talking-to-claude-code-interface-research-2026-09-01">Talking to Claude Code: interface research (2026-09-01)</h1>
+<p>Deep research on alternatives to the current Telegram + Discord bot setup for dispatching and steering the Claude Code fleet on the agent box. Three parallel sweeps: Discord platform constraints, the 2026 tool landscape, and community practice (Reddit/X/HN).</p>
+<p><strong>Current state on the box (grounded):</strong> dev-bot Discord executors post plain chunked ~1700-char messages (no embeds, no file attachments, no link-out). Telegram dev bot same idea. Hermes gateway already ships adapters for: Slack, Matrix, Mattermost, WhatsApp, Signal, Email, SMS/Twilio, iMessage (BlueBubbles), DingTalk/Feishu/WeCom/QQ — several escape routes are pre-installed. md-server already serves <code>~/brain</code> as styled HTML on Tailnet :8092 + public Funnel path.</p>
+<hr />
+<h2 id="1-discord-the-limits-are-permanent-but-the-current-bots-use-the-worst-case-mode">1. Discord: the limits are permanent, but the current bots use the worst-case mode</h2>
+<ul>
+<li><strong>2,000-char message cap for bots is not going away.</strong> Discord staff position (unchanged since 2021, reconfirmed through 2026): no raise for bots/webhooks; Nitro's 4,000 chars applies only to human accounts. Source: <a href="https://github.com/discord/discord-api-docs/discussions/3345">discord-api-docs #3345</a>.</li>
+<li><strong>Embeds are the built-in 4x upgrade nobody's using here:</strong> description 4,096 chars, up to 10 embeds/message, 6,000-char combined embed budget → <strong>~8,000 chars in one message</strong> (2,000 content + 6,000 embeds). Overflow returns HTTP 400, not truncation. Sources: <a href="https://docs.discord.com/developers/resources/message">official message resource docs</a>, <a href="https://www.pythondiscord.com/pages/guides/python-guides/discord-embed-limits/">Python Discord limits guide</a>.</li>
+<li><strong>Components V2 (shipped Apr 2025):</strong> up to 40 components/message — containers, sections, text displays, media galleries, file components. A layout upgrade (status boards, grouped results), <em>not</em> a character-limit workaround; enabling it disables <code>content</code>/<code>embeds</code> on that message. Source: <a href="https://docs.discord.com/developers/components/reference">components reference</a>.</li>
+<li><strong>Rate limits that matter for streaming:</strong> ~5 sends/5s per channel; edit-in-place streaming sustainable at ~1 edit/sec (the live status board already does this correctly). Global 50 req/s. Webhooks: 30/min each. Source: <a href="https://docs.discord.com/developers/topics/rate-limits">rate limit topics</a>.</li>
+<li><strong>Threads:</strong> 1,000 <em>active</em> threads per guild (archived unlimited; auto-archive keeps this a non-issue at current fleet scale).</li>
+<li><strong>Files:</strong> bot upload limit tracks the guild's boost tier (free ≈10 MB, possibly 20 MB since Aug 2026 — unverified; L2 boost = 50 MB). Plenty for .md/.diff deliverables.</li>
+</ul>
+<p><strong>How real Claude Code ↔ Discord bridges handle long output</strong> (fredchu/discord-claude-code-bot, Kav-K/GPTDiscord, ecmulli/claudecord, zebbern/claude-code-discord, ebibibi's agent relay):</p>
+<ol>
+<li><strong>Chunked multi-message is everyone's fallback</strong> — but always code-fence-aware (never split inside ``` blocks).</li>
+<li><strong>Attach-as-file for deliverables:</strong> anything report-shaped is saved as .md and attached, keeping the channel readable and side-stepping the cap entirely. The ebibibi relay does exactly this.</li>
+<li><strong>Thread-per-task/session</strong> — dominant pattern; already implemented in dev-bot.</li>
+<li><strong>Link-out to a web view</strong> for anything beyond embed limits (Mimir Works' "Discord as AI control surface" posts first 256 chars + a link). The box already has the perfect target: md-server.</li>
+<li><strong>Edit-in-place streaming status</strong> — already implemented in dev-bot.</li>
+</ol>
+<p><strong>Multi-agent org patterns:</strong> bot-token-per-agent (what the box does — 6 bots) vs. one-bot-with-threads (Hermes' native Discord mode) vs. webhook personas (output-only, cheap identities for status fan-out). None raises the char ceiling; all converge on chunk + thread + file + link.</p>
+<hr />
+<h2 id="2-the-2026-landscape-beyond-chat-bots">2. The 2026 landscape beyond chat bots</h2>
+<h3 id="official-anthropic-the-biggest-news">Official Anthropic — the biggest news</h3>
+<ul>
+<li><strong>Remote Control</strong> (GA 2026, all paid plans): <code>claude --remote-control</code> (or <code>/remote-control</code>) connects a session <em>running on the box</em> to claude.ai/code and the Claude iOS/Android app. QR-code pairing, live sync across terminal/browser/phone, <strong>push notifications when Claude finishes or needs a decision</strong>, survives network drops, ~32 concurrent sessions in server mode. Execution stays local; only chat/status syncs via Anthropic. Needs claude.ai sign-in (no API keys) and Claude Code ≥2.1.110. Docs: <a href="https://code.claude.com/docs/en/remote-control">Remote Control</a>.</li>
+<li><strong>Teleport</strong> (<code>/teleport</code>): pull a cloud session down into a local terminal — reverse direction.</li>
+<li><strong>Cross-session messaging</strong> (≥2.1.224): sessions can discover and message each other (same machine via Unix socket, cross-machine via Remote Control). Native fleet plumbing without custom relays. Docs: <a href="https://code.claude.com/docs/en/cross-session-messaging">cross-session messaging</a>.</li>
+<li><strong>Claude in Slack:</strong> @Claude spawns <em>cloud</em> sessions only, GitHub-repo-bound, one PR per session — wrong shape for a box-local fleet. Docs: <a href="https://code.claude.com/docs/en/slack">Slack</a>.</li>
+<li><strong>Agent SDK</strong> (Python/TS): the substrate for building a custom frontend — what dev_bot.py effectively already does via <code>claude -p</code>.</li>
+</ul>
+<h3 id="purpose-built-third-party-clients">Purpose-built third-party clients</h3>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>What it is</th>
+<th>Verdict for the box</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/slopus/happy">Happy</a></td>
+<td>OSS (MIT, ~23.6k stars), E2E-encrypted mobile/web/desktop client for Claude Code + Codex; run <code>happy claude</code> instead of <code>claude</code>; parallel sessions, push on permission requests; self-hostable sync server</td>
+<td>Strongest third-party candidate; built precisely for "escaping chat-bot UIs"</td>
+</tr>
+<tr>
+<td><a href="https://github.com/omnara-ai/omnara">Omnara</a></td>
+<td>OSS (Apache 2.0), YC-backed; daemon + Postgres + web dashboard + iOS/Android; push approvals, diff review, voice mode; Docker self-host</td>
+<td>Heavier install; dashboard-first rather than chat-first</td>
+</tr>
+<tr>
+<td><a href="https://docs.vibetunnel.sh">VibeTunnel</a></td>
+<td>Any terminal in a browser (<code>vt &lt;cmd&gt;</code>) + Tailscale</td>
+<td>Fine for watching; weak on mobile input</td>
+</tr>
+<tr>
+<td>Conductor / Nimbalyst (ex-Crystal)</td>
+<td>Mac-native multi-session GUIs, worktree isolation</td>
+<td>Mac-side tools, not box remotes; Conductor mobile is $50/mo</td>
+</tr>
+<tr>
+<td>claude-code-webui, Claudia/opcode</td>
+<td>Browser wrappers</td>
+<td>Archived / unmaintained — skip</td>
+</tr>
+<tr>
+<td>ntfy approval hooks (claude-remote-approver, claude-ntfy-hook)</td>
+<td>Permission prompts → phone via ntfy</td>
+<td>Already have ntfy; largely subsumed by Remote Control push</td>
+</tr>
+</tbody>
+</table>
+<h3 id="other-chat-platforms-all-already-have-hermes-adapters-on-the-box">Other chat platforms (all already have Hermes adapters on the box)</h3>
+<ul>
+<li><strong>Matrix/Element:</strong> 48 KB per message (~24x Discord), threads, E2EE, self-hosted homeserver required for bots. The length problem simply disappears. Needs: homeserver (Conduit is lightweight) + Element app.</li>
+<li><strong>Zulip:</strong> topic-based threading is the <em>best semantic fit</em> for multi-agent fleets (each agent/task = a durable addressable topic); message length admin-configurable. Needs new self-hosted server + app; no Hermes adapter — highest migration cost.</li>
+<li><strong>Slack:</strong> 4k best-practice / 40k truncation, good threads — but a workspace app for a personal fleet feels off, and official Claude-in-Slack is cloud-only anyway.</li>
+<li><strong>Mattermost / Rocket.Chat:</strong> self-hostable, configurable message length (Mattermost adapter already in Hermes), generic webhook/bot integration only — viable but nothing purpose-built.</li>
+<li><strong>WhatsApp / Signal / Email / iMessage:</strong> adapters exist (OpenWA, signal-cli, AgentMail); all are worse group/thread UIs than Discord for a fleet.</li>
+</ul>
+<h3 id="what-experienced-builders-converge-on-hn-write-ups">What experienced builders converge on (HN + write-ups)</h3>
+<ul>
+<li>No single winner — tools specialize. But for solo fleet operators the pattern is consistent: <strong>chat/dashboards for dispatch + notifications, terminal (tmux) for real work, file/link handoff for deliverables.</strong></li>
+<li>Recurring failure mode named across threads: the "sanitised optimism problem" — agents self-reporting success in curated summaries. The fix people converge on is raw tool-call visibility (live status boards, tail-able logs), not prettier summaries.</li>
+<li>Mobile-first clients (Happy, Omnara) are cited as exactly the products built for "I want to steer agents from my phone but hate doing it through a chat bot."</li>
+</ul>
+<hr />
+<h2 id="3-community-voices-redditx-sweep">3. Community voices (Reddit/X sweep)</h2>
+<p><strong>The headline: Anthropic shipped official Claude Code Channels — Telegram + Discord.</strong> Announced Mar 2026 (<a href="https://twitter.com/trq212/status/2034761016320696565">announcement tweet</a>, 25k likes), docs verified live: <a href="https://code.claude.com/docs/en/channels">code.claude.com/docs/en/channels</a> ("Push events into a running session with channels"), official plugins in <a href="https://github.com/anthropics/claude-plugins-official">anthropics/claude-plugins-official</a> (external_plugins/telegram + /discord, MCP + Bun). Community reception threads: <a href="https://www.reddit.com/r/claude/comments/1ryrhrh/">r/claude</a>, <a href="https://www.reddit.com/r/ClaudeCode/comments/1ryhbg0/">r/ClaudeCode</a>.</p>
+<p><strong>Known warts of official Channels (from those threads):</strong>
+- Permission prompts block in the local terminal and the bot never sees them ("the bot… is now useless" mid-prompt). Workarounds: settings allowlists or skip-permissions — which the box's bots already run with.
+- Channel config is global, not per-session — separate projects can't each pin their own channel without separate <code>.claude</code> config dirs per launch.</p>
+<p><strong>Other community signals:</strong>
+- <strong>Remote Control is explicitly framed as the thing that replaced DIY Telegram relays</strong> and "sketchy self-hosted web UIs" (<a href="https://www.reddit.com/r/ClaudeCode/comments/1ruyhyl/">r/ClaudeCode</a>).
+- <strong>The "kernel + ephemeral workers" architecture keeps winning:</strong> one chat-facing orchestrator dispatching disposable Claude Code sessions that never talk to the user directly; durable state in files/DB, not chat transcripts (<a href="https://www.reddit.com/r/ClaudeCode/comments/1v2rrby/">thread</a>, <a href="https://gist.github.com/csnyder256/ea4621f81fed9a48818bcb30316f16d8">full build gist</a>). This is essentially the box's current architecture — validated.
+- <strong>Multi-agent chatter inside one Telegram group is a documented debugging sink</strong> ("Debugging took 70-80% of some weeks" — <a href="https://twitter.com/Tony_Stef_/status/2094370223574946173">Tony_Stef_</a>, <a href="https://github.com/tonydzi/clawrush">clawrush log</a>).
+- <strong>Hermes Agent is the most-repeated recommendation</strong> over OpenClaw for reliability ("With OpenClaw, 80% of time was debugging; with Hermes, 80% was getting things done" — r/hermesagent). OpenClaw did add persistent Telegram-topic / Discord-channel binding via ACP.
+- <strong>Slack recurs for serious multi-agent setups</strong>; <strong>no Matrix or Zulip adoption surfaced anywhere</strong> for Claude Code specifically — the dark horse is real but unproven in this niche.
+- <strong>Telegram latency complaint matches yours:</strong> "works for quick approvals, but to actually review code you still need a proper screen" — which is why Happy/Omnara (real diff/log streaming UIs) are the most-cited "real interface" replacements.
+- Anti-silence UX trick from one build's CLAUDE.md: on every inbound Discord message, react with an emoji + one-line intent reply immediately, push long work to subagents so the chat-facing loop stays responsive.</p>
+<hr />
+<h2 id="4-recommendation">4. Recommendation</h2>
+<p><strong>Don't migrate platforms. Consolidate on Discord, upgrade the output layer, and add the two official Anthropic bridges (Remote Control + Channels).</strong></p>
+<ol>
+<li><strong>Now, ~1 evening of dev-bot work — make long output stop hurting:</strong></li>
+<li>Any reply that would span &gt;2 chunks → write it to <code>~/brain/...</code> as .md, <strong>attach the file</strong> to the Discord message <em>and</em> post the md-server link + a 3-line summary. (One tap = styled HTML; the attachment is the durable in-channel copy.)</li>
+<li>Move final results into a <strong>single embed</strong> (4,096 chars) instead of plain chunks — doubles the effective single-message budget and renders cleaner.</li>
+<li>Keep the existing chunker as fallback; make it code-fence-aware.</li>
+<li><strong>Now, zero code — official Remote Control</strong> for the interactive tmux session(s): <code>claude --remote-control</code> inside tmux → steer from the Claude app with push notifications. Covers "poke a running session from the couch," which no bot handles well, and is what the community says obsoleted DIY relays.</li>
+<li><strong>Trial — official Claude Code Channels (Discord plugin)</strong> on one non-critical session: it's the Anthropic-maintained version of what dev_bot does by hand. Known warts: global (not per-session) channel config and no permission-prompt relay — the latter moot here since the bots run permission-skipped. If it matures, it could retire chunks of dev_bot maintenance.</li>
+<li><strong>Optional: Happy</strong> if chat-dispatch still grates after the above — OSS, E2E-encrypted, purpose-built mobile fleet client with real diff/log streaming; the tool people reach for specifically to escape chat-bubble review.</li>
+<li><strong>Dark horse only if a platform move is ever truly wanted: Matrix</strong> via the existing Hermes adapter + a lightweight Conduit homeserver (48 KB messages, threads, self-hosted). Semantically Zulip fits multi-agent best (topic threading) but has the highest cost (new server, no Hermes adapter) — and notably, <em>zero</em> community adoption of either for Claude Code surfaced in the sweep.</li>
+</ol>
+<p>Why not leave Discord: the six bot identities, threads-as-sessions, inter-agent mentions, live status boards, and #ops-log wiring already match what the best public builds converged on (the "kernel + ephemeral workers" pattern the community keeps re-inventing). The genuine deficiencies are long-output handling and couch-steering — fixable with items 1-2, not a platform change. And the community's Telegram verdict matches yours: fine for approvals, wrong surface for reviewing real work.</p></main></body></html>

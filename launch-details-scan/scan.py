@@ -10,8 +10,9 @@ details" gap — and reports:
   - reports/latest.md (+ dated copy) every run
   - one ntfy push to Tomas's phone ONLY when a task newly appears in the
     missing set (state.json remembers what was already reported — no daily nag)
-  - the same push mirrored to the #assistant Discord channel via the EA bot
-    token (Tomas, 2026-07-28), so the fill can be dispatched from the thread
+  - the same push mirrored to the "Launch Details" Telegram topic in the Creative
+    group via the Creative Lead bot (Tomas, 2026-08-31: launch details moved off the
+    EA bot, which is now personal-only), so the fill can be dispatched from the thread
 
 Unlike the autofill cron, SUBTASKS ARE IN SCOPE (talent THT cuts like
 "[Lindsay Ortega] - SHA_..." live as subtasks and are exactly the ones media
@@ -35,7 +36,6 @@ HERE = Path(__file__).resolve().parent
 TEAM_ID = "9011638245"
 LIST_ID = "901110066469"
 NTFY_TOPIC = "tomas-ph-1ea8ac8e"
-DISCORD_CHANNEL_ID = "1531571387108429964"  # #assistant (EA bot)
 BOTS_ENV = Path.home() / "agentic-os" / "discord" / "bots.env"
 STATE = HERE / "state.json"
 REPORTS = HERE / "reports"
@@ -194,19 +194,19 @@ def main():
             log(f"pushed ntfy ({len(top)} listed)")
         except Exception as e:
             log(f"ntfy push failed: {e}")
-        discord_push(f"**Launch details missing: {len(found)} task(s)**\n{body}")
+        tg_push(f"**Launch details missing: {len(found)} task(s)**\n{body}")
 
 
-def discord_push(content):
-    # Telegram-only rule (2026-08-31): EA Feed topic via tg-post.sh; fail-open
+def tg_push(content):
+    # Telegram-only rule (2026-08-31): Creative group topic via tg-post.sh; fail-open
     try:
         import subprocess
         subprocess.run(
             ["bash", str(Path.home() / "systems/lib/tg-post.sh"),
-             "📋 Launch Details", "tg-ea-bot"],
+             "📋 Launch Details", "tg-creative-bot"],
             input=content.encode(), timeout=60, check=True,
             stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
-        log("pushed telegram EA Feed")
+        log("pushed telegram Launch Details (creative)")
     except Exception as e:
         log(f"telegram push failed: {e}")
 

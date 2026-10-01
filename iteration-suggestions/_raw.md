@@ -1,27 +1,33 @@
-🔁 **Iteration Suggestions — wk Aug 24–30** *(auto-generated)*
+🔁 **Iteration Suggestions — wk Sep 21–27** *(auto-generated)*
 
 Reply "go <n>" (optionally with edits) to brief one. Nothing is created without your go.
 
 **VIDEO**
 
-**1. {{SH-16975-2}} (16975 Vid) — HOOK_SWAP** 🟢
-Only profitable video concept this week: ROAS 1.48, CM-ROAS 1.02 on $3,468 spend. Hook sits at 12.6% — the body converts when viewers land, but most never do. → New hook, body and CTA untouched. Metric to beat: hook rate > 18%.
+**1. {{SH-16975-2}} (16975 Vid-2) — BODY_EDIT** 🟢
+$10.7k spend, ROAS 1.15, 144 orders — top profitable video this week. INTRO_SWAP is already in flight; body is the last untouched axis at this scale. → Tighten proof/offer module only; hook and intro locked. Metric to beat: ROAS > 1.3.
 
-**2. {{SH-15611-1}} (15611 Vid) — INTRO_SWAP** 🟢
-ROAS 1.25, $1,262 spend, one variation ever tested. Hook 25.2% pulls them in; hold collapses to 0.6% = viewers exiting in the opening seconds after the hook. → Rebuild 5–8s post-hook, hook and CTA locked. Metric to beat: hold rate > 3%.
+**2. {{SH-19143-3}} (MB Halloween Two-Sizes) — LENGTH_VARIANT** 🟡
+Hold 14.1% — best body retention in the account. HOOK_SWAP in flight from Sep-29. Strong hold + $1.7k spend means a tighter cut converts more of the retained audience once entry lifts. → 12–15s condensed version; hook treatment pending. Metric to beat: ROAS > 1.0.
 
-**3. {{SH-17338-1}} (S32 AffordableSpoon AI) — BODY_EDIT** 🟡
-Best hook in the dataset at 62.3%, hold 7.8% — content genuinely retains people. ROAS 0.65, CM-ROAS 0.42 — the offer section isn't closing despite the engagement. → Rewrite the conversion section; hook untouched. Metric to beat: ROAS > 1.0.
+**3. {{SH-18969}} (MB CTV New Version) — SOCIAL_PROOF_INSERT** 🟡
+ROAS 1.17, CTR -23.8% steep fatigue. Hook and length both iterated in prior weeks; hold 4.0% means the body earns whoever arrives. → Insert 5–8s social proof segment into the body; hook and CTA locked. Metric to beat: ROAS > 1.3, CTR stabilizes w/w.
+
+**4. {{SH-18403-2}} (S35 Cravings UGC) — BODY_EDIT** 🟡
+Hook 45.3% (best in account), hold bleeds to 5.7%. INTRO_SWAP in flight tests the bridge — concurrent body edit isolates whether the bleed is mid-body. → Edit proof section only; hook and bridge locked. Metric to beat: hold > 10%.
 
 **IMAGE**
 
-**4. {{SH-13376-6}} (JDC Mar-16) — headline variants** 🟢
-ROAS 1.38, $1,882 spend — top image ROAS this week. Visual refresh and layout variant both shipped in prior drops; headlines are the one clean axis remaining. → 3 headline options on the proven layout. Metric to beat: ROAS > 1.4.
+**5. {{SH-19377-7}} (MB Pumpkin Bowl OfferFirst) — headline variants** 🟢
+ROAS 2.04, scale + variants suggested last drop. Visual proven at the highest ROAS in the account — headline is the clean next axis to unlock CTR at growing spend. → 3 headline options; visual locked. Metric to beat: ROAS > 1.9 at $2k+ spend.
 
-**5. {{SH-13376-9}} (JDC Mar-16 v9) — scale + variants** 🟡
-ROAS 1.21, $2,473 spend; paired with -6 the concept is holding across both variants. Validate -9 at higher spend before the headline test on -6 absorbs the budget. → Stepped-up spend test alongside the headline run. Metric to beat: ROAS > 1.2 at 2× spend.
+**6. {{SH-16457-6}} (JDC 1080 Jul-1 CTV) — layout variant** 🟡
+$8k spend, ROAS exactly 1.00, CTR -4.7%. Headline variants in flight (Sep-29). Layout is the last clean axis before breakeven tips to loss. → One layout treatment; headline and visual locked. Metric to beat: ROAS > 1.15.
 
-**6. {{SH-14498-8}} (JDC Apr-16 CTV) — visual refresh** 🟡
-ROAS 1.07, $2,488 spend, 6 variations in concept, never in a drop. CM-ROAS 0.69 — marginal; a fresh visual is the lowest-friction path past the margin line. → New product visual, current headline intact. Metric to beat: ROAS > 1.2.
+**7. {{SH-13376-6}} (JDC Mar-16 v6) — visual refresh** 🟡
+ROAS 1.04 on $4.8k, CTR -10.3%. Layout (Sep-22) and headline variants (Sep-24) both exhausted. Visual is the final axis before a proven spender slips below margin. → New product or lifestyle visual; headline and layout locked. Metric to beat: ROAS > 1.2.
 
-**Watchlist ⚠️:** {{SH-17273}} ($5,973 spend, ROAS 0.84, CM-ROAS 0.53, CTR -8% on -4) — 10 variations tested, still underwater; iterate-vs-kill call overdue. Unmapped UGC video ($4,792 spend, ROAS 0.69, CTR -15% WoW) — biggest unlinked account drain; assign to a task or pause.
+**8. {{SH-15965-7}} (Gifts Offer Proven Retro) — layout variant** 🟡
+ROAS 1.07, CM-ROAS 0.69, $2.2k spend. Scale and headline variants run in prior drops; layout is the one remaining axis on a near-breakeven concept. → One layout treatment; visual and headline locked. Metric to beat: ROAS > 1.2, CM-ROAS > 0.8.
+
+**Watchlist ⚠️:** {{SH-16975-3}} — $26k at ROAS 0.60 with BODY_EDIT + INTRO_SWAP already in flight; no new axes until results land. {{SH-17784-3}} — ROAS 0.39, 4 variations exhausted across the concept; kill call overdue.

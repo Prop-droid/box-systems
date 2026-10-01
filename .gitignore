@@ -75,3 +75,9 @@ lib/.tg-topic-*
 dev-bot/tg_topics.json
 tg-*-bot/tg_boards.json
 dev-bot/tg_boards.json
+# env backups + heavy share media (served from disk via Funnel, not versioned)
+*.env.bak
+.env.*
+public-share/**/*.mp4
+public-share/**/*.zip
+public-share/rch5evij396dmbq/index.html
