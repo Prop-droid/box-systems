@@ -9,7 +9,8 @@ inside an allow-phrase match on the same line is suppressed.
 Scans *.md changed in the last SCRUB_WINDOW_HOURS (default 25) under
 ~/brain/wiki and ~/brain/projects — but ONLY shippable-copy surfaces.
 Internal surfaces that legitimately name banned terms (work logs, weekly
-reports, competitor ad dumps/analysis, substantiation/legal, meta) are
+reports, perf write-backs that cite LP slugs like `glp-1` and historic ad
+names, competitor ad dumps/analysis, substantiation/legal, meta) are
 excluded, or the digest is 90% noise (183-hit first dry run, 2026-08-31).
 Writes reports/latest.md always; posts to Discord #creative only when there
 are hits (quiet when clean).
@@ -78,7 +79,7 @@ def main():
             if any(x in s for x in (
                     "/raw/", "legal", ".bak", "/log.md", "/index.md", "/meta/",
                     "competitor", "competitive", "atria", "weekly-report",
-                    "substantiation", "research", "swipe")):
+                    "substantiation", "research", "swipe", "/performance/")):
                 continue
             try:
                 if p.stat().st_mtime >= cutoff:
