@@ -1,7 +1,7 @@
 #!/bin/bash
 # SHA weekly ad-comments digest -> ~/systems/comments-digest/out/digest-YYYY-MM-DD.md
 # Served by CCC at /api/comments/digest (COMMENTS_DIGEST_DIR in .env.local).
-# Runs Tuesdays 09:00 via com.tomas.comments-digest. Manual: bash run_digest.sh
+# Runs Tuesdays 04:00 via comments-digest.timer (systemd user). Manual: bash run_digest.sh
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,7 +16,11 @@ export GOOGLE_APPLICATION_CREDENTIALS="${GOOGLE_APPLICATION_CREDENTIALS/#\~/$HOM
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
 
 command -v bq >/dev/null || { echo "FAIL: bq CLI not on PATH"; exit 2; }
-command -v claude >/dev/null || { echo "FAIL: claude CLI not on PATH"; exit 2; }
+# claude-max = Max OAuth wrapper (unsets the empty ANTHROPIC_API_KEY sourced above, honors usage-guard pause).
+CLAUDE_BIN="/usr/local/bin/claude-max"
+[ -x "$CLAUDE_BIN" ] || { echo "FAIL: $CLAUDE_BIN missing"; exit 2; }
+# shellcheck source=/dev/null
+[ -f "$SCRIPT_DIR/../lib/hermes_fallback.sh" ] && . "$SCRIPT_DIR/../lib/hermes_fallback.sh"
 [ -f "$GOOGLE_APPLICATION_CREDENTIALS" ] || { echo "FAIL: SA file missing"; exit 2; }
 
 TO=$(date +%Y-%m-%d)
@@ -72,14 +76,20 @@ RAW="$WORK/_raw.md"
 OK=0
 for attempt in 1 2 3; do
   : > "$RAW"
-  if claude -p --model claude-sonnet-4-6 --output-format text < "$WORK/_prompt.txt" > "$RAW" 2>"$WORK/_claude.err"; then
+  if timeout 900 "$CLAUDE_BIN" -p --model claude-sonnet-4-6 --output-format text < "$WORK/_prompt.txt" > "$RAW" 2>"$WORK/_claude.err"; then
     if [ -s "$RAW" ] && grep -q "^# SHA Ad Comments Digest" "$RAW"; then OK=1; break; fi
-    echo "WARN: attempt $attempt invalid output ($(wc -c <"$RAW") bytes) — retrying"
+    echo "WARN: attempt $attempt invalid output ($(wc -c <"$RAW") bytes): $(head -c 200 "$RAW") — retrying"
   else
-    echo "WARN: attempt $attempt claude errored: $(tail -1 "$WORK/_claude.err") — retrying"
+    # claude prints auth/limit errors on stdout, not stderr — log both (2026-09-29 failed with an empty reason)
+    echo "WARN: attempt $attempt claude errored: $(tail -1 "$WORK/_claude.err") $(head -c 200 "$RAW") — retrying"
   fi
   sleep 15
 done
+if [ "$OK" != "1" ] && command -v hermes_fallback >/dev/null 2>&1 \
+   && hermes_fallback "$WORK/_prompt.txt" "$RAW" "$WORK/_claude.err" \
+   && grep -q "^# SHA Ad Comments Digest" "$RAW"; then
+  OK=1; echo ">> recovered via hermes"
+fi
 [ "$OK" = "1" ] || { echo "FAIL: claude output invalid after 3 attempts"; exit 3; }
 
 cp -f "$RAW" "$OUT_DIR/digest-$TODAY.md"
