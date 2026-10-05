@@ -1,0 +1,71 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=robots content=noindex><title>SHA ad performance: system plan</title><style>
+body{font:16px/1.55 -apple-system,Segoe UI,Roboto,sans-serif;max-width:860px;margin:0 auto;padding:24px 18px 80px;color:#1d1d1f;background:#fafafa}
+h1{font-size:1.6em;margin:.2em 0 .6em}h2{margin-top:2em;border-top:2px solid #e5e5e5;padding-top:.8em}h3{margin-top:1.4em;color:#333}
+li{margin:.3em 0}code{background:#eee;padding:1px 4px;border-radius:3px;font-size:.92em}
+p:first-of-type{color:#555}
+h2:nth-of-type(1)+p{font-size:1.12em;background:#fff4d6;border-left:4px solid #e0a800;padding:12px 14px;border-radius:4px}
+@media (prefers-color-scheme:dark){body{background:#111;color:#e8e8e8}h3{color:#ccc}code{background:#222}h2{border-color:#333}p:first-of-type{color:#aaa}h2:nth-of-type(1)+p{background:#2a2410}}
+</style></head><body><h1>SHA ad performance: what to change in our system (2026-10-01)</h1>
+<p>Sources: 4 research passes in raw/ (1 internal BQ audit, 2 Meta operators, 3 AI tools/open source, 4 Reddit/X). BQ headline numbers re-verified independently. Window: 26 weeks, 2026-03-30 to 2026-09-27, SHA Meta.</p>
+<h2>The one-line answer</h2>
+<p>We don't have a creative-volume problem or a tooling problem. We have a selection-and-allocation problem: too many near-identical variants that never get a read, winners funded after they've stopped winning, and our findings never reach the person who moves budget.</p>
+<h2>Where the money leaks (BQ, verified)</h2>
+<ul>
+<li>26w Meta: $4.07M spend, $3.33M revenue, ROAS 0.817. First-order break-even is ~1.54, so first-order contribution is about -$1.95M. Paid DTC CM ran $0.84M worse than plan (Apr-Sep), mostly in the over-budget months (Apr 150%, Jul 159%).</li>
+<li>69% of variations launched Apr-Aug (3,513 of 5,044) got under $100 in their first 28 days. Two-thirds of the team's output never gets a real test.</li>
+<li>Money hit rate: 103 variations (2.0%) reached $500+ at ROAS 1.0+ in 28 days. Only 14 (0.3%) cleared 1.54.</li>
+<li>Winners decay fast and get funded late. Spend on those 103 hits by age: wk 0-1 $77K at 1.38, wk 2-3 $70K at 1.12, wk 4-7 $60K at 0.95, wk 8+ $190K at 0.77. Almost half their money lands after they're below 1.0.</li>
+<li>SH-16975-3 took $165K at 0.74 after the 2026-08-18 finding said to move budget to sibling -2 (1.19 on $69K). Upper bound on that one miss: ~$73K revenue.</li>
+<li>Lane yield vs production volume:</li>
+<li>WL / creator: 1,891 assets (most of any lane), $783K at 0.70, 1.4% hit.</li>
+<li>Launch tasks: 339 assets, 7.7% hit at 0.99, only 4% of spend.</li>
+<li>Offer-led statics lead: Scarcity/Urgency 1.04, Direct Offer 0.95. Problem-Solution 0.62 and Curiosity 0.59 still get hundreds of launches.</li>
+<li>Video 59% of spend at 0.78 (CPM $38); image 0.87 (CPM $30).</li>
+<li>LPs: target ~1.0 and glp-2 1.35 (now off) beat trw-gifts (0.85, 42% of spend with it2-vp). swap burned $317K at 0.68. 30% of spend has no identifiable LP.</li>
+<li>LTV is unknown at creative level: 92% of orders are subscriptions, but the subscription table has no creative key. Directional cohort read: rebills add ~0.75x first-order revenue, which would put the real (LTV) break-even somewhere around 0.85-1.0 first-order ROAS, not 1.54. Needs finance to confirm before any threshold is built on it.</li>
+</ul>
+<h2>Where our system leaks</h2>
+<ul>
+<li>Proposals don't reach action: iteration-suggestions has had 0 "go" replies since 07-29. Weekly-report kill/scale calls go to Tomas, who isn't the media buyer, and reach nobody else. Verdict ledger: 5 records ever.</li>
+<li>Nothing checks outcomes: the planned brief-vs-result check isn't built, and its <code>ai-brief</code> tag was banned 2026-09-03.</li>
+<li>Broken sensors:</li>
+<li>Weekly report runs before Sunday US data lands (week of 9/21 reported $139K vs $162K actual, -14%).</li>
+<li>fatigue-sentinel scans all eJam brands on a partial-day window (watches 5-10 ads; SHA alone had 53 at $100+; false "ROAS 0.00" alerts).</li>
+<li>iteration posts carry raw <code>{{SH-…}}</code> placeholders; comments-digest failed 09-29; cm-roas-recut stale since 08-07; format-lifecycle dead since 08-03; launch-autofill has no timer.</li>
+<li>Wrong success metric: the winners archive is built from the media buyer's "winner" label (avg CM-ROAS ~0.70), so briefs learn from the least-unprofitable ads. Two CM-ROAS formulas in use (0.52 vs 0.57). Hook/CTR-led tools run against our own finding that hook rate is inverse to ROAS.</li>
+<li>Blind spots: video (59% of spend) has 0% ai_angle tags; 30% of spend has no LP.</li>
+</ul>
+<h2>What others do that we should copy (external, sourced in raw/2-4)</h2>
+<ol>
+<li>Concepts, not variants. Meta clusters visually similar ads under one Entity ID and delivers one of them. Meta added a per-ad-set Creative Diversity column (Low/Med/High, visual similarity) on 2026-08-26, labelled "estimated and in development". Reports from operators (Marketing Concurrent 09-07, plus 5+ X operators) say different backgrounds or frames around the same product photo still score Low. This is the most likely mechanism behind our 69% no-spend rate. (The "60% similarity = suppressed" number that circulates has no Meta source; don't cite it.)</li>
+<li>A concept-level gate, not ad-level pausing. Jones Road lets each concept spend ~$1k before deciding; Ridge runs a hybrid CBO where each concept is its own ad set with a minimum budget and winners absorb the rest (~40% of spend over 60 days). Practitioner rules seen on X: kill under 1.0 ROAS after 1.5x target CAC; iterate anything over 1.8 ROAS on $500.</li>
+<li>Statics as the testing engine (several operators at 70% statics; "20 tests for the price of one video"). Matches our data.</li>
+<li>Partnership ads have the best external numbers (one Meta lift test: CPA $25.63 vs $39.34). Ours is the opposite (WL 0.70). The likely difference is spread: 1,891 assets across many creators vs a few proven ones. Meta's Creator Marketing Hub (2026-09-15) adds creator discovery by predicted performance.</li>
+<li>Measure incrementality before cutting or scaling. Operators run holdouts or Conversion Lift; one r/FacebookAds holdout found Meta claimed 60%+ non-incremental sales. Haus data (vendor) says Meta's Incremental Attribution setting beat standard attribution 1.38x for DTC-only brands (Jul 2026); Loomer is skeptical.</li>
+<li>Lock Advantage+ Creative. Since 2026-07-27 Meta auto-rewrites on-image text into up to 8 headline variants, and Common Thread reports the settings re-enabling themselves. Risk to canon claims (26g fiber, 70 cal). Fix: Restricted Words list plus a weekly toggle audit.</li>
+<li>Official Meta Ads MCP (open beta since 2026-04-29): read-only scope gives Creative Diversity, opportunity score, anomaly signal, A/B and lift tools that BQ can't. New entities land paused.</li>
+<li>Hypothesis registry ("set the bar before you look", keep dismissed bets with reasons), from Parker Brain's open method. No vendor ships it.</li>
+</ol>
+<p>Not worth it: buying Motion/Segwise/etc. (we already have the data; labels are the gap), pre-launch scorers as a hard gate (best published model R² 0.21 on ecommerce; shadow mode at most), synthetic persona panels, AI avatars as first-person testimonials (FTC/NAD risk: an avatar "cannot have used a product"), autonomous write-access buying agents (ban reports).</p>
+<p>Contradictions worth knowing: external "partnership ads win" vs our WL lane losing; "a winner is an ad live 60-90 days" vs ours fading by week 3; Foxwell/Motion "more volume" vs Loomer/HexClad "fewer, more distinct concepts" (our data sides with fewer, more distinct).</p>
+<h2>The plan, ranked by $ impact per hour</h2>
+<h3>A. Our lane: production + creative (Tomas decides)</h3>
+<ol>
+<li>Fewer variants, more distinct concepts. Cap variants per concept (proposal: 3-4), make each new concept visually different (background, format, talent, setting, not just headline). New production KPI: % of variations reaching $100 in 28 days (now ~31%).</li>
+<li>Re-weight the brief mix toward what yields: more Launch-type tasks and offer-led statics; fewer Problem-Solution/Curiosity statics; cut WL/creator volume to the creators with proven ROI (Cruva profiles already exist).</li>
+<li>Retire the media-buyer "winner" label as our learning source; rebuild winners.jsonl on a money definition (spend floor + CM-ROAS) so skills learn from ads that made money.</li>
+</ol>
+<h3>B. Our system: fix what's broken (hours, no new tools)</h3>
+<ol start="4">
+<li>Move sha-weekly-report to after Sunday US data lands; fix fatigue-sentinel (SHA only, full-day windows); resolve <code>{{SH-…}}</code> links; fix comments-digest; re-run cm-roas-recut; one CM-ROAS formula everywhere.</li>
+<li>Tag video: Gemini pass over video asset links for angle/formula plus pacing, CTA timing, on-screen text (59% of spend currently blind).</li>
+<li>Brief→result check: hypothesis + bar recorded at brief time, verdict auto-filled from BQ at day 28 via clickup_id (100% coverage). Replaces the dead ai-brief plan.</li>
+</ol>
+<h3>C. Hand to the buying team (they own budget)</h3>
+<ol start="7">
+<li>Weekly budget-actions digest sent to the media buyer, not Tomas: scale fresh winners (wk 0-3 above bar), cut decayed ones (wk 4+ below bar), sibling swaps like SH-16975-3 to -2. Money-based rules, one table, links.</li>
+<li>Concept-level testing structure (Ridge hybrid CBO with minimum ad-set budgets, or a ~$1k-per-concept gate) so every concept gets a read.</li>
+<li>Advantage+ Creative: Restricted Words list + weekly toggle audit (compliance).</li>
+<li>Read-only Meta Ads MCP grant for us (Creative Diversity per ad set into our weekly report).</li>
+<li>One incrementality test (Conversion Lift or geo holdout) and an agreed LTV-adjusted break-even ROAS from finance. With -$1.95M first-order contribution, this decides whether more spend helps at all.</li>
+</ol></body></html>
