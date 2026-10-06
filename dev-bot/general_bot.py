@@ -181,6 +181,8 @@ async def handle_task(shared: Shared, key: str, thread: discord.Thread,
             text = reply.strip() or "(no output)"
             for i in range(0, len(text), 1900):
                 await thread.send(text[i:i + 1900])
+            if runner is run_claude:
+                await dev_bot.compact_after_turn(thread, session_id or resume, cwd=p["cwd"])
         except Exception as e:
             # bare create_task — an uncaught exception here dies silently otherwise
             print(f"ERROR: handle_task[{key}]({thread.id}): {e!r}", flush=True)

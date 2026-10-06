@@ -340,6 +340,28 @@ async def compact_session(session_id: str, cwd: str | None = None) -> bool:
     return proc.returncode == 0
 
 
+async def compact_after_turn(thread, session_id: str | None, cwd: str | None = None):
+    """Compact right after the reply is posted (2026-10-06): the 2-4 min flush+compact
+    runs while Tomas reads, not before his next answer. Runs under the thread lock, so
+    messages sent meanwhile queue (📨) and land on the compacted session. The pre-turn
+    check stays as the fallback (failed compaction, bot restart)."""
+    if not session_id or session_context_tokens(session_id, cwd=cwd) <= COMPACT_AT:
+        return
+    note = None
+    try:
+        note = await thread.send("🗜️ Saving memory + compacting in the background "
+                                 "(~2-4 min); messages sent now queue until it's done.")
+    except discord.HTTPException:
+        pass
+    ok = await compact_session(session_id, cwd=cwd)
+    if note:
+        try:
+            await note.edit(content="🗜️ Memory saved, session compacted." if ok else
+                            "🗜️ Compaction failed — will retry before the next turn.")
+        except discord.HTTPException:
+            pass
+
+
 async def run_claude(prompt: str, resume: str | None, on_block=None,
                      cwd: str | None = None, model: str | None = None,
                      sys_prompt: str | None = None) -> tuple[str, str | None]:
@@ -588,6 +610,7 @@ class ChannelAgent(discord.Client):
                         self.sessions[str(thread.id)] = session_id
                         save_sessions(self.sessions)
                     await self.send_chunked(thread, reply)
+                    await compact_after_turn(thread, session_id or resume)
                 except Exception as e:
                     # drain() runs as a bare create_task — an uncaught exception dies
                     # silently and leaves the thread with a dangling status board.
