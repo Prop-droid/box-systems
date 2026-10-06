@@ -24,7 +24,7 @@ import discord
 import codex_bot
 import dev_bot
 from dev_bot import (ALLOWED_USERS, CLAUDE_BIN, DEFAULT_GUARDRAILS, GUILD_ID,
-                     TRUSTED_BOT_IDS, StatusBoard, run_claude, save_attachments,
+                     TRUSTED_BOT_IDS, run_claude, save_attachments,
                      with_attachments)
 
 HERE = Path(__file__).resolve().parent
@@ -110,6 +110,8 @@ class Shared:
         self.clients: dict[str, discord.Client] = {}
         self.sessions = self._load()
         self.locks: dict[int, asyncio.Lock] = {}
+        self.compactions: dict[int, dev_bot.Compaction] = {}
+        self.waiting: dict[int, int] = {}  # thread -> turns queued on its lock
         self.channel_id: int | None = None
         self.bot_dispatches: dict[int, list[float]] = {}
 
@@ -144,7 +146,11 @@ class Shared:
 async def handle_task(shared: Shared, key: str, thread: discord.Thread,
                       prompt: str, resume: str | None):
     p = PROFILES[key]
+    if c := shared.compactions.get(thread.id):
+        c.interrupt()  # a new message beats a still-safe compaction
+    shared.waiting[thread.id] = shared.waiting.get(thread.id, 0) + 1
     async with shared.lock_for(thread.id):
+        shared.waiting[thread.id] -= 1
         try:
             if resume is None:
                 # profile joining an existing conversation — hand it the thread so far
@@ -153,24 +159,14 @@ async def handle_task(shared: Shared, key: str, thread: discord.Thread,
                     prompt = (f"[Discord thread context so far, oldest first]\n{ctx}\n\n"
                               f"[Latest request addressed to you]\n{prompt}")
             runner = codex_bot.run_codex if p.get("engine") == "codex" else run_claude
-            if (resume and runner is run_claude
-                    and dev_bot.session_context_tokens(resume, cwd=p["cwd"]) > dev_bot.COMPACT_AT):
-                # compaction fires the PreCompact memory-flush hook, so nothing is lost
-                try:
-                    note = await thread.send(
-                        "🗜️ Session context near the 529 wedge zone — saving durable "
-                        "knowledge to memory, then compacting (~2-4 min)…")
-                    ok = await dev_bot.compact_session(resume, cwd=p["cwd"])
-                    await note.edit(content="🗜️ Memory saved, session compacted." if ok else
-                                    "🗜️ Compaction failed — continuing on the full context.")
-                except discord.HTTPException:
-                    pass
-            board = StatusBoard(thread)
-            async with thread.typing():
-                reply, session_id = await runner(prompt, resume, on_block=board.on_block,
-                                                 cwd=p["cwd"], model=p["model"],
-                                                 sys_prompt=p["sys"])
-            await board.finish("⏱️" if reply.startswith("⏱️") else "❌" if reply.startswith("❌") else "✅")
+            kw = dict(cwd=p["cwd"], model=p["model"], sys_prompt=p["sys"])
+            is_claude = runner is run_claude
+            if (resume and is_claude and dev_bot.session_context_tokens(resume, cwd=p["cwd"])
+                    > dev_bot.HARD_COMPACT_AT):
+                c = dev_bot.Compaction(thread, resume, **kw)  # too big to run on: wait, with a timer
+                c.show_wait()
+                await asyncio.wait({c.task})
+            reply, session_id = await dev_bot.run_turn(thread, prompt, resume, runner, **kw)
             if session_id:
                 entry = shared.sessions.get(str(thread.id)) or {"profile": key}
                 entry.setdefault("sessions", {})[key] = session_id
@@ -179,10 +175,20 @@ async def handle_task(shared: Shared, key: str, thread: discord.Thread,
                 shared.sessions[str(thread.id)] = entry
                 shared.save()
             text = reply.strip() or "(no output)"
+            last = None
             for i in range(0, len(text), 1900):
-                await thread.send(text[i:i + 1900])
-            if runner is run_claude:
-                await dev_bot.compact_after_turn(thread, session_id or resume, cwd=p["cwd"])
+                last = await thread.send(text[i:i + 1900])
+            # compact now, while Tomas reads — unless his next message is already waiting
+            # and the context is still safe to run on
+            sid = session_id or resume
+            tokens = dev_bot.session_context_tokens(sid, cwd=p["cwd"]) if sid and is_claude else 0
+            queued = shared.waiting.get(thread.id, 0) > 0
+            if tokens > dev_bot.COMPACT_AT and (not queued or tokens > dev_bot.HARD_COMPACT_AT):
+                c = shared.compactions[thread.id] = dev_bot.Compaction(thread, sid, anchor=last, **kw)
+                if queued:
+                    c.show_wait()
+                await asyncio.wait({c.task})
+                shared.compactions.pop(thread.id, None)
         except Exception as e:
             # bare create_task — an uncaught exception here dies silently otherwise
             print(f"ERROR: handle_task[{key}]({thread.id}): {e!r}", flush=True)

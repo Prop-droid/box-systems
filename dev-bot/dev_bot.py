@@ -230,11 +230,11 @@ class StatusBoard:
         elif self._pending is None or self._pending.done():
             self._pending = asyncio.create_task(self._delayed_push(self.MIN_EDIT_GAP - gap))
 
-    async def finish(self, header_icon: str):
+    async def finish(self, header_icon: str, word: str | None = None):
         if self._pending and not self._pending.done():
             self._pending.cancel()
         self._done = True
-        word = {"✅": "Done", "❌": "Failed", "⏱️": "Timed out"}.get(header_icon, "Done")
+        word = word or {"✅": "Done", "❌": "Failed", "⏱️": "Timed out"}.get(header_icon, "Done")
         await self._push(f"{header_icon} {word} · {self._counter()} · {self._elapsed()}")
 
 
@@ -264,6 +264,7 @@ def with_attachments(content: str, paths: list[str]) -> str:
 
 
 COMPACT_AT = 250_000  # tokens; ~300k+ contexts get 529-load-shed on every call (INTEL wedge, 2026-08-13)
+HARD_COMPACT_AT = 275_000  # past this a turn must wait for compaction; below it a new message wins
 
 
 def session_context_tokens(session_id: str, cwd: str | None = None) -> int:
@@ -311,55 +312,166 @@ COMPACT_PRESERVE = (
 )
 
 
-async def compact_session(session_id: str, cwd: str | None = None) -> bool:
+_FLUSHES: dict[str, asyncio.Task] = {}  # session_id -> running memory flush (one at a time)
+
+
+async def _run_quiet(cmd: list[str], workdir: str, env: dict, timeout: float) -> int | None:
+    """Run a subprocess silently; returncode, or None on timeout. Cancel-safe: a
+    cancelled caller terminates the child instead of orphaning it."""
+    proc = await asyncio.create_subprocess_exec(
+        *cmd, cwd=workdir, env=env,
+        stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL)
+    try:
+        return await asyncio.wait_for(proc.wait(), timeout)
+    except (asyncio.TimeoutError, asyncio.CancelledError) as e:
+        if proc.returncode is None:
+            proc.terminate()
+            try:
+                await asyncio.wait_for(proc.wait(), 10)
+            except asyncio.TimeoutError:
+                proc.kill()
+        if isinstance(e, asyncio.CancelledError):
+            raise
+        return None
+
+
+async def compact_session(session_id: str, cwd: str | None = None, model: str | None = None,
+                          sys_prompt: str | None = None) -> bool:
     """Run /compact on a session between turns, before it reaches 529-shed size.
-    First gives the agent one turn to persist unsaved knowledge to memory, so
-    nothing durable is lost to the summary; then compacts with preserve rules."""
+    The memory-save turn runs on a FORK of the session, detached and in parallel
+    (2026-10-06): nothing durable is lost, but it no longer adds to the wait, and a
+    cancelled compaction doesn't kill it. Same model/system prompt as the bot's turns
+    so the fork's 250k prefix is a prompt-cache hit."""
     env = dict(os.environ)
     env["PATH"] = os.path.expanduser("~/.local/bin") + ":" + env.get("PATH", "")
     workdir = os.path.expanduser(cwd or os.environ.get("CLAUDE_CWD", "~"))
-    flush = await asyncio.create_subprocess_exec(
-        CLAUDE_BIN, "-p", "--resume", session_id, PRE_COMPACT_FLUSH_PROMPT,
-        cwd=workdir, env=env,
-        stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
-    )
-    try:
-        await asyncio.wait_for(flush.wait(), timeout=600)
-    except asyncio.TimeoutError:
-        flush.kill()  # compaction still runs — avoiding the wedge beats a perfect flush
-    proc = await asyncio.create_subprocess_exec(
-        CLAUDE_BIN, "-p", "--resume", session_id, "/compact " + COMPACT_PRESERVE,
-        cwd=workdir, env=env,
-        stdout=asyncio.subprocess.DEVNULL, stderr=asyncio.subprocess.DEVNULL,
-    )
-    try:
-        await asyncio.wait_for(proc.wait(), timeout=600)
-    except asyncio.TimeoutError:
-        proc.kill()
-        return False
-    return proc.returncode == 0
+    flush = _FLUSHES.get(session_id)
+    if flush is None or flush.done():
+        flush_cmd = [
+            CLAUDE_BIN, "-p", PRE_COMPACT_FLUSH_PROMPT, "--resume", session_id, "--fork-session",
+            "--model", model or os.environ.get("MODEL", "claude-fable-5"),
+            "--effort", os.environ.get("EFFORT", "xhigh"),
+            "--append-system-prompt", sys_prompt or system_prompt(),
+        ]
+        # CLAUDE_INVOKED_BY: memory-compiler hooks skip the fork (the real session's
+        # PreCompact hook already captures this transcript)
+        flush_env = dict(env, CLAUDE_INVOKED_BY="bot-precompact-flush")
+        _FLUSHES[session_id] = asyncio.create_task(_run_quiet(flush_cmd, workdir, flush_env, 900))
+    rc = await _run_quiet([CLAUDE_BIN, "-p", "--resume", session_id, "/compact " + COMPACT_PRESERVE],
+                          workdir, env, 600)
+    return rc == 0
 
 
-async def compact_after_turn(thread, session_id: str | None, cwd: str | None = None):
-    """Compact right after the reply is posted (2026-10-06): the 2-4 min flush+compact
-    runs while Tomas reads, not before his next answer. Runs under the thread lock, so
-    messages sent meanwhile queue (📨) and land on the compacted session. The pre-turn
-    check stays as the fallback (failed compaction, bot restart)."""
-    if not session_id or session_context_tokens(session_id, cwd=cwd) <= COMPACT_AT:
-        return
-    note = None
-    try:
-        note = await thread.send("🗜️ Saving memory + compacting in the background "
-                                 "(~2-4 min); messages sent now queue until it's done.")
-    except discord.HTTPException:
-        pass
-    ok = await compact_session(session_id, cwd=cwd)
-    if note:
+class Compaction:
+    """Compacts one session between turns. The reply it follows gets a 🗜️ reaction that
+    turns ✅ when done (2026-10-06, replaces the chat notes). Below HARD_COMPACT_AT a new
+    message cancels it: the turn runs on the full context and compaction retries after
+    that reply. Above it, whoever is waiting sees a live elapsed timer, not a guessed ETA."""
+    TICK = 15  # seconds between timer edits
+
+    def __init__(self, thread, session_id: str, anchor: discord.Message | None = None,
+                 cwd: str | None = None, model: str | None = None, sys_prompt: str | None = None):
+        self.thread, self.anchor = thread, anchor
+        self.cancellable = session_context_tokens(session_id, cwd=cwd) <= HARD_COMPACT_AT
+        self.started = time.monotonic()
+        self.note: discord.Message | None = None
+        self.ticker: asyncio.Task | None = None
+        self.task = asyncio.create_task(self._run(session_id, cwd, model, sys_prompt))
+
+    def _elapsed(self) -> str:
+        mins, secs = divmod(int(time.monotonic() - self.started), 60)
+        return f"{mins}m {secs:02d}s" if mins else f"{secs}s"
+
+    async def _react(self, remove: str | None = None, add: str | None = None):
+        if self.anchor is None:
+            return
         try:
-            await note.edit(content="🗜️ Memory saved, session compacted." if ok else
-                            "🗜️ Compaction failed — will retry before the next turn.")
+            if remove:
+                await self.anchor.remove_reaction(remove, self.thread.guild.me)
+            if add:
+                await self.anchor.add_reaction(add)
         except discord.HTTPException:
             pass
+
+    async def _run(self, session_id, cwd, model, sys_prompt) -> bool:
+        try:
+            await self._react(add="🗜️")
+            ok = await compact_session(session_id, cwd=cwd, model=model, sys_prompt=sys_prompt)
+        except asyncio.CancelledError:
+            await self._finish(None)
+            raise
+        await self._finish(ok)
+        return ok
+
+    async def _finish(self, ok: bool | None):
+        if self.ticker:
+            self.ticker.cancel()
+            await asyncio.gather(self.ticker, return_exceptions=True)
+        await self._react(remove="🗜️", add={True: "✅", False: "⚠️"}.get(ok))
+        if self.note:
+            text = {True: f"🗜️ Compacted in {self._elapsed()} — on your message now.",
+                    False: "🗜️ Compaction failed — continuing on the full context.",
+                    None: "🗜️ Compaction paused — answering you first."}[ok]
+            try:
+                await self.note.edit(content=text)
+            except discord.HTTPException:
+                pass
+
+    def show_wait(self):
+        """Someone is now waiting on this compaction — show the live timer."""
+        if self.ticker is None and not self.task.done():
+            self.ticker = asyncio.create_task(self._tick())
+
+    def interrupt(self):
+        """A new message arrived: cancel if the full context is still safe, else show the timer."""
+        if self.task.done():
+            return
+        if self.cancellable:
+            self.task.cancel()
+        else:
+            self.show_wait()
+
+    async def _tick(self):
+        try:
+            while True:
+                text = (f"🗜️ Compacting first — session is too big to answer on safely · "
+                        f"{self._elapsed()}")
+                if self.note is None:
+                    self.note = await self.thread.send(text)
+                else:
+                    await self.note.edit(content=text)
+                await asyncio.sleep(self.TICK)
+        except discord.HTTPException:
+            pass
+
+
+AUTO_CONTINUE_PROMPT = (
+    "[Auto-continue] Your previous turn hit the bot's 30-min limit and was cut off mid-task. "
+    "Continue from where you stopped; don't redo finished steps.")
+
+
+async def run_turn(thread, prompt: str, resume: str | None, runner=None,
+                   **kw) -> tuple[str, str | None]:
+    """One task turn with its status board. A 30-min timeout auto-continues once in the
+    same session (2026-10-06); a second one pings Tomas instead of silently stopping."""
+    runner = runner or run_claude  # resolved at call time: codex_bot patches run_claude
+    for attempt in (1, 2):
+        board = StatusBoard(thread)
+        async with thread.typing():
+            reply, session_id = await runner(prompt, resume, on_block=board.on_block, **kw)
+        resume = session_id or resume
+        timed_out = reply.startswith("⏱️")
+        if timed_out and resume and attempt == 1:
+            await board.finish("⏱️", "30 min hit — auto-continuing")
+            prompt = AUTO_CONTINUE_PROMPT
+            continue
+        await board.finish("⏱️" if timed_out else "❌" if reply.startswith("❌") else "✅")
+        break
+    if timed_out:
+        owner = next(iter(ALLOWED_USERS))
+        reply = (f"<@{owner}> ⏱️ Still not finished after 2 × 30 min, so I stopped. "
+                 "The session is saved — reply here to continue it.")
+    return reply, resume
 
 
 async def run_claude(prompt: str, resume: str | None, on_block=None,
@@ -485,6 +597,7 @@ class ChannelAgent(discord.Client):
         self.sessions = load_sessions()
         self.locks: dict[int, asyncio.Lock] = {}
         self.queues: dict[int, list[str]] = {}
+        self.compactions: dict[int, Compaction] = {}
         self.bot_dispatches: dict[int, list[float]] = {}
         self.channel_id: int | None = None
         self.extra_names = {c.strip() for c in os.environ.get(
@@ -533,10 +646,10 @@ class ChannelAgent(discord.Client):
 
     async def send_chunked(self, dest, text: str):
         text = text.strip() or "(no output)"
+        last = None
         while text:
             if len(text) <= CHUNK:
-                await dest.send(text)
-                break
+                return await dest.send(text)
             window = text[:CHUNK]
             # break at a natural boundary: paragraph > line > word
             cut = window.rfind("\n\n")
@@ -546,8 +659,9 @@ class ChannelAgent(discord.Client):
                 cut = window.rfind(" ")
             if cut < CHUNK // 2:
                 cut = CHUNK
-            await dest.send(text[:cut].rstrip())
+            last = await dest.send(text[:cut].rstrip())
             text = text[cut:].lstrip()
+        return last
 
     def queue_for(self, tid: int) -> list[str]:
         return self.queues.setdefault(tid, [])
@@ -559,6 +673,8 @@ class ChannelAgent(discord.Client):
         """Terminal-style: messages sent while a task runs are queued, never interrupt it.
         They're delivered (batched) to the same session as soon as the current turn ends."""
         self.queue_for(thread.id).append(prompt)
+        if c := self.compactions.get(thread.id):
+            c.interrupt()
         if self.lock_for(thread.id).locked():
             if msg:
                 try:
@@ -591,26 +707,26 @@ class ChannelAgent(discord.Client):
                         prompt = (f"[Discord context — background only; the request may refer "
                                   f"to it (e.g. picking an option offered earlier)]\n{ctx}\n\n"
                                   f"[Latest request addressed to you]\n{prompt}")
-                if resume and session_context_tokens(resume) > COMPACT_AT:
-                    try:
-                        note = await thread.send(
-                            "🗜️ Session context near the 529 wedge zone — saving durable "
-                            "knowledge to memory, then compacting (~2-4 min)…")
-                        ok = await compact_session(resume)
-                        await note.edit(content="🗜️ Memory saved, session compacted." if ok else
-                                        "🗜️ Compaction failed — continuing on the full context.")
-                    except discord.HTTPException:
-                        pass
                 try:
-                    board = StatusBoard(thread)
-                    async with thread.typing():
-                        reply, session_id = await run_claude(prompt, resume, on_block=board.on_block)
-                    await board.finish("⏱️" if reply.startswith("⏱️") else "❌" if reply.startswith("❌") else "✅")
+                    if resume and session_context_tokens(resume) > HARD_COMPACT_AT:
+                        c = Compaction(thread, resume)  # too big to run on: wait, with a timer
+                        c.show_wait()
+                        await asyncio.wait({c.task})
+                    reply, session_id = await run_turn(thread, prompt, resume)
                     if session_id:
                         self.sessions[str(thread.id)] = session_id
                         save_sessions(self.sessions)
-                    await self.send_chunked(thread, reply)
-                    await compact_after_turn(thread, session_id or resume)
+                    last = await self.send_chunked(thread, reply)
+                    # compact now, while Tomas reads — unless his next message is already
+                    # queued and the context is still safe to run on
+                    sid = session_id or resume
+                    tokens = session_context_tokens(sid) if sid else 0
+                    if tokens > COMPACT_AT and (not q or tokens > HARD_COMPACT_AT):
+                        c = self.compactions[thread.id] = Compaction(thread, sid, anchor=last)
+                        if q:
+                            c.show_wait()
+                        await asyncio.wait({c.task})
+                        self.compactions.pop(thread.id, None)
                 except Exception as e:
                     # drain() runs as a bare create_task — an uncaught exception dies
                     # silently and leaves the thread with a dangling status board.
