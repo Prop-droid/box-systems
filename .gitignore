@@ -81,3 +81,8 @@ dev-bot/tg_boards.json
 public-share/**/*.mp4
 public-share/**/*.zip
 public-share/rch5evij396dmbq/index.html
+
+# laya: local venv + eval/finetune artifacts
+laya/.venv/
+laya/*.jsonl
+laya/ft/

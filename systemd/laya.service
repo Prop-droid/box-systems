@@ -1,0 +1,23 @@
+[Unit]
+Description=Laya decision engine (open-source Jev, /v1/systemone on localhost)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/systems/laya
+Environment=LAYA_HOST=127.0.0.1
+Environment=LAYA_PORT=8095
+Environment=LAYA_DEVICE=cpu
+# 4-core box shared with CCC/Hermes: cap threads, keep one checkpoint, free RAM when idle
+Environment=LAYA_THREADS=2
+Environment=LAYA_MAX_LOADED=1
+Environment=LAYA_IDLE_UNLOAD_SECONDS=900
+Environment=LAYA_PRELOAD=0
+Environment=USE_TF=0
+ExecStart=%h/systems/laya/.venv/bin/laya-serve
+Restart=on-failure
+RestartSec=5
+MemoryMax=3G
+
+[Install]
+WantedBy=default.target
