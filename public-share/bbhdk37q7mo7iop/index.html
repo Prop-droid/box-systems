@@ -1,0 +1,44 @@
+<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MB Halloween Cauldron</title>
+<style>
+:root{--bg:#111;--card:#1c1c1c;--fg:#eee;--mute:#9a9a9a;--acc:#ff7a1a;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:14px/1.4 system-ui,sans-serif;padding:16px;max-width:1200px;margin:auto}
+h1{font-size:20px;margin:8px 0 4px} p.sub{color:var(--mute);margin:0 0 16px}
+.muse{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap} .muse img{width:160px;border-radius:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{margin:0;background:var(--card);border-radius:10px;overflow:hidden;border:2px solid transparent}
+.card.on{border-color:var(--acc)} .card img{width:100%;display:block;aspect-ratio:1}
+figcaption{padding:10px;display:flex;flex-direction:column;gap:6px} figcaption span{color:var(--mute);font-size:13px}
+.note{background:#0d0d0d;border:1px solid #333;color:var(--fg);padding:6px;border-radius:6px}
+#st{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:#222;padding:6px 10px;border-radius:6px;color:var(--mute)}
+</style>
+<h1>Mini Bites Halloween: Cauldron Sale, round 1</h1>
+<p class="sub">5 concepts x 2 renders, Created.AI GPT-2.5-FLARE, 1:1. Tick the good ones, add a note for fixes; saves automatically. Click an image for full size.</p>
+<div class="muse"><img src="img/muse.webp" alt="muse"><div><b>Muse: SH-4750-3</b><br>OG Halloween Spooky Sale, $1,037 / 1.56 ROAS</div></div>
+<div class="grid"><figure class="card" data-id="c1-1"><a href="img/c1-1.png" target="_blank"><img src="img/c1-1.webp" loading="lazy" alt="Literal remake v1"></a>
+<figcaption><b>1.1 Literal remake</b><span>Cauldron of loose gummies, two mini bags at the rim</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure><figure class="card" data-id="c1-2"><a href="img/c1-2.png" target="_blank"><img src="img/c1-2.webp" loading="lazy" alt="Literal remake v2"></a>
+<figcaption><b>1.2 Literal remake</b><span>Cauldron of loose gummies, two mini bags at the rim</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure><figure class="card" data-id="c2-1"><a href="img/c2-1.png" target="_blank"><img src="img/c2-1.webp" loading="lazy" alt="Bag haul v1"></a>
+<figcaption><b>2.1 Bag haul</b><span>Cauldron overflowing with mini bags</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure><figure class="card" data-id="c2-2"><a href="img/c2-2.png" target="_blank"><img src="img/c2-2.webp" loading="lazy" alt="Bag haul v2"></a>
+<figcaption><b>2.2 Bag haul</b><span>Cauldron overflowing with mini bags</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure><figure class="card" data-id="c3-1"><a href="img/c3-1.png" target="_blank"><img src="img/c3-1.webp" loading="lazy" alt="Jack-o'-lantern v1"></a>
+<figcaption><b>3.1 Jack-o'-lantern</b><span>Pumpkin pouring mini bags and gummies</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure><figure class="card" data-id="c3-2"><a href="img/c3-2.png" target="_blank"><img src="img/c3-2.webp" loading="lazy" alt="Jack-o'-lantern v2"></a>
+<figcaption><b>3.2 Jack-o'-lantern</b><span>Pumpkin pouring mini bags and gummies</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure><figure class="card" data-id="c4-1"><a href="img/c4-1.png" target="_blank"><img src="img/c4-1.webp" loading="lazy" alt="Witch's hand v1"></a>
+<figcaption><b>4.1 Witch's hand</b><span>Adult hand lifting one mini bag out of the smoke</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure><figure class="card" data-id="c4-2"><a href="img/c4-2.png" target="_blank"><img src="img/c4-2.webp" loading="lazy" alt="Witch's hand v2"></a>
+<figcaption><b>4.2 Witch's hand</b><span>Adult hand lifting one mini bag out of the smoke</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure><figure class="card" data-id="c5-1"><a href="img/c5-1.png" target="_blank"><img src="img/c5-1.webp" loading="lazy" alt="Value Pack hero v1"></a>
+<figcaption><b>5.1 Value Pack hero</b><span>Purple Ultimate Value Pack in the cauldron, minis fanned in front</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure><figure class="card" data-id="c5-2"><a href="img/c5-2.png" target="_blank"><img src="img/c5-2.webp" loading="lazy" alt="Value Pack hero v2"></a>
+<figcaption><b>5.2 Value Pack hero</b><span>Purple Ultimate Value Pack in the cauldron, minis fanned in front</span>
+<label><input type="checkbox" class="go"> Good to go</label><input class="note" placeholder="Fix note"></figcaption></figure></div><div id="st">loading</div>
+<script>
+const st=document.getElementById('st');let t;
+function save(){const items={};document.querySelectorAll('.card').forEach(c=>{items[c.dataset.id]={go:c.querySelector('.go').checked,note:c.querySelector('.note').value};c.classList.toggle('on',c.querySelector('.go').checked)});
+st.textContent='saving';fetch('picks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({items})}).then(r=>st.textContent=r.ok?'saved':'save failed').catch(()=>st.textContent='save failed')}
+document.addEventListener('input',e=>{if(e.target.matches('.go,.note')){clearTimeout(t);t=setTimeout(save,600)}});
+fetch('picks.json').then(r=>r.ok?r.json():{items:{}}).then(d=>{for(const[k,v]of Object.entries(d.items||{})){const c=document.querySelector(`.card[data-id="${k}"]`);if(!c)continue;c.querySelector('.go').checked=v.go;c.querySelector('.note').value=v.note||'';c.classList.toggle('on',v.go)}st.textContent='ready'}).catch(()=>st.textContent='ready');
+</script>
