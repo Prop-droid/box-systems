@@ -35,7 +35,7 @@ def fetch_doc(url_or_text):
     # relative filename and read it back.
     try:
         with tempfile.TemporaryDirectory() as d:
-            subprocess.run(["gws", "drive", "files", "export", "--params",
+            subprocess.run([os.path.expanduser("~/.local/bin/gws-work"), "drive", "files", "export", "--params",
                             json.dumps({"fileId": fid, "mimeType": "text/plain"}),
                             "-o", "doc.txt"],
                            cwd=d, capture_output=True, text=True, timeout=60)

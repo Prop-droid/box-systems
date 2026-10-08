@@ -208,7 +208,7 @@ def fetch_gdoc_text(text):
     try:
         with tempfile.TemporaryDirectory() as d:
             subprocess.run(
-                ["gws", "drive", "files", "export", "--params",
+                [os.path.expanduser("~/.local/bin/gws-work"), "drive", "files", "export", "--params",
                  json.dumps({"fileId": m.group(1), "mimeType": "text/plain"}),
                  "-o", "doc.txt"],
                 cwd=d, capture_output=True, text=True, timeout=60)

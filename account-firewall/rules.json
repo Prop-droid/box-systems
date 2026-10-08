@@ -1,0 +1,35 @@
+{
+  "_doc": "Hard work/personal Google-account separation. Work = Shameless Snacks + creative strategy (eJam) -> tomas.s@ejam.com. Everything else -> propeidzas@gmail.com. 'markers' identify content that belongs to THAT side; a write to the other side containing them is blocked. Patterns are Python regex, case-sensitive unless prefixed (?i). Edit by hand (Tomas) only.",
+  "work": {
+    "account": "tomas.s@ejam.com",
+    "config_dir": "~/.config/gws-work",
+    "markers": [
+      "(?i)\\bshameless\\b",
+      "(?i)eatshameless",
+      "\\bSHA[_-]",
+      "\\bSH-\\d{3,}",
+      "(?i)\\bejam\\b",
+      "(?i)ejam-dwh",
+      "(?i)\\bmini ?bites\\b",
+      "(?i)\\bfiber first\\b",
+      "(?i)trw-gifts",
+      "(?i)\\bcruva\\b",
+      "(?i)\\btrybe\\b",
+      "(?i)creative strateg",
+      "(?i)tomas\\.s@ejam\\.com"
+    ]
+  },
+  "personal": {
+    "account": "propeidzas@gmail.com",
+    "config_dir": "~/.config/gws-personal",
+    "markers": [
+      "(?i)propeidzas",
+      "(?i)mo[čc]iut|senel|grandm|babcia",
+      "(?i)slaugos|globos namai|care home|nursing home",
+      "(?i)lake house|sodyb|aruodas|skelbiu|vinted",
+      "(?i)nobara|steam deck|playstation|\\bps4\\b|jonsbo|gaming (box|pc|build)",
+      "(?i)\\bkobo\\b|calibre-web|ricoh",
+      "(?i)tablet-assistant|personal coach|/personal/"
+    ]
+  }
+}

@@ -117,8 +117,8 @@ fi
 anon="$(timeout 15 journalctl --user -u hermes-gateway --since "24 hours ago" --no-pager 2>/dev/null | grep -ci 'anonymous' || true)"
 [ -n "$anon" ] && [ "$anon" -gt 0 ] && warn "perplexity in anonymous mode ($anon hits in gateway log 24h) — session token expired, re-copy from Mac Chrome"
 # Google: gws token cache (work account) — token_valid from auth status.
-if command -v gws >/dev/null 2>&1; then
-  tv="$(timeout 20 gws auth status 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("token_valid"))' 2>/dev/null || echo err)"
+if [ -x "$HOME/.local/bin/gws-work" ]; then
+  tv="$(timeout 20 "$HOME/.local/bin/gws-work" auth status 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("token_valid"))' 2>/dev/null || echo err)"
   [ "$tv" = "True" ] || warn "google token: gws auth status token_valid=$tv"
 fi
 
