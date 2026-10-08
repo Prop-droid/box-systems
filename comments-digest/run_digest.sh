@@ -53,11 +53,21 @@ if ! grep -q "|" "$WORK/01_comments.txt" 2>/dev/null; then
   exit 0
 fi
 
+# Laya pass: yes/no flags (adverse, order problem, subscription, price) over every comment.
+# Fail-soft: a dead laya.service only costs the {{FLAGS}} block, never the digest.
+echo ">> laya flags"
+sed -e "s|{{FROM}}|$FROM|g" -e "s|{{TO}}|$TO|g" "$SCRIPT_DIR/queries/01_comments.sql" \
+  | bq query --use_legacy_sql=false --format=json --max_rows=400 > "$WORK/01_comments.json" 2>/dev/null \
+  && timeout 2400 python3 "$SCRIPT_DIR/flag_comments.py" "$WORK/01_comments.json" "$OUT_DIR/flags-$TODAY.jsonl" \
+     > "$WORK/_flags.md" 2>"$WORK/_flags.err" \
+  || echo "(Laya flagger failed this run; estimate from the sample as usual.)" > "$WORK/_flags.md"
+echo "   $(head -1 "$WORK/_flags.md" | cut -c1-120)"
+
 # Assemble prompt
 python3 - "$SCRIPT_DIR/digest_prompt.txt" "$WORK/_prompt.txt" "$FROM" "$TO" \
-  "$WORK/01_comments.txt" "$WORK/02_page_replies.txt" "$WORK/03_top_posts.txt" <<'PY'
+  "$WORK/01_comments.txt" "$WORK/02_page_replies.txt" "$WORK/03_top_posts.txt" "$WORK/_flags.md" <<'PY'
 import sys, pathlib
-tpl, out, frm, to, comments, replies, top = sys.argv[1:8]
+tpl, out, frm, to, comments, replies, top, flags = sys.argv[1:9]
 read = lambda p: pathlib.Path(p).read_text() if pathlib.Path(p).exists() else "(none)"
 text = pathlib.Path(tpl).read_text()
 for k, v in {
@@ -65,6 +75,7 @@ for k, v in {
     "{{COMMENTS}}": read(comments),
     "{{REPLIES}}": read(replies),
     "{{TOP_POSTS}}": read(top),
+    "{{FLAGS}}": read(flags),
 }.items():
     text = text.replace(k, v)
 pathlib.Path(out).write_text(text)
@@ -95,5 +106,6 @@ fi
 cp -f "$RAW" "$OUT_DIR/digest-$TODAY.md"
 # Keep last 12 digests
 ls -t "$OUT_DIR"/digest-*.md 2>/dev/null | tail -n +13 | xargs rm -f 2>/dev/null || true
+ls -t "$OUT_DIR"/flags-*.jsonl 2>/dev/null | tail -n +13 | xargs rm -f 2>/dev/null || true
 
 echo "DONE: $OUT_DIR/digest-$TODAY.md ($(wc -l <"$OUT_DIR/digest-$TODAY.md") lines)"

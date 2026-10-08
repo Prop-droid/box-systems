@@ -33,6 +33,7 @@ Any comment threads implying health claims we must not echo (cure/treat language
 Rules:
 - Quote customers VERBATIM; never paraphrase quotes.
 - Counts are estimates from the sample below; say "of sampled comments" when giving numbers.
+- MACHINE FLAGS (below) were computed over every sampled comment. Use the AUTO counts for adverse reactions, order/site problems, subscription complaints and price objections instead of eyeballing, and say "flagged" when you cite them. REVIEW items are unconfirmed: read them and count only the ones you agree with. If an order/site problem mentions a broken link, 404 or error page, put it FIRST in the TL;DR with the cre code (it means paid traffic is hitting a dead page).
 - Allowed brand language: prebiotic fiber, food noise, pooping every day. NEVER write "no artificial colors/flavors" or disease-treatment claims.
 - No em dashes in any copy you suggest.
 - Output ONLY the markdown report, nothing else.
@@ -45,3 +46,6 @@ Rules:
 
 === TOP COMMENTED POSTS (with perf) ===
 {{TOP_POSTS}}
+
+=== MACHINE FLAGS ===
+{{FLAGS}}
