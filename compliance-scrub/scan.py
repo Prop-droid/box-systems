@@ -79,7 +79,10 @@ def main():
             if any(x in s for x in (
                     "/raw/", "legal", ".bak", "/log.md", "/index.md", "/meta/",
                     "competitor", "competitive", "atria", "weekly-report",
-                    "substantiation", "research", "swipe", "/performance/")):
+                    "substantiation", "research", "swipe", "/performance/",
+                    # Customer data (VOC verbatims, survey, personas) is real
+                    # data, never rewritten (Tomas 2026-10-08).
+                    "voice-of-customer", "/personas/", "survey")):
                 continue
             try:
                 if p.stat().st_mtime >= cutoff:
