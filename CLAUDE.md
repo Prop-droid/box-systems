@@ -34,9 +34,13 @@ command to prove a change works before the timer fires.
   (CCC serves it at `/api/comments/digest`). Schedule: Tue 04:00.
   Entry: `run_digest.sh`. No flag; a manual run only writes a local md (needs BQ).
   Exits 0 on no data by design (upstream feed was dead; don't "fix" that).
+  Before the Claude pass, `flag_comments.py` runs Laya yes/no flags (adverse,
+  order/site problem, subscription, price) over every comment → `{{FLAGS}}`
+  prompt block + `out/flags-DATE.jsonl`. Fail-soft if laya.service is down.
 - **compliance-scrub/** — daily 05:45 deterministic banned-claims scan
   (compliance-eval policy.json) over *.md changed <25h in ~/brain shippable-copy
-  surfaces; digest to Discord #creative on hits, silent when clean.
+  surfaces (skips VOC/survey/personas: real customer data, never fixed);
+  digest to Discord #creative on hits, silent when clean.
   Dry run: `SCRUB_DRY=1 python3 scan.py`.
 - **fatigue-sentinel/** — daily creative fatigue watch: winning ads whose hook
   rate/ROAS decays vs 7-day baseline → one ntfy alert; Mon heartbeat.
@@ -132,8 +136,20 @@ command to prove a change works before the timer fires.
   `~/fable-window/`): `driver.sh` runs `tasks/*.task` as sequential headless claude
   jobs with per-task MODEL/CWD, limit-retry (30 min x16). Controls: `touch
   ~/fable-window/START_NOW` / `STOP`; `PAUSE_90` honored mid-loop.
+- **account-firewall/** — hard work/personal Google split (Tomas 2026-10-06).
+  `guard.py` is symlinked as `~/.local/bin/gws` (= work), `gws-work` and
+  `gws-personal`. It binds `~/.config/gws-{work,personal}` (the raw `/usr/bin/gws`
+  has no creds) and refuses writes that carry the other side's markers
+  (`rules.json`). `guard.py hook` = the box Claude PreToolUse hook (cross-side
+  MCP writes, cred bypass). Timers have no `~/.local/bin` on PATH, so call
+  `~/.local/bin/gws-work` by absolute path. Test: `python3 account-firewall/test_guard.py`.
 - **transcript-janitor/** — gzip+archive Claude transcripts >30d (never deletes,
   never touches memory/*.md). Called by agents-weekly; manual: `run_janitor.sh`.
+- **laya/** — always-on local Jev clone (Laya, CPU) on 127.0.0.1:8095,
+  `laya.service`; lazy-loads, unloads after 15 min idle (~2 GB when warm).
+  Client `lib/decide.py` (`yes/choose/ask_batch`, None = escalate to Claude).
+  Zero-shot = triage-grade: crisp yes/no gates only, never a full tagger.
+  Test: `python3 ~/systems/lib/decide.py "<text>" "<yes/no question>"`.
 - **md-server/** — always-on read-only markdown browser for `~/brain` on :8092
   (Tailnet/LAN). `md-server.service` (Type=simple, Restart=on-failure).
   Test: `curl -s localhost:8092 | head`.
