@@ -257,6 +257,11 @@ Full manual = the `fleet-control` skill. Load-bearing subset for this repo:
   `discord-notify.sh` and `discord-post.sh` are now shims to these — never post
   to Discord. ntfy remains only for phone topics (usage-guard
   `tomas-usage-guard-7c31`, `tomas-ph-1ea8ac8e`).
+- **No creative-strategy pings Sat/Sun (Tomas 2026-10-10):** any job posting
+  Shameless/creative signal (#creative, Creative Feed, ClickUp/phone pushes) must
+  stay silent on weekends and let Monday's run catch up. Precedents:
+  launch-details-scan (state deferral), fatigue-sentinel (stateless skip),
+  compliance-scrub (Monday 73h window). Infra alerts to #ops-log are exempt.
 - **Creds live OUTSIDE the repo:** BQ SA `~/.config/gcloud/ejam-dwh-sa.json`,
   ClickUp `~/.config/clickup/pk` (600), provider keys `~/.hermes/.env`, Atria
   `~/.config/atria/key`, gbrain `~/.gbrain/.pgurl`. Guard-check them at the top

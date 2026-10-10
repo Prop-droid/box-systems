@@ -31,7 +31,10 @@ POST = Path.home() / "systems/lib/discord-post.sh"
 CREATIVE_CH = "1531648564932120737"
 REPORTS = HERE / "reports"
 DRY = os.environ.get("SCRUB_DRY") == "1"
-WINDOW_H = float(os.environ.get("SCRUB_WINDOW_HOURS", "25"))
+# No #creative posts Sat/Sun (Tomas 2026-10-10): weekend runs still write the
+# report but stay silent; Monday's window reaches back to Friday's run.
+WEEKDAY = time.localtime().tm_wday  # Mon=0
+WINDOW_H = float(os.environ.get("SCRUB_WINDOW_HOURS", "73" if WEEKDAY == 0 else "25"))
 ROOTS = [Path(p).expanduser() for p in os.environ.get(
     "SCRUB_ROOTS", "~/brain/wiki:~/brain/projects").split(":")]
 
@@ -115,7 +118,7 @@ def main():
         rel = str(path).replace(str(Path.home()), "~")
         key = (rel, sev, rid)
         agg.setdefault(key, {"n": 0, "frag": frag, "why": why})["n"] += 1
-    digest = [f"🚫 **Compliance scrub — {len(all_hits)} hit(s) in copy changed yesterday**"]
+    digest = [f"🚫 **Compliance scrub — {len(all_hits)} hit(s) in copy changed {'since Friday' if WEEKDAY == 0 else 'yesterday'}**"]
     rows = sorted(agg.items(), key=lambda kv: (kv[0][1] != "HARD", -kv[1]["n"]))
     for (rel, sev, rid), v in rows[:10]:
         digest.append(f"- {sev} **{rid}** ×{v['n']} in `{rel}` (e.g. \"{v['frag']}\" — {v['why']})")
@@ -126,6 +129,9 @@ def main():
     body = "\n".join(digest)
     if DRY:
         print("--- DRY digest ---\n" + body)
+        return 0
+    if WEEKDAY >= 5:
+        print("weekend: #creative digest suppressed, Monday's run re-covers it")
         return 0
     subprocess.run(["bash", str(POST), CREATIVE_CH, "CREATIVE_TOKEN"],
                    input=body, text=True, check=False)

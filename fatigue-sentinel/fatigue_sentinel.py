@@ -198,12 +198,17 @@ def main():
     top = alerts[:TOP_N]
 
     is_monday = datetime.date.today().weekday() == 0
+    # No creative pings Sat/Sun (Tomas 2026-10-10). Stateless, so Monday's run
+    # re-evaluates and alerts on anything still decaying.
+    is_weekend = datetime.date.today().weekday() >= 5
 
     if top:
         title = f"Creative fatigue: {len(alerts)} winner(s) decaying"
         body = "\n".join(alert_line(a) for a in top)
         if args.dry_run:
             print(f"\n[WOULD PUSH — Priority high] {title}\n{body}")
+        elif is_weekend:
+            print(f"weekend: alert suppressed ({len(top)} ad(s)), Monday re-checks")
         else:
             send_ntfy(title, body, "high")
             print(f"pushed alert: {len(top)} ad(s)")
