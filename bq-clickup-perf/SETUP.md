@@ -1,72 +1,56 @@
 # BigQuery → ClickUp performance writeback
 
-Stamps ad performance from the BigQuery creative dashboard onto ClickUp tasks so
-performance is **sortable and filterable** in ClickUp views (the existing ETL bot
-posts the same data as comments, which you can't filter on). Runs **daily 07:30
-local** via launchd.
+Stamps **Meta** ad performance onto ClickUp tasks so it is **sortable and
+filterable** in ClickUp views (the ETL bot's comments aren't filterable). Runs
+**daily 14:30 Vilnius** via `systemd/bq-clickup-perf.timer`, after the US ad
+day has closed and facebook_dashboard has rebuilt (~11:00 UTC).
 
 ## What it writes
 
-For every task on the Creative Strategist list (`901110066469`) that was **active
-in the last 30 days** (had ad spend), it sets 5 custom fields from
-`ejam-dwh.production.creative_dashboard`, matched on `clickup_project` = SH-####:
+Every task on the Creative Strategist list (`901110066469`) with Meta spend gets
+5 custom fields, from `ejam-dwh.production.facebook_dashboard`
+(`brand='SHA'`, `type='placement_breakdown'`):
 
 | ClickUp field | Source |
 |---|---|
-| ROAS (number) | lifetime revenue / spend |
-| Spend (number) | lifetime spend |
-| Orders (number) | lifetime orders |
-| Spend 30d (number) | spend in last 30 days |
-| Last Active (date) | most recent active date |
+| ROAS (number) | lifetime last-click revenue / spend (internal, not Meta pixel ROAS) |
+| Spend (number) | lifetime Meta spend |
+| Orders (number) | lifetime last-click orders |
+| Spend 30d (number) | Meta spend over the last 30 complete days (0 once quiet) |
+| Last Active (date) | last day with spend > 0 |
 
-Scope is active-in-30d because dormant tasks' lifetime numbers don't change and
-the ClickUp side is a per-task loop (no bulk field endpoint). First run touched
-~119 tasks.
+Task key per ad = `creative_dashboard.clickup_project` when CAMS maps the ad,
+else the first `SH-####` in the ad name. Only changed fields are written; tasks
+with no Meta spend but leftover values get cleared. The script aborts before
+writing if BQ returns < 1000 projects (protects against mass clearing).
+
+Meta only by decision (2026-10-12): AppLovin/TikTok spend is NOT in these fields.
+
+## Why facebook_dashboard, not creative_dashboard
+
+Audit 2026-10-12 (`~/brain/projects/2026-10/clickup-perf-audit/AUDIT.md`):
+creative_dashboard drops Meta ads with no CAMS asset record (~$172k SHA spend
+Jun–Oct 2026; SH-17273 showed $22.7k vs $118.6k). Matched ads agree to the cent.
 
 ## Cost
 
-ONE BigQuery query per run, projecting only 5 narrow numeric columns. Because the
-table is columnar, this scans ~65 MB (~$0.0004/run, ~$0.15/yr daily) — NOT the
-14 GB table. **Do not add `SELECT *` or the text columns (`script`,
-`ai_remaining_transcript`) — those are what make this table expensive.** The table
-is partitioned on `asset_published_at`, not `dt`, so date filters don't prune;
-column selection is what keeps it cheap.
+Lifetime aggregate over facebook_dashboard ≈ 8 GB scanned (~$0.05/run). Keep the
+projection narrow; `ad_name` is the expensive column. Never `SELECT *`.
 
-## One-time setup (per Mac)
-
-Reuses the same creds as the other crons:
-- BQ service account at `~/.config/gcloud/ejam-dwh-sa.json` (`GOOGLE_APPLICATION_CREDENTIALS`)
-- ClickUp token at `~/.config/clickup/pk`
-- `bq` CLI on PATH
-
-The 5 custom fields must exist on the list (created in the ClickUp UI). Field IDs
-are hard-coded in `bq_to_clickup_perf.py`; if the fields are recreated, re-fetch
-IDs (`curl -H "Authorization: $(cat ~/.config/clickup/pk)" https://api.clickup.com/api/v2/list/901110066469/field`)
-and update the `FIELDS` map.
-
-Install the job:
+## Run manually
 
 ```sh
-cp "$HOME/Library/CloudStorage/GoogleDrive-propeidzas@gmail.com/My Drive/Code Things/systems/bq-clickup-perf/com.tomas.bq-clickup-perf.plist" "$HOME/Library/LaunchAgents/"
-launchctl unload "$HOME/Library/LaunchAgents/com.tomas.bq-clickup-perf.plist" 2>/dev/null
-launchctl load "$HOME/Library/LaunchAgents/com.tomas.bq-clickup-perf.plist"
+# preview (writes nothing):
+PERF_DRY_RUN=1 GOOGLE_APPLICATION_CREDENTIALS=~/.config/gcloud/ejam-dwh-sa.json \
+  python3 ~/systems/bq-clickup-perf/bq_to_clickup_perf.py
+
+# live:
+systemctl --user start bq-clickup-perf.service
+tail -n 30 "$(ls -td ~/Library/Logs/bq-clickup-perf/* | head -1)"
 ```
 
-## Run manually / preview
+Field IDs are hard-coded in `FIELDS`; if the fields are recreated, re-fetch via
+`curl -H "Authorization: $(cat ~/.config/clickup/pk)" https://api.clickup.com/api/v2/list/901110066469/field`.
 
-```sh
-# preview only (writes nothing):
-PERF_DRY_RUN=1 GOOGLE_APPLICATION_CREDENTIALS=~/.config/gcloud/ejam-dwh-sa.json TOKEN_FILE=~/.config/clickup/pk \
-  python3 "$HOME/Library/CloudStorage/GoogleDrive-propeidzas@gmail.com/My Drive/Code Things/systems/bq-clickup-perf/bq_to_clickup_perf.py"
-
-# live (or trigger the launchd job):
-bash "$HOME/Library/CloudStorage/GoogleDrive-propeidzas@gmail.com/My Drive/Code Things/systems/bq-clickup-perf/run_perf_writeback.sh"
-launchctl start com.tomas.bq-clickup-perf
-tail -n 30 "$HOME/Library/Logs/bq-clickup-perf/"*.log
-```
-
-## Notes
-
-- Per-Mac: plist, creds, and `~/Library/Logs/` are local; scripts ride Drive.
-- ROAS is first-purchase (revenue/spend from the dashboard); sub LTV runs higher.
-- Schedule: daily 07:30, ahead of the Monday 08:00 winners refresh + 09:07 report.
+Fields are display columns in the list views "WL View", "Open WL SHA" and
+"CS View" (no view sorts/filters on them as of 2026-10-12).

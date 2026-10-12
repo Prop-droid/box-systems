@@ -15,9 +15,10 @@ command to prove a change works before the timer fires.
 
 ### Data pipelines (BQ / ClickUp / Atria)
 
-- **bq-clickup-perf/** — nightly BQ ad-performance writeback (ROAS/Spend/Orders/
-  Spend30d/LastActive) onto active Creative Strategist ClickUp tasks.
-  Schedule: daily 02:30. Entry: `run_perf_writeback.sh` → `bq_to_clickup_perf.py`.
+- **bq-clickup-perf/** — daily Meta ad-performance writeback (ROAS/Spend/Orders/
+  Spend30d/LastActive) from BQ facebook_dashboard onto every Creative Strategist
+  ClickUp task with Meta spend (diff-only writes). Meta only, no AppLovin.
+  Schedule: daily 14:30. Entry: `run_perf_writeback.sh` → `bq_to_clickup_perf.py`.
   Dry run: `PERF_DRY_RUN=1 python3 bq_to_clickup_perf.py` (computes + prints, writes nothing).
 - **launch-autofill/** — daily pre-fill of empty launch/taxonomy custom fields on
   active CS-list tasks (images inferred from name/desc; videos read script or

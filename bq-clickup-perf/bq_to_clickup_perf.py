@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
 """
-Write BigQuery ad performance back onto ClickUp tasks (ROAS / Spend / Orders /
+Write Meta ad performance back onto ClickUp tasks (ROAS / Spend / Orders /
 Spend 30d / Last Active) so performance is sortable & filterable in ClickUp views.
 
-Cost-aware by design:
-- ONE BigQuery query per run, projecting only 5 narrow numeric columns
-  (clickup_project, spend, revenue, orders, dt). creative_dashboard is columnar,
-  so this scans ~65 MB (~$0.0004), NOT the full 14 GB. NEVER add SELECT * or the
-  text columns (script / ai_remaining_transcript) — those are what make BQ pricey.
-- Scope = tasks active in the last 30 days (spend_30d > 0) that live on the
-  Creative Strategist list. Dormant tasks' lifetime numbers don't change, and the
-  ClickUp side is a per-task loop (no bulk field endpoint), so we keep it small.
+Source = ejam-dwh.production.facebook_dashboard (Meta only; AppLovin/TikTok are
+NOT in these fields by decision 2026-10-12). Not creative_dashboard: that table
+drops Meta ads with no CAMS asset record (~10% of SHA Meta spend, e.g. SH-17273
+showed $22.7k vs $118.6k real). Task key = creative_dashboard.clickup_project for
+the ad_id when CAMS has one, else the first SH-#### in the ad name.
+
+Every task on the Creative Strategist list with Meta spend is kept in sync, not
+just recently active ones; only fields whose value changed are written, so a
+normal run is a few hundred calls. Spend 30d drops to 0 when a task goes quiet.
+Tasks with no Meta spend but leftover values get their fields cleared.
+
+Cost: facebook_dashboard is partitioned on date_start but this is a lifetime
+aggregate, so it scans ~8 GB (~$0.05/run). Keep the projection narrow; never
+SELECT * (35M rows, big text columns).
 
 Env:
     GOOGLE_APPLICATION_CREDENTIALS  BQ service account json (for the `bq` CLI)
     TOKEN_FILE                      ClickUp pk token file (default ~/.config/clickup/pk)
-    PERF_DRY_RUN=1                  compute + print targets, write nothing
+    PERF_DRY_RUN=1                  compute + print the diff, write nothing
 
 Usage:
     PERF_DRY_RUN=1 python3 bq_to_clickup_perf.py     # preview
@@ -25,7 +31,6 @@ import http.client
 import json
 import os
 import subprocess
-import sys
 import time
 import urllib.error
 import urllib.parse
@@ -33,14 +38,15 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 BQ_PROJECT = "ejam-dwh"
-TABLE = "ejam-dwh.production.creative_dashboard"
 LIST_ID = "901110066469"
 TEAM_ID = "9011638245"
 BASE = "https://api.clickup.com/api/v2"
-TOKEN_FILE = os.path.expanduser(os.environ.get("TOKEN_FILE", "/tmp/clickup_pk"))
+TOKEN_FILE = os.path.expanduser(os.environ.get("TOKEN_FILE", "~/.config/clickup/pk"))
 DRY_RUN = os.environ.get("PERF_DRY_RUN") == "1"
 REQUEST_TIMEOUT = 60
 MAX_WORKERS = 5
+# Guard: a broken/partial BQ result must never trigger mass field clearing.
+MIN_BQ_PROJECTS = 1000
 
 # field_id -> (row key, kind)  kind: "num" or "date_ms"
 FIELDS = {
@@ -53,27 +59,44 @@ FIELDS = {
 
 TOKEN = open(TOKEN_FILE).read().strip()
 
-# narrow column projection only — keep this query cheap
-BQ_SQL = """
+# Spend 30d = the last 30 complete days (today excluded, it is always partial).
+BQ_SQL = r"""
+WITH fb AS (
+  SELECT CAST(ad_id AS STRING) AS ad_id,
+    ANY_VALUE(ad_name) AS ad_name,
+    SUM(spend) AS spend, SUM(revenue) AS revenue, SUM(orders) AS orders,
+    SUM(IF(date_start BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
+                          AND DATE_SUB(CURRENT_DATE(), INTERVAL 1 DAY), spend, 0)) AS spend_30d,
+    MAX(IF(spend > 0, date_start, NULL)) AS last_active
+  FROM `ejam-dwh.production.facebook_dashboard`
+  WHERE brand = 'SHA' AND type = 'placement_breakdown' AND date_start >= '2020-01-01'
+  GROUP BY ad_id
+),
+cd AS (
+  SELECT CAST(ad_id AS STRING) AS ad_id, ANY_VALUE(clickup_project) AS clickup_project
+  FROM `ejam-dwh.production.creative_dashboard`
+  WHERE channel = 'facebook' AND clickup_project LIKE 'SH-%'
+  GROUP BY ad_id
+)
 SELECT
-  clickup_project,
-  ROUND(SUM(spend), 2) AS spend_life,
-  ROUND(SAFE_DIVIDE(SUM(revenue), NULLIF(SUM(spend), 0)), 2) AS roas_life,
-  CAST(ROUND(SUM(orders)) AS INT64) AS orders_life,
-  ROUND(SUM(IF(dt >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY), spend, 0)), 2) AS spend_30d,
-  CAST(UNIX_MILLIS(TIMESTAMP(MAX(dt))) AS INT64) AS last_active_ms
-FROM `%s`
-WHERE clickup_project LIKE 'SH-%%'
-GROUP BY clickup_project
-HAVING spend_30d > 0
-""" % TABLE
+  COALESCE(cd.clickup_project, REGEXP_EXTRACT(fb.ad_name, r'(SH-\d+)')) AS clickup_project,
+  ROUND(SUM(fb.spend), 2) AS spend_life,
+  ROUND(IFNULL(SAFE_DIVIDE(SUM(fb.revenue), NULLIF(SUM(fb.spend), 0)), 0), 2) AS roas_life,
+  CAST(ROUND(IFNULL(SUM(fb.orders), 0)) AS INT64) AS orders_life,
+  ROUND(SUM(fb.spend_30d), 2) AS spend_30d,
+  CAST(UNIX_MILLIS(TIMESTAMP(MAX(fb.last_active))) AS INT64) AS last_active_ms
+FROM fb LEFT JOIN cd USING (ad_id)
+GROUP BY 1
+HAVING clickup_project IS NOT NULL AND SUM(fb.spend) > 0
+"""
 
 
 def bq_rows():
+    # SQL via stdin: bq parses a leading "--" in an argv query as a flag.
     out = subprocess.run(
         ["bq", f"--project_id={BQ_PROJECT}", "query", "--use_legacy_sql=false",
-         "--format=json", "--max_rows=100000", BQ_SQL],
-        capture_output=True, text=True,
+         "--format=json", "--max_rows=100000"],
+        input=BQ_SQL, capture_output=True, text=True,
     )
     if out.returncode != 0:
         raise RuntimeError(f"bq query failed:\n{out.stderr}")
@@ -104,9 +127,9 @@ def api(method, path, params=None, body=None, retries=4):
     raise RuntimeError(f"Failed after {retries} retries: {method} {url}")
 
 
-def list_custom_ids():
-    """Every parent custom_id on the Creative Strategist list."""
-    ids = set()
+def list_tasks():
+    """custom_id -> {field_id: current value} for every parent task on the list."""
+    tasks = {}
     page = 0
     while True:
         resp = api("GET", f"/list/{LIST_ID}/task", {
@@ -118,68 +141,94 @@ def list_custom_ids():
             break
         for t in batch:
             if t.get("custom_id"):
-                ids.add(t["custom_id"])
+                tasks[t["custom_id"]] = {
+                    cf["id"]: cf.get("value") for cf in t.get("custom_fields", [])
+                    if cf["id"] in FIELDS
+                }
         if len(batch) < 100:
             break
         page += 1
-    return ids
+    return tasks
 
 
-def set_field(custom_id, field_id, value):
-    api("POST", f"/task/{custom_id}/field/{field_id}",
-        params={"custom_task_ids": "true", "team_id": TEAM_ID},
-        body={"value": value})
+def same(kind, current, target):
+    if current in (None, ""):
+        return False
+    if kind == "date_ms":
+        return int(current) // 86_400_000 == target // 86_400_000
+    return abs(float(current) - target) < 0.005
 
 
-def write_task(row):
-    cid = row["clickup_project"]
-    for field_id, (key, kind) in FIELDS.items():
-        raw = row.get(key)
-        if raw is None or raw == "":
-            continue
-        value = int(raw) if kind == "date_ms" else float(raw)
-        set_field(cid, field_id, value)
+def plan(tasks, rows):
+    """List of (custom_id, field_id, value|None); None = clear the field."""
+    by_cid = {r["clickup_project"]: r for r in rows}
+    ops = []
+    for cid, current in tasks.items():
+        row = by_cid.get(cid)
+        for field_id, (key, kind) in FIELDS.items():
+            cur = current.get(field_id)
+            if row is None or row.get(key) in (None, ""):
+                if cur not in (None, ""):
+                    ops.append((cid, field_id, None))
+                continue
+            target = int(row[key]) if kind == "date_ms" else float(row[key])
+            if not same(kind, cur, target):
+                ops.append((cid, field_id, target))
+    return ops
+
+
+def apply(op):
+    cid, field_id, value = op
+    params = {"custom_task_ids": "true", "team_id": TEAM_ID}
+    if value is None:
+        api("DELETE", f"/task/{cid}/field/{field_id}", params=params)
+    else:
+        api("POST", f"/task/{cid}/field/{field_id}", params=params, body={"value": value})
     return cid
 
 
 def main():
-    print(f"{'DRY RUN — ' if DRY_RUN else ''}BQ -> ClickUp performance writeback")
-    on_list = list_custom_ids()
-    print(f"List {LIST_ID}: {len(on_list)} task custom_ids")
+    print(f"{'DRY RUN — ' if DRY_RUN else ''}BQ (Meta) -> ClickUp performance writeback")
+    tasks = list_tasks()
+    print(f"List {LIST_ID}: {len(tasks)} tasks")
 
     rows = bq_rows()
-    print(f"BQ active projects (spend_30d>0): {len(rows)}")
+    print(f"BQ projects with Meta spend: {len(rows)}")
+    if len(rows) < MIN_BQ_PROJECTS:
+        raise SystemExit(f"ABORT: only {len(rows)} BQ projects (< {MIN_BQ_PROJECTS}); refusing to write")
 
-    targets = [r for r in rows if r["clickup_project"] in on_list]
-    print(f"Targets (active AND on list): {len(targets)}")
+    ops = plan(tasks, rows)
+    clears = sum(1 for o in ops if o[2] is None)
+    touched = len({o[0] for o in ops})
+    print(f"Changed fields: {len(ops)} on {touched} tasks ({clears} clears)")
 
-    sample = sorted(targets, key=lambda r: float(r["spend_30d"]), reverse=True)[:8]
-    print("\nTop 8 by 30d spend (what would be written):")
-    for r in sample:
+    on_list = {r["clickup_project"]: r for r in rows if r["clickup_project"] in tasks}
+    print("\nTop 8 by 30d Meta spend:")
+    for r in sorted(on_list.values(), key=lambda r: float(r["spend_30d"]), reverse=True)[:8]:
         print(f"  {r['clickup_project']}: ROAS {r['roas_life']} | Spend ${r['spend_life']} "
               f"| Orders {r['orders_life']} | 30d ${r['spend_30d']}")
 
     if DRY_RUN:
-        print(f"\nDRY RUN: would write 5 fields to {len(targets)} tasks "
-              f"({len(targets) * 5} field writes). No changes made.")
+        print(f"\nDRY RUN: would make {len(ops)} field writes. No changes made.")
         return
 
     ok, errs = 0, []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
-        futs = {pool.submit(write_task, r): r["clickup_project"] for r in targets}
+        futs = {pool.submit(apply, o): o for o in ops}
         for fut in as_completed(futs):
-            cid = futs[fut]
             try:
                 fut.result()
                 ok += 1
             except Exception as e:
-                errs.append((cid, str(e)))
-            if (ok + len(errs)) % 50 == 0:
-                print(f"  {ok + len(errs)}/{len(targets)} done", flush=True)
+                errs.append((futs[fut], str(e)))
+            if (ok + len(errs)) % 500 == 0:
+                print(f"  {ok + len(errs)}/{len(ops)} done", flush=True)
 
-    print(f"\nDone. {ok} tasks updated, {len(errs)} errors.")
-    for cid, e in errs[:10]:
-        print(f"  ERR {cid}: {e}")
+    print(f"\nDone. {ok} field writes, {len(errs)} errors.")
+    for op, e in errs[:10]:
+        print(f"  ERR {op[0]} {op[1][:8]}: {e}")
+    if errs:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

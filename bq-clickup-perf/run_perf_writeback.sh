@@ -1,7 +1,7 @@
 #!/bin/bash
-# Nightly: write BigQuery ad performance (ROAS / Spend / Orders / Spend 30d /
-# Last Active) onto active ClickUp tasks on the Creative Strategist list.
-# Installed via launchd (see com.tomas.bq-clickup-perf.plist + SETUP.md).
+# Daily 14:30: write Meta ad performance (ROAS / Spend / Orders / Spend 30d /
+# Last Active) from BQ facebook_dashboard onto Creative Strategist ClickUp tasks.
+# Scheduled by systemd/bq-clickup-perf.timer (see SETUP.md).
 set -uo pipefail
 
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:$HOME/.local/bin:$PATH"

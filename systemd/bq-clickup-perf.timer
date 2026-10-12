@@ -1,8 +1,8 @@
 [Unit]
-Description=Daily 07:30 BQ->ClickUp perf writeback
+Description=Daily 14:30 BQ->ClickUp Meta perf writeback (after the US day closes)
 
 [Timer]
-OnCalendar=*-*-* 02:30:00
+OnCalendar=*-*-* 14:30:00
 Persistent=true
 
 [Install]
