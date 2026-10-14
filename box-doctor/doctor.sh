@@ -121,6 +121,10 @@ if [ -x "$HOME/.local/bin/gws-work" ]; then
   tv="$(timeout 20 "$HOME/.local/bin/gws-work" auth status 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("token_valid"))' 2>/dev/null || echo err)"
   [ "$tv" = "True" ] || warn "google token: gws auth status token_valid=$tv"
 fi
+# Claude Max OAuth (every headless claude -p job): live probe + refresh-token cliff.
+while IFS= read -r l; do
+  case "$l" in FAIL:*) fail "${l#FAIL: }" ;; WARN:*) warn "${l#WARN: }" ;; esac
+done < <(bash "$DOC_DIR/claude-auth-check.sh" 2>/dev/null)
 
 # --- 9. usage-guard state freshness (AUTO-FIX: rerun guard once) ----------------
 uw="$HOME/.claude/usage-window.json"
@@ -172,7 +176,7 @@ n_bad=$(( ${#fails[@]} + ${#warns[@]} ))
   [ ${#fixed[@]} -gt 0 ] && { echo; echo "## Auto-fixed"; printf -- "- 🔧 %s\n" "${fixed[@]}"; }
   [ ${#infos[@]} -gt 0 ] && { echo; echo "## Notes"; printf -- "- %s\n" "${infos[@]}"; }
   echo
-  echo "Checks: failed-units, timers, disk, memory/earlyoom, syncthing+conflicts, skill-symlinks, tailscale, tokens (pplx/google), usage-guard, git repos, stale-outputs"
+  echo "Checks: failed-units, timers, disk, memory/earlyoom, syncthing+conflicts, skill-symlinks, tailscale, tokens (pplx/google/claude), usage-guard, git repos, stale-outputs"
 } > "$REPORT"
 ln -sf "$REPORT" "$DOC_DIR/doctor-report.md"
 

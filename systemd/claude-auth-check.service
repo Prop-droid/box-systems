@@ -1,0 +1,6 @@
+[Unit]
+Description=claude-auth-check (probe Max OAuth before the nightly headless batch)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/box-doctor/claude-auth-check.sh --notify
+SuccessExitStatus=2
