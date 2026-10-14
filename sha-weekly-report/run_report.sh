@@ -150,12 +150,34 @@ PY
 # Write to a LOCAL temp file (streaming straight onto a Drive/FileProvider path
 # produced truncated output on 2026-06-10: file started mid-table, no H1).
 # Retry up to 3 attempts; each attempt must be non-empty AND contain an H1.
+# stream-json + stitch, NOT --output-format text: text mode returns only the LAST
+# assistant turn. When thinking eats the output cap, Claude Code auto-continues
+# ("Output token limit hit. Resume directly") and text mode drops everything
+# before the seam — 2026-10-12 lost 3/3 attempts this way (output started
+# mid-sentence at section 7). Stitching joins every turn's text in order.
+stitch_stream() {
+  python3 -I -c '
+import json, sys
+seen = set()
+for line in open(sys.argv[1]):
+    try: ev = json.loads(line)
+    except ValueError: continue
+    if ev.get("type") != "assistant": continue
+    m = ev.get("message") or {}
+    for i, b in enumerate(m.get("content") or []):
+        if b.get("type") == "text" and (m.get("id"), i, b["text"]) not in seen:
+            seen.add((m.get("id"), i, b["text"]))
+            sys.stdout.write(b["text"])
+' "$1"
+}
 echo ">> claude -p (generating report.md)"
 RAW_TMP="$(mktemp /tmp/sha-weekly-raw.XXXXXX)"
 CLAUDE_OK=0
 for attempt in 1 2 3; do
   : > "$RAW_TMP"
-  if claude -p --model claude-sonnet-4-6 --output-format text < "$OUTDIR/_assembled_prompt.txt" > "$RAW_TMP" 2>"$OUTDIR/_claude.err"; then
+  if CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000 claude -p --model claude-sonnet-4-6 --output-format stream-json --verbose \
+       < "$OUTDIR/_assembled_prompt.txt" > "$RAW_TMP.jsonl" 2>"$OUTDIR/_claude.err" \
+     && stitch_stream "$RAW_TMP.jsonl" > "$RAW_TMP"; then
     if [ -s "$RAW_TMP" ] && grep -q "^# " "$RAW_TMP"; then
       CLAUDE_OK=1
       break
@@ -179,11 +201,13 @@ if [ "$CLAUDE_OK" != "1" ]; then
   else
     echo "FAIL: claude output invalid after 3 attempts — keeping previous report.md"
     cp -f "$RAW_TMP" "$OUTDIR/_report_raw.md" 2>/dev/null || true
+    mv -f "$RAW_TMP.jsonl" "$OUTDIR/_claude_stream.jsonl" 2>/dev/null || true
     rm -f "$RAW_TMP"
     exit 3
   fi
 fi
 cp -f "$RAW_TMP" "$OUTDIR/_report_raw.md"
+mv -f "$RAW_TMP.jsonl" "$OUTDIR/_claude_stream.jsonl" 2>/dev/null || true
 rm -f "$RAW_TMP"
 
 # Strip any preamble before the first markdown H1 -> write to a TEMP file first
