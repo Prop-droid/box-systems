@@ -231,6 +231,16 @@ command to prove a change works before the timer fires.
   exit nonzero with "usage limit" in output — treat as transient (retry/sleep),
   not as failure. A `claude -p` run that emits ZERO output with rc 0 is the
   known silent failure mode — that's what the validate-retry loop is for.
+- Long outputs (reports): `--output-format text` returns ONLY the last assistant
+  turn. If thinking eats the output cap, Claude Code auto-continues and text mode
+  silently drops everything before the seam (sha-weekly-report lost 3/3 attempts
+  2026-10-12). Use `--output-format stream-json --verbose` + stitch every text
+  block (`stitch_stream` in sha-weekly-report/run_report.sh) and/or
+  `CLAUDE_CODE_MAX_OUTPUT_TOKENS=64000`.
+- OAuth health: `box-doctor/claude-auth-check.sh` (live probe + refresh-token
+  expiry warning, hard ~30d cliff). Runs 21:30 via `claude-auth-check.timer`
+  (alerts #ops-log ahead of the night batch) and inside box-doctor. Dead auth
+  fix = ssh the box, `claude /login`.
 - One-shot headless runs must finish synchronously — never background a child
   and "wait for a notification" (there is none; two fable agents died this way).
 - Hook opt-out for crons where relevant: `export RTK_HOOK_OFF=1`.
