@@ -1,16 +1,16 @@
-📈 **Viral trends — week of Oct 05**
+📈 **Viral trends — week of Oct 12**
 
 **3 trends worth knowing**
 
-- **low sugar candy** — breakout signal across Reddit, X, and YouTube (tms 62.7, corroborated by 5 sources including retail and ads); accelerating fast (+0.21). The search intent is active purchase, not curiosity — people are looking for a real candy that hits the brief. Direct category match for SHA.
+- **High fiber snacks** — Rising on all four tracked sources (Reddit 73, YouTube 67, X 62, retail 67), top momentum score this week at 77. Shoppers are actively searching for snacks that fill them up; SHA is the only candy brand with a credible story in this lane.
 
-- **functional candy** — Reddit-led with strong YouTube presence (tms 55.9, velocity +0.29, acceleration +0.40 — fastest-climbing non-provisional term this week). Consumers are building a mental bucket for "candy that does something" and competitors are starting to advertise into it. SHA fits the definition without needing a health claim.
+- **GLP-1 snacks** — Rising across Reddit, X, YouTube, and competitor ads; a Costco GLP-1 snack guide hit 700K YouTube views this week. The GLP-1 audience is comparison-shopping for low-cal, filling snacks right now, and SHA's 70 cal / 26g fiber profile fits better than anything else in candy.
 
-- **late night snacks** — breakout status on X (91.6) and YouTube (91.1M+ views in heat data, tms 73.5). Conversation is high-volume and emotionally resonant, not informational. SHA's nightly treat positioning is literally this moment.
+- **Sugar free candy** — Rising on 5 sources (Reddit, X, YouTube, ads, retail), TMS 55; SmartSweets is running active spend against it now. SHA's 3g sugar positions directly into this demand and is underexposed relative to competitor activity.
 
 **1 suggested brief**
 
-**Working title:** "The Late Night Candy That's Actually Fine"
-**Angle:** You deserve candy at night and this one isn't a compromise.
-**Format:** Short-form video (15-20s), creator POV, couch/kitchen setting.
-**Hook direction:** Open mid-ritual — bag already open, zero guilt energy — with a caption cold open: "wait this has HOW much fiber??"
+Working title: **"On GLP-1? Keep this one"**
+Angle: SHA is the nightly candy the GLP-1 lifestyle does not have to cut, 70 cal and 26g fiber per bag.
+Format: Video (15-20s)
+Hook direction: Candy bag getting put away, cut to SHA with "actually, this one stays" -- let the numbers be the reward, not the pitch.
