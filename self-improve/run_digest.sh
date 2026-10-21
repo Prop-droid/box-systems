@@ -87,9 +87,15 @@ RC=0
 if [ "$ok" = 1 ]; then
   mv "$OUT_TMP" "$DIR/pending.md"
   N="$(grep -c '^### P' "$DIR/pending.md" || true)"
+  # HTML preview link on every digest (Tomas 2026-10-21). Tailnet-only URL;
+  # tick-to-build reply line. Failure degrades to the path, never blocks the post.
+  PREVIEW="$(python3 "$DIR/build_preview.py" "$DIR/pending.md" 2>>"$LOG")" \
+    && curl -sf -o /dev/null --max-time 15 "$PREVIEW" \
+    || { echo "preview build/verify failed: ${PREVIEW:-none}"; PREVIEW="~/systems/self-improve/pending.md (preview failed)"; }
+  echo "preview: $PREVIEW"
   BODY="$N open proposal(s) from $blocks source report(s).
 $(grep '^### P' "$DIR/pending.md" | head -3 | sed 's/^### /• /')
-Full list: ~/systems/self-improve/pending.md
+Preview: $PREVIEW
 Reply here: \"self-improve: apply P2, P4\" (or skip)."
   bash "$SYS/lib/tg-notify.sh" "Self-improve digest $TODAY" "$BODY" default
   # Full pending.md inline (Tomas 2026-08-25: path references are unreadable from

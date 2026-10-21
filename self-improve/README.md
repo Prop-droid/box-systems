@@ -11,13 +11,15 @@ notification that is a no-op on this headless box. This job closes the loop.
 1. Tue 06:30 (`self-improve-digest.timer`, after Tue 05:00/05:30 synths; agents
    ran Sun 05:30): `run_digest.sh` gathers the newest report from every source,
    distills them via claude-max into ONE ranked `pending.md` (max 10 proposals,
-   each with evidence + an exact apply action), posts count + top 3 to Discord
-   #ops-log.
+   each with evidence + an exact apply action), renders it to an HTML preview
+   (`build_preview.py`, tailnet-only `/si/<token>/`, tick boxes build the reply
+   line), posts count + top 3 + preview link to Discord #ops-log.
 2. Tomas replies in #dev: `self-improve: apply P2, P4` (or `skip P3`).
 3. The dispatched Claude session reads `pending.md`, applies exactly the named
    items - baseline commit first when touching ~/systems or skills; memory edits
    get a MEMORY.md index line - then moves them into `applied.md` with the date
-   and replies with proof.
+   and replies with proof, then reruns `python3 build_preview.py` so the link
+   shows what is still open.
 
 ## Guardrails
 
@@ -33,6 +35,7 @@ notification that is a no-op on this headless box. This job closes the loop.
 ## Files
 
 - `run_digest.sh`   - entry point (manual run is safe; burns window tokens, posts to Discord)
+- `build_preview.py`- pending.md -> ~/systems/public-share/<token>/index.html (+ dated copy); prints URL
 - `digest_prompt.md`- synthesis instructions + output contract
 - `pending.md`      - current week's ranked proposals (the thing Tomas gates)
 - `applied.md`      - append-only log of applied items
