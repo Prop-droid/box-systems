@@ -1,16 +1,16 @@
-📈 **Viral trends — week of Oct 12**
+📈 **Viral trends — week of Oct 19**
 
 **3 trends worth knowing**
 
-- **High fiber snacks** — Rising on all four tracked sources (Reddit 73, YouTube 67, X 62, retail 67), top momentum score this week at 77. Shoppers are actively searching for snacks that fill them up; SHA is the only candy brand with a credible story in this lane.
+- **Functional candy** — Breakout signal this week: Reddit TMS 95.5, cross-platform rising with the highest acceleration on the board. The market is actively sorting "candy that does something" from regular candy. SHA is that product without needing to say it.
 
-- **GLP-1 snacks** — Rising across Reddit, X, YouTube, and competitor ads; a Costco GLP-1 snack guide hit 700K YouTube views this week. The GLP-1 audience is comparison-shopping for low-cal, filling snacks right now, and SHA's 70 cal / 26g fiber profile fits better than anything else in candy.
+- **GLP-1 snacks** — Fastest-accelerating watchlisted term (velocity 0.42, acceleration 0.62); top YouTube video has 1.7M views on GLP-1 snacks at Costco. Audience is hunting low-cal, filling snacks to fit their routine. SHA answers the search at 70 cal / 26g fiber with zero drug-adjacent framing required.
 
-- **Sugar free candy** — Rising on 5 sources (Reddit, X, YouTube, ads, retail), TMS 55; SmartSweets is running active spend against it now. SHA's 3g sugar positions directly into this demand and is underexposed relative to competitor activity.
+- **Candy salad** — Rising on Reddit, X, and YouTube; SmartSweets is already running "Candy Salad, 86% Less Sugar" ads, confirming the format works for better-for-you candy. SHA's variety pack is a built-in candy salad.
 
 **1 suggested brief**
 
-Working title: **"On GLP-1? Keep this one"**
-Angle: SHA is the nightly candy the GLP-1 lifestyle does not have to cut, 70 cal and 26g fiber per bag.
-Format: Video (15-20s)
-Hook direction: Candy bag getting put away, cut to SHA with "actually, this one stays" -- let the numbers be the reward, not the pitch.
+**Title:** My Nightly Candy Salad
+**Angle:** Creator pours multiple SHA flavors into a bowl, builds their nightly candy mix as pure ritual with no health framing.
+**Format:** Short vertical video, 15-20s
+**Hook:** Caption cold open, "building my candy salad" over a bag-pour sound, flavor mix reveal at the end. Nightly treat territory, not supplement territory.

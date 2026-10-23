@@ -1,3 +1,3 @@
-# Compliance scrub — 2026-10-15
+# Compliance scrub — 2026-10-23
 0 changed file(s) in last 25h, 0 hit(s)
 

@@ -30,211 +30,206 @@ RULES:
 - Interpret the data tables: spend/revenue/roas/orders/cpa are last-week figures; hook_rate = 3s views / impressions %, hold_rate = throughplays %, ctr_change_pct = week-over-week CTR change (fatigue signal).
 - Keep total body under ~350 words. Punchy, numbers-first, no fluff. Do not invent numbers not present in the data.
 
-## Report data week: 2026-09-28 to 2026-10-04 (label the drop with this week)
-## Today: 2026-10-13
+## Report data week: 2026-10-12 to 2026-10-18 (label the drop with this week)
+## Today: 2026-10-22
 
 ### DATA: 03_top_spend
 +------------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
 |  creative  |                           ad_name                            | channel  |  spend  | revenue | roas | orders |  cpa   |
 +------------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
-| SH-16975-3 | SH-16975-3_SHA_META_VID-1080x1920_7658068191888805134.mp4 -  | facebook | 11468.0 |  7170.0 | 0.63 |  110.0 | 104.25 |
-| SH-16975-2 | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  | facebook |  8672.0 |  9129.0 | 1.05 |  103.0 |   84.2 |
-| Unmapped   | Cruva · @castdeals · 2026-09-19 · cruva=7672502528923143454  | facebook |  5869.0 |  4848.0 | 0.83 |   54.0 | 108.69 |
-| Unmapped   | Cruva · @yaboyhotway · 2026-09-19 · cruva=767026962545993654 | facebook |  4920.0 |  3815.0 | 0.78 |   47.0 | 104.67 |
-| Unmapped   | Cruva · @shark.findz · 2026-09-19 · cruva=765502155741202356 | facebook |  4504.0 |  3716.0 | 0.83 |   48.0 |  93.82 |
-| SH-16457-6 | SH-16457-6_SHA_OG_EN_META_1080X1080_IMG_JDC_01-07-2026-CTV.p | facebook |  4300.0 |  2144.0 |  0.5 |   31.0 |  138.7 |
-| SH-13376-6 | SH-13376-6_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook |  3818.0 |  3403.0 | 0.89 |   39.0 |  97.89 |
-| SH-9428    | SHA_CC_WK22_HealthGLP1_Broad__post3_880502221406945 – Copy   | facebook |  3634.0 |  2650.0 | 0.73 |   44.0 |   82.6 |
-| SH-16212-3 | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho | facebook |  3605.0 |  3386.0 | 0.94 |   43.0 |  83.83 |
-| SH-3028    | SHA_CC_WK22_Images_Broad__post3_786852690771899              | facebook |  2983.0 |  2689.0 |  0.9 |   35.0 |  85.22 |
-| SH-13376-9 | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook |  2882.0 |  3298.0 | 1.14 |   40.0 |  72.04 |
-| SH-16180-1 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  | facebook |  2828.0 |  1984.0 |  0.7 |   32.0 |  88.37 |
-| SH-16469   | SH-16469-SHA_2026_S23_CC_POVSideScript_THT_TSM3_TOM_MAR_REEL | facebook |  2026.0 |  1831.0 |  0.9 |   30.0 |  67.54 |
-| SH-19143-3 | SH-19143-3_SHA_2026_S38_MB_Retro_Two-Sizes-Numbers_Halloween | facebook |  1665.0 |  1064.0 | 0.64 |   12.0 | 138.78 |
-| SH-18041-2 | SH-18041-2_SHA_2026_S35_OG_Weightloss_AlmondMom_OfferFirst_I | facebook |  1545.0 |  1388.0 |  0.9 |   19.0 |  81.33 |
+| SH-16975-2 | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  | facebook | 10181.0 |  9860.0 | 0.97 |  111.0 |  91.72 |
+| SH-16975-3 | SH-16975-3_SHA_META_VID-1080x1920_7658068191888805134.mp4 -  | facebook |  5961.0 |  3093.0 | 0.52 |   47.0 | 126.84 |
+| Unmapped   | Cruva · @castdeals · 2026-09-19 · cruva=7672502528923143454  | facebook |  5010.0 |  4015.0 |  0.8 |   48.0 | 104.38 |
+| SH-3028    | SHA_CC_WK22_Images_Broad__post3_786852690771899              | facebook |  4528.0 |  3385.0 | 0.75 |   45.0 | 100.63 |
+| SH-13376-6 | SH-13376-6_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook |  3527.0 |  2315.0 | 0.66 |   26.0 | 135.64 |
+| SH-16212-3 | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho | facebook |  3433.0 |  3306.0 | 0.96 |   43.0 |  79.85 |
+| SH-19844-3 | SH-19844-3_SHA_OG_META_VID-1080x1920_PAO_WL_StephanieJoplin2 | facebook |  3321.0 |  2497.0 | 0.75 |   43.0 |  77.24 |
+| SH-13376-9 | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook |  3114.0 |  1998.0 | 0.64 |   25.0 | 124.56 |
+| Unmapped   | Cruva · @yaboyhotway · 2026-09-19 · cruva=767026962545993654 | facebook |  3011.0 |  1651.0 | 0.55 |   27.0 | 111.53 |
+| Unmapped   | Cruva · @shark.findz · 2026-09-19 · cruva=766884752858610407 | facebook |  2035.0 |  1885.0 | 0.93 |   20.0 | 101.77 |
+| Unmapped   | Cruva · @shark.findz · 2026-09-19 · cruva=766037439046659610 | facebook |  1922.0 |  1411.0 | 0.73 |   17.0 | 113.06 |
+| SH-18044-5 | SH-18044-5_SHA_OG_META_IMG-1080x1350_AYC_BundleKit_Retro_Ima | facebook |  1511.0 |  2300.0 | 1.52 |   29.0 |   52.1 |
+| Unmapped   | Cruva · @jaytriedthat · 2026-10-17 · cruva=76752035586349663 | facebook |  1505.0 |  1415.0 | 0.94 |   19.0 |  79.21 |
+| SH-16180-1 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  | facebook |  1418.0 |  1281.0 |  0.9 |   21.0 |  67.52 |
+| SH-9428    | SHA_CC_WK22_HealthGLP1_Broad__post3_880502221406945 – Copy   | facebook |  1389.0 |   791.0 | 0.57 |    9.0 | 154.29 |
 +------------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
 
 ### DATA: 04_top_roas
-+-------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
-|  creative   |                           ad_name                            | channel  | spend  | revenue | roas | orders |
-+-------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
-| SH-17241-1  | SH-17241-1_SHA_META_VID-720x1280_TiktokUGC_WithUsageRights_v | facebook |  955.0 |  1437.0 |  1.5 |   16.0 |
-| SH-19365-1  | SH-19365-1_SHA_2026_S38_WL_VeronicaFreund1_AUG26_Tom_agu_MET | facebook |  594.0 |   865.0 | 1.46 |   12.0 |
-| SH-16360-1  | SH-16360-1_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U | facebook |  653.0 |   792.0 | 1.21 |    8.0 |
-| SH-19374-10 | SH-19374-10_SHA_OG_META_IMG-1080x1080_TOM_Offer_AllOfThisFor | facebook |  658.0 |   769.0 | 1.17 |    9.0 |
-| SH-13376-9  | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  | facebook | 2886.0 |  3298.0 | 1.14 |   40.0 |
-| SH-15264-6  | SH-15264-6_SHA_OG_META_IMG-1080x1350_AYC_CTV_Retro_ImageTest | facebook |  531.0 |   601.0 | 1.13 |    6.0 |
-| SH-19377-7  | SH-19377-7_SHA_MB_META_IMG-1080x1350_AYC_PumpkinBowl_OfferFi | facebook |  737.0 |   813.0 |  1.1 |    9.0 |
-| SH-16975-2  | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  | facebook | 8820.0 |  9535.0 | 1.08 |  107.0 |
-| SH-15965-7  | SH-15965-7_SHA_2026_S23_Gifts_Offer_Proven_Retro_ImageTest_T | facebook | 1233.0 |  1216.0 | 0.99 |   15.0 |
-| SH-16192-4  | SH-16192-4_SHA_OG_META_VID-1080x1080_PAO_QVC_Proven_Retro_Ne | facebook |  527.0 |   518.0 | 0.98 |    9.0 |
-+-------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
++------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
+|  creative  |                           ad_name                            | channel  | spend  | revenue | roas | orders |
++------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
+| Unmapped   | Cruva · @northerndlites · 2026-09-19 · cruva=764012894274086 | facebook |  503.0 |   891.0 | 1.77 |    9.0 |
+| Unmapped   | Cruva · @spiicyfinds · 2026-09-19 · cruva=767380088646387636 | facebook | 1036.0 |  1780.0 | 1.72 |   19.0 |
+| Unmapped   | Cruva · @castdeals · 2026-09-19 · cruva=7672180518825331999  | facebook |  652.0 |  1080.0 | 1.66 |    9.0 |
+| SH-18044-5 | SH-18044-5_SHA_OG_META_IMG-1080x1350_AYC_BundleKit_Retro_Ima | facebook | 1513.0 |  2300.0 | 1.52 |   29.0 |
+| SH-17789-7 | SH-17789-7_SHA_OG_META_IMG-1080x1350_AYC_IngredientPanel_Unp | facebook |  507.0 |   714.0 | 1.41 |    7.0 |
+| SH-16313-2 | SH-16313-2_SHA_2026_S24_BRPK_Retro_ImageTest_Tom_FER_META_IM | facebook |  600.0 |   791.0 | 1.32 |    8.0 |
+| SH-18041-2 | SH-18041-2_SHA_2026_S35_OG_Weightloss_AlmondMom_OfferFirst_I | facebook |  906.0 |  1106.0 | 1.22 |   13.0 |
+| Unmapped   | JeremyMorrison_ShamelessSuperVarietyPack_20260908_trybe=929b | facebook | 1246.0 |  1331.0 | 1.07 |   14.0 |
+| SH-19371-1 | SH-19371-1_SHA_2026_S38_WL_JenHatmaker1_AUG26_Tom_agu_META_V | facebook |  653.0 |   658.0 | 1.01 |    9.0 |
+| SH-18039-6 | SH-18039-6_SHA_OG_META_IMG-1080x1350_AYC_CTV_Retro_ImageTest | facebook |  763.0 |   742.0 | 0.97 |    9.0 |
++------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 
 ### DATA: 05_losers
 +------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 |  creative  |                           ad_name                            | channel  | spend  | revenue | roas | orders |
 +------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
-| SH-16457-6 | SH-16457-6_SHA_OG_EN_META_1080X1080_IMG_JDC_01-07-2026-CTV.p | facebook | 4371.0 |  2144.0 | 0.49 |   31.0 |
+| SH-17784-3 | SH-17784-3_SHA_2026_S34_OG_LowCal_Skeptic_TiktokUGC_Retro_In | facebook | 1284.0 |   252.0 |  0.2 |    5.0 |
+| Unmapped   | AshleyWatkins_ShamelessSuperVarietyPack_20260908_trybe=f61d1 | facebook | 1081.0 |   295.0 | 0.27 |    5.0 |
 +------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 
 ### DATA: 10_hook_hold
 +------------+--------------------------------------------------------------+-----------+-----------+---------+
 |  creative  |                        ad_name_short                         | hook_rate | hold_rate |  spend  |
 +------------+--------------------------------------------------------------+-----------+-----------+---------+
-| SH-19365-1 | SH-19365-1_SHA_2026_S38_WL_VeronicaFreund1_AUG26_Tom_agu_MET |      50.4 |      12.8 |   594.0 |
-| SH-16975-3 | SH-16975-3_SHA_META_VID-1080x1920_7658068191888805134.mp4 -  |      36.1 |       2.6 | 11784.0 |
-| Unmapped   | promocodepal_Product_20260908_trybe=2b4b9282                 |      34.8 |       2.7 | 20206.0 |
-| SH-16360-1 | SH-16360-1_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U |      30.9 |       6.2 |   653.0 |
-| SH-16192-4 | SH-16192-4_SHA_OG_META_VID-1080x1080_PAO_QVC_Proven_Retro_Ne |      30.7 |       0.9 |   527.0 |
-| SH-17241-1 | SH-17241-1_SHA_META_VID-720x1280_TiktokUGC_WithUsageRights_v |      30.2 |       3.2 |   955.0 |
-| SH-16212-3 | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho |      28.9 |       1.3 |  3619.0 |
-| SH-19143-3 | SH-19143-3_SHA_2026_S38_MB_Retro_Two-Sizes-Numbers_Halloween |      19.9 |      12.5 |  1760.0 |
-| SH-18969   | SH-18969_CTV_Mini_Newvertion_H1.mp4 - SH-18969_SHA_2026_S38_ |      17.2 |       4.1 |  1334.0 |
-| SH-16180-1 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  |      15.8 |       1.1 |  2848.0 |
-| SH-16469   | SH-16469-SHA_2026_S23_CC_POVSideScript_THT_TSM3_TOM_MAR_REEL |      14.9 |       1.4 |  2039.0 |
-| SH-16975-2 | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  |      12.7 |       1.2 |  8820.0 |
+| SH-19844-3 | SH-19844-3_SHA_OG_META_VID-1080x1920_PAO_WL_StephanieJoplin2 |      50.0 |       5.1 |  3325.0 |
+| SH-16975-3 | SH-16975-3_SHA_META_VID-1080x1920_7658068191888805134.mp4 -  |      35.2 |       2.5 |  6210.0 |
+| SH-17784-3 | SH-17784-3_SHA_2026_S34_OG_LowCal_Skeptic_TiktokUGC_Retro_In |      35.1 |       2.2 |  1284.0 |
+| SH-19371-1 | SH-19371-1_SHA_2026_S38_WL_JenHatmaker1_AUG26_Tom_agu_META_V |      34.8 |       6.6 |   653.0 |
+| SH-16212-3 | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho |      31.9 |       1.4 |  3437.0 |
+| Unmapped   | MariaSmith_Product_20260624_trybe=294a9843 - Copy            |      30.7 |       3.0 | 22786.0 |
+| SH-17241-1 | SH-17241-1_SHA_META_VID-720x1280_TiktokUGC_WithUsageRights_v |      28.8 |       3.1 |   578.0 |
+| SH-16360-2 | SH-16360-2_SHA_OG_META_VID-1080x1920_PAO_PhillipCowley4_WL_U |      26.3 |       2.6 |   611.0 |
+| SH-18969   | SH-18969_CTV_Mini_Newvertion_H1.mp4 - SH-18969_SHA_2026_S38_ |      24.5 |       6.8 |   867.0 |
+| SH-12937-7 | SH-12937-7_SHA_OG_META_VID-1080x1920_PAO_Packing_Proven_Ware |      24.2 |       1.6 |  1360.0 |
+| SH-16180-1 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  |      16.4 |       1.0 |  1418.0 |
+| SH-16469   | SH-16469-SHA_2026_S23_CC_POVSideScript_THT_TSM3_TOM_MAR_REEL |      14.0 |       1.3 |  1064.0 |
+| SH-16975-2 | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  |      12.4 |       1.1 | 10465.0 |
 +------------+--------------------------------------------------------------+-----------+-----------+---------+
 
 ### DATA: 11_fatigue
 +------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
 |  creative  |                        ad_name_short                         | spend_last | ctr_prior | ctr_last | ctr_change_pct |
 +------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
-| Unmapped   | promocodepal_Product_20260908_trybe=2b4b9282                 |    20591.0 |      1.66 |      1.6 |           -3.9 |
-| SH-16975-2 | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  |     8820.0 |      1.32 |     1.22 |           -7.4 |
-| SH-16457-6 | SH-16457-6_SHA_OG_EN_META_1080X1080_IMG_JDC_01-07-2026-CTV.p |     4371.0 |      0.71 |     0.66 |           -6.8 |
-| SH-9428    | SHA_CC_WK22_HealthGLP1_Broad__post3_880502221406945 – Copy - |     3860.0 |      1.21 |      1.1 |           -9.3 |
-| SH-13376-6 | SH-13376-6_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  |     3823.0 |       1.4 |     1.21 |          -13.2 |
-| SH-16212-3 | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho |     3619.0 |      1.35 |     1.31 |           -3.4 |
-| SH-3028    | SHA_CC_WK22_Images_Broad__post3_786852690771899 - Copy       |     2987.0 |      0.68 |     0.66 |           -4.1 |
-| SH-13376-9 | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  |     2886.0 |      1.24 |     1.17 |           -5.8 |
-| SH-16180-1 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  |     2848.0 |      1.27 |     1.18 |           -6.5 |
-| SH-16469   | SH-16469-SHA_2026_S23_CC_POVSideScript_THT_TSM3_TOM_MAR_REEL |     2039.0 |      1.37 |     1.33 |           -3.3 |
-| SH-19143-3 | SH-19143-3_SHA_2026_S38_MB_Retro_Two-Sizes-Numbers_Halloween |     1760.0 |       2.0 |     1.85 |           -7.4 |
-| SH-18041-2 | SH-18041-2_SHA_2026_S35_OG_Weightloss_AlmondMom_OfferFirst_I |     1546.0 |      0.76 |     0.66 |          -12.8 |
-| SH-14765-7 | SH-14765-7_SHA_OG_EN_META_1080X1080_IMG_JDC_07-04-2026-CTV.p |     1444.0 |      1.56 |      1.4 |          -10.2 |
-| SH-18969   | SH-18969_CTV_Mini_Newvertion_H1.mp4 - SH-18969_SHA_2026_S38_ |     1334.0 |      1.53 |      1.5 |           -1.7 |
-| SH-18963-1 | SH-18963-1_SHA_2026_S38_MB_Launch_Online-Exclusive_ImageTest |     1263.0 |      1.22 |     1.11 |           -9.6 |
+| Unmapped   | SHMB_LP_05.jpg - LP Images - https://snacks.eatshameless.com |    22797.0 |      1.55 |      1.3 |          -15.8 |
+| SH-16975-2 | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  |    10465.0 |      1.22 |     1.15 |           -5.7 |
+| SH-16975-3 | SH-16975-3_SHA_META_VID-1080x1920_7658068191888805134.mp4 -  |     6210.0 |      1.52 |     1.47 |           -3.2 |
+| SH-3028    | SHA_CC_WK22_Images_Broad__post3_786852690771899 - Copy       |     4531.0 |      0.65 |     0.63 |           -2.8 |
+| SH-13376-6 | SH-13376-6_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  |     3528.0 |       1.3 |     1.25 |           -3.3 |
+| SH-16212-3 | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho |     3437.0 |      1.45 |     1.41 |           -2.2 |
+| SH-19844-3 | SH-19844-3_SHA_OG_META_VID-1080x1920_PAO_WL_StephanieJoplin2 |     3325.0 |      3.95 |     3.65 |           -7.4 |
+| SH-13376-9 | SH-13376-9_SHA_OG_EN_META_1000X1000_IMG_JDC_16-03-2026-.png  |     3116.0 |      1.15 |     1.11 |           -3.9 |
+| SH-18044-5 | SH-18044-5_SHA_OG_META_IMG-1080x1350_AYC_BundleKit_Retro_Ima |     1513.0 |      0.98 |     0.75 |          -23.8 |
+| SH-16180-1 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  |     1418.0 |      1.23 |     1.12 |           -9.4 |
+| SH-12937-7 | SH-12937-7_SHA_OG_META_VID-1080x1920_PAO_Packing_Proven_Ware |     1360.0 |      1.42 |     1.25 |          -11.8 |
+| SH-17784-3 | SH-17784-3_SHA_2026_S34_OG_LowCal_Skeptic_TiktokUGC_Retro_In |     1284.0 |      2.15 |     1.52 |          -29.4 |
+| SH-19379-4 | SH-19379-4_SHA_MB_META_IMG-1080x1350_AYC_TablePile_BundleKit |     1152.0 |      1.63 |     1.22 |          -25.0 |
+| SH-16469   | SH-16469-SHA_2026_S23_CC_POVSideScript_THT_TSM3_TOM_MAR_REEL |     1064.0 |      1.31 |     1.04 |          -20.1 |
 +------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
 
 ### DATA: 12_concepts
-+-----------------+-------------+--------+---------+------+------------+--------+--------+------------+----------------+
-| clickup_project | top_variant | spend  | revenue | roas | margin_pct | cmroas | orders | variations | contrib_margin |
-+-----------------+-------------+--------+---------+------+------------+--------+--------+------------+----------------+
-| SH-19365        | SH-19365-1  | 1029.0 |  1648.0 |  1.6 |       68.7 |    1.1 |     25 |          3 |          103.0 |
-| SH-16360        | SH-16360-1  | 1036.0 |  1430.0 | 1.38 |       64.8 |   0.89 |     15 |          5 |         -109.0 |
-| SH-15965        | SH-15965-7  | 1462.0 |  1525.0 | 1.04 |       62.6 |   0.65 |     18 |          6 |         -507.0 |
-| SH-14498        | SH-14498-8  | 1118.0 |   844.0 | 0.75 |       61.3 |   0.46 |     11 |          5 |         -602.0 |
-| SH-18041        | SH-18041-2  | 1547.0 |  1388.0 |  0.9 |       64.4 |   0.58 |     19 |          5 |         -652.0 |
-| SH-18969        | SH-18969    | 1334.0 |  1016.0 | 0.76 |       65.3 |    0.5 |     11 |          8 |         -670.0 |
-| SH-18963        | SH-18963-1  | 1416.0 |   944.0 | 0.67 |       62.9 |   0.42 |     10 |         13 |         -822.0 |
-| SH-16469        | SH-16469    | 2039.0 |  1831.0 |  0.9 |       63.1 |   0.57 |     30 |          2 |         -884.0 |
-| SH-19143        | SH-19143-3  | 1760.0 |  1274.0 | 0.72 |       64.4 |   0.47 |     14 |          3 |         -940.0 |
-| SH-14765        | SH-14765-7  | 1484.0 |   745.0 |  0.5 |       66.9 |   0.34 |     11 |          3 |         -986.0 |
-| SH-3028         | SH-3028     | 2987.0 |  2689.0 |  0.9 |       64.8 |   0.58 |     35 |          2 |        -1244.0 |
-| SH-16212        | SH-16212-3  | 3659.0 |  3386.0 | 0.93 |       64.6 |    0.6 |     43 |          3 |        -1470.0 |
-| SH-16180        | SH-16180-1  | 2848.0 |  2014.0 | 0.71 |       63.3 |   0.45 |     33 |          2 |        -1573.0 |
-| SH-9428         | SH-9428     | 3860.0 |  2708.0 |  0.7 |       64.1 |   0.45 |     45 |          2 |        -2125.0 |
-| SH-13376        | SH-13376-6  | 6709.0 |  6702.0 |  1.0 |       64.1 |   0.64 |     79 |          2 |        -2412.0 |
-+-----------------+-------------+--------+---------+------+------------+--------+--------+------------+----------------+
++-----------------+-------------+---------+---------+------+------------+--------+--------+------------+----------------+
+| clickup_project | top_variant |  spend  | revenue | roas | margin_pct | cmroas | orders | variations | contrib_margin |
++-----------------+-------------+---------+---------+------+------------+--------+--------+------------+----------------+
+| SH-18044        | SH-18044-5  |  2050.0 |  2584.0 | 1.26 |       65.0 |   0.82 |     34 |         10 |         -370.0 |
+| SH-15965        | SH-15965-7  |  1091.0 |   804.0 | 0.74 |       63.1 |   0.47 |     12 |          5 |         -583.0 |
+| SH-12937        | SH-12937-7  |  1384.0 |  1246.0 |  0.9 |       63.8 |   0.57 |     16 |          2 |         -589.0 |
+| SH-16180        | SH-16180-1  |  1418.0 |  1281.0 |  0.9 |       63.4 |   0.57 |     21 |          1 |         -606.0 |
+| SH-16469        | SH-16469    |  1064.0 |   604.0 | 0.57 |       63.8 |   0.36 |      9 |          2 |         -678.0 |
+| SH-19379        | SH-19379-4  |  1179.0 |   749.0 | 0.64 |       62.3 |    0.4 |     10 |          6 |         -712.0 |
+| SH-19524        | SH-19524-5  |  1207.0 |   712.0 | 0.59 |       63.2 |   0.37 |      8 |          5 |         -757.0 |
+| SH-16132        | SH-16132-11 |  1354.0 |   846.0 | 0.62 |       61.3 |   0.38 |     12 |          3 |         -835.0 |
+| SH-9428         | SH-9428     |  1389.0 |   791.0 | 0.57 |       63.8 |   0.36 |      9 |          1 |         -884.0 |
+| SH-17784        | SH-17784-3  |  1375.0 |   282.0 | 0.21 |       63.8 |   0.13 |      6 |          5 |        -1195.0 |
+| SH-16212        | SH-16212-3  |  3503.0 |  3390.0 | 0.97 |       65.2 |   0.63 |     44 |          3 |        -1292.0 |
+| SH-19844        | SH-19844-3  |  3386.0 |  2567.0 | 0.76 |       66.2 |    0.5 |     45 |          3 |        -1686.0 |
+| SH-3028         | SH-3028     |  4531.0 |  3385.0 | 0.75 |       64.6 |   0.48 |     45 |          2 |        -2343.0 |
+| SH-13376        | SH-13376-6  |  6644.0 |  4370.0 | 0.66 |       65.5 |   0.43 |     52 |          2 |        -3782.0 |
+| SH-16975        | SH-16975-2  | 16675.0 | 13355.0 |  0.8 |       63.5 |   0.51 |    163 |          6 |        -8196.0 |
++-----------------+-------------+---------+---------+------+------------+--------+--------+------------+----------------+
 
 ### PREVIOUS DROPS (do not repeat task + iteration-type combos):
---- 2026-10-08.md
+--- 2026-10-20.md
+🔁 **Iteration Suggestions — wk Oct 12–18** *(auto-generated)*
+
+Reply "go <n>" (optionally with edits) to brief one. Nothing is created without your go.
+
+**VIDEO**
+
+**1. [SH-18969](https://app.clickup.com/t/868m25zdn) (CTV Mini Newvertion) — HOOK_SWAP** 🟢
+Hold 6.8% is second-best in the account and the body earns; hook 24.5% is the only gate blocking volume. $867 spend with zero iteration history confirms this is worth protecting. → New hook only; body and CTA locked. Metric to beat: hook > 38%, ROAS > 1.2.
+
+**2. {{SH-16212-3}} (S23 Warehouse LoveYourChoice) — INTRO_SWAP** 🟢
+Hook 31.9% is solid; hold 1.4% collapses immediately after — the bridge is where the audience exits. BODY_EDIT from Oct-08 covers the proof module; bridge is the untested axis. $3,433 at ROAS 0.96. → Replace 5–8s post-hook bridge only; hook and close locked. Metric to beat: hold > 6%, ROAS > 1.1.
+
+**3. {{SH-16975-2}} (16975 Vid-2) — HOOK_SWAP** 🟡
+$10,181 at ROAS 0.97 — biggest spend in the account, near-breakeven — but hook 12.4% is the worst on the board and hold 1.1% means almost nobody reaches the offer. SOCIAL_PROOF_INSERT was the prior axis. → New hook only; body locked. Metric to beat: hook > 25%, ROAS > 1.2.
+
+**4. {{SH-19371-1}} (S38 WL JenHatmaker) — LENGTH_VARIANT** 🟡
+ROAS 1.01, hold 6.6% earns, hook 34.8% holds up — but only $653 spend. The body works for everyone who watches; a condensed cut removes the exit risk at scale. → 15–20s version; hook and body locked. Metric to beat: ROAS > 1.2 at $2k+.
+
+**IMAGE**
+
+**5. {{SH-18044-5}} (BundleKit Retro) — headline variants** 🟢
+Top image ROAS at 1.52, $1,511 — but CTR down 23.8% w/w, sharpest decay in the image set. Headline is the fastest lever before this fades out. → 3 headline options; visual locked. Metric to beat: CTR stabilizes, ROAS > 1.5.
+
+**6. {{SH-17789-7}} (IngredientPanel Unpackaged) — scale + variants** 🟢
+ROAS 1.41, $507 — second-best image ROAS, no iteration history, underfunded signal. → Scale to $2k with 2–3 headline variants in parallel. Metric to beat: ROAS > 1.3 at $2k+.
+
+**7. {{SH-16313-2}} (S24 BRPK Retro ImageTest) — scale + variants** 🟢
+ROAS 1.32, $600 — clean winner, no prior drops, no iteration on any axis. → Scale to $2k with 2 variants (headline or visual). Metric to beat: ROAS > 1.2 at $2k+.
+
+**8. {{SH-18041-2}} (S35 WL AlmondMom OfferFirst) — headline variants** 🟡
+ROAS 1.22, $906. Visual refresh actioned Oct-13; headline is the next clean axis before margin slips. → 3 headline options; visual locked. Metric to beat: ROAS > 1.3.
+
+**Watchlist ⚠️:** {{SH-16975-3}} — $5,961 at ROAS 0.52, third consecutive week underwater; pause call overdue before more spend burns. [SH-3028](https://app.clickup.com/t/868fnzq10) — $4,528 at ROAS 0.75, scale+variants in flight from Oct-15; CM-ROAS 0.48 means hold spend until variant results land.--- 2026-10-15.md
+🔁 **Iteration Suggestions — wk Oct 5–11** *(auto-generated)*
+
+Reply "go <n>" (optionally with edits) to brief one. Nothing is created without your go.
+
+**VIDEO**
+
+**1. {{SH-19844-3}} (WL StephanieJoplin) — INTRO_SWAP** 🟢
+Top ROAS this week at 1.34 on $743. Hook 54.3% (best in account) means the open lands clean; hold drops to 6.1%, pointing squarely at a weak post-hook bridge as the exit point. → Replace the 5–8s bridge only; hook and close locked. Metric to beat: hold > 12%, ROAS > 1.5.
+
+**2. {{SH-19143-3}} (MB Retro Two-Sizes-Numbers Halloween) — HOOK_SWAP** 🟢
+Hold 12.7% is the highest in the account; hook 20.1% means only 1-in-5 viewers clears the entry gate on a body that actually converts. ROAS 0.88 on $2,171 with CTR -15.6% w/w — volume is the only problem. → New hook only; body and CTA locked. Metric to beat: hook > 30%, ROAS > 1.1.
+
+**3. {{SH-16180-1}} (S23 Warehouse LoveYourChoice) — LENGTH_VARIANT** 🟢
+ROAS 1.04 on $2,093, CPA $67.51 — best CPA in the top-spend set, profitable, and only 1 variation ever shipped. Untested for efficiency gains on a clean winner. → Condensed 15–20s cut; hook locked. Metric to beat: ROAS > 1.2 at $2k+.
+
+**4. {{SH-19632-3}} (MB UGC splitscreen) — INTRO_SWAP** 🟡
+Hook 50.6% second-best in account; hold 1.7% is an immediate cliff — audience stops before the offer lands. ROAS 0.99 on $971. → New 5–8s post-hook bridge; hook and close locked. Metric to beat: hold > 7%, ROAS > 1.1.
+
+**IMAGE**
+
+**5. [SH-3028](https://app.clickup.com/t/868fnzq10) (WK22 Images Broad) — scale + variants** 🟢
+ROAS 1.04 on $4,179, CPA $78.85 — top image by spend AND profitable, never iterated any axis. Scaling without variants is a single point of failure. → 3 visual/headline variants off the base; base locked. Metric to beat: ROAS > 1.1 at $6k+.
+
+**6. {{SH-15965-7}} (Gifts Offer Proven Retro) — visual refresh** 🟢
+ROAS 1.29 this week on $1,221 — top ROAS in the image set. Headline variants actioned Oct-13; visual is the next clean axis on an already-hot concept before fatigue catches it. → New product or lifestyle visual; headline locked. Metric to beat: ROAS > 1.3 at $2k+.
+
+**7. {{SH-13376-6}} (JDC Mar-16 v6) — layout variant** 🟡
+ROAS 0.92 on $4,374. Headline variants actioned Oct-13; layout is the last clean axis before fatigue pulls this under margin. → One layout treatment; headline and visual locked. Metric to beat: ROAS > 1.0.
+
+**Watchlist ⚠️:** {{SH-16975-3}} — $11k at ROAS 0.58, CTR -18%; iterations from prior drops still in flight, no new axes until results land. {{SH-19365-1}} — collapsed from ROAS 1.46→0.36 week-over-week with CTR -38.5%; pause/kill decision needed before more spend burns.--- 2026-10-13.md
 🔁 **Iteration Suggestions — wk Sep 28–Oct 4** *(auto-generated)*
 
 Reply "go <n>" (optionally with edits) to brief one. Nothing is created without your go.
 
 **VIDEO**
 
-**1. {{SH-19365-1}} (S38 WL Veronica) — LENGTH_VARIANT** 🟢
-Only profitable concept this week: CM-ROAS 1.1, ROAS 1.46, hold 12.8%. CTA_VARIANT in flight from Oct-06. Hold this strong means a tighter cut removes dead weight while keeping everyone who stays — no audience left on the table. → 15–20s condensed version; hook and body locked. Metric to beat: ROAS > 1.5.
+**1. {{SH-17241-1}} (TikTok UGC WithRights) — BODY_EDIT** 🟢
+ROAS 1.50, top video this week, $955. INTRO_SWAP actioned Oct-06 targets the bridge; hold 3.2% means the body is where the surviving audience exits. → Tighten proof module only; hook and bridge locked. Metric to beat: hold > 8%, ROAS > 1.6.
 
-**2. {{SH-16360-1}} (PAO PhillipCowley WL) — INTRO_SWAP** 🟢
-ROAS 1.21, $653, hook 30.9%, hold 6.2% — second-best hold in the account, never iterated. Entry is solid and the body earns; the post-hook bridge is the one gap. → New 5–8s bridge; hook and close locked. Metric to beat: hold > 12%, ROAS > 1.4.
+**2. {{SH-19365-1}} (S38 WL Veronica) — CREATOR_SWAP** 🟡
+Only profitable concept (CM-ROAS 1.1, ROAS 1.46); CTA_VARIANT + LENGTH_VARIANT both actioned. Hook 50.4%, hold 12.8% prove the structure; a second creator on the identical script tests whether the result is creator-specific or repeatable. → New creator, hook/body/CTA locked verbatim. Metric to beat: ROAS > 1.5.
 
-**3. {{SH-16975-2}} (16975 Vid-2) — SOCIAL_PROOF_INSERT** 🟡
-$8.7k, ROAS 1.05, CTR −7.4% w/w. HOOK_SWAP + BODY_EDIT already cover entry and structure; social proof is the one remaining untested axis to reinforce offer credibility mid-body. → 5–8s proof segment mid-body; hook and CTA locked. Metric to beat: ROAS > 1.3.
-
-**4. {{SH-16212-3}} (S23 Warehouse LoveYourChoice) — BODY_EDIT** 🟡
-$3.6k, ROAS 0.94, hold 1.3%. INTRO_SWAP in flight for the bridge — body edit runs in parallel to isolate whether the proof section is the exit point. → Tighten proof/offer copy only; hook and intro locked. Metric to beat: hold > 5%, ROAS > 1.1.
+**3. [SH-16469](https://app.clickup.com/t/868k5anu0) (S23 POV SideScript) — HOOK_SWAP** 🟡
+$2.0k, ROAS 0.90, hook 14.9% — weakest entry rate among un-iterated videos; body gets to near-breakeven for anyone who clears the hook. Never touched this drop cycle. → New hook only; body locked. Metric to beat: hook > 25%, ROAS > 1.1.
 
 **IMAGE**
 
-**5. {{SH-13376-9}} (JDC Mar-16 v9) — visual refresh** 🟢
-ROAS 1.14, $2.9k, CTR −5.8%. Headline variants actioned Oct-06; visual is the last clean axis before decay pulls ROAS under margin. → New product or lifestyle visual; headline locked. Metric to beat: ROAS > 1.2.
+**4. {{SH-13376-9}} (JDC Mar-16 v9) — layout variant** 🟡
+ROAS 1.14, $2.9k. Headline variants (Oct-06) and visual refresh (Oct-08) both actioned — layout is the last clean axis before fatigue decay pulls ROAS under margin. → One layout treatment; headline and visual locked. Metric to beat: ROAS > 1.2.
 
-**6. {{SH-19377-7}} (MB Pumpkin Bowl OfferFirst) — headline variants** 🟢
-ROAS 1.10, $737. Layout actioned Oct-06; headline is the next clean axis before the Halloween window closes. → 3 headline options; visual and layout locked. Metric to beat: ROAS > 1.2.
+**5. {{SH-13376-6}} (JDC Mar-16 v6) — headline variants** 🟡
+ROAS 0.89, $3.8k, CTR −13.2% — steepest fatigue in the image set. Visual refresh ran in a prior data week; headline is fresh for this week and the most direct CTR lever. → 3 headline options; visual locked. Metric to beat: CTR stabilizes, ROAS > 1.0.
 
-**7. {{SH-19374-10}} (Offer AllOfThisFor) — visual refresh** 🟡
-ROAS 1.17, $658, under-scaled. Headline variants actioned Oct-06; visual opens a second iteration path on this underfunded winner. → New visual treatment; headline locked. Metric to beat: ROAS > 1.2 at $2k+.
+**6. {{SH-15965-7}} (Gifts Offer Proven Retro) — headline variants** 🟡
+ROAS 0.99, $1.2k, CM-ROAS 0.65 — nearest-to-margin image with no iteration this cycle. → 3 headline options; visual locked. Metric to beat: ROAS > 1.1.
 
-**8. {{SH-15264-6}} (CTV Retro ImageTest) — headline variants** 🟡
-ROAS 1.13, $531. Scale + variants actioned Oct-06; headline is the next axis to push this concept toward its ceiling. → 3 headline options; visual locked. Metric to beat: ROAS > 1.1 at $2k+.
+**7. {{SH-18041-2}} (S35 WL AlmondMom OfferFirst) — visual refresh** 🟡
+ROAS 0.90, $1.5k, CTR −12.8% steep fatigue. Never suggested this cycle; visual swap is the direct CTR lever on an un-iterated asset. → New product or lifestyle visual; headline locked. Metric to beat: CTR stabilizes, ROAS > 1.1.
 
-**Watchlist ⚠️:** {{SH-16975-3}} — $11.5k at ROAS 0.63, hold 2.6% (worst in account); BODY_EDIT + INTRO_SWAP in flight, no new axes until results land. {{SH-16457-6}} — ROAS 0.49, $4.3k burned this week; kill call flagged Oct-06, still running.--- 2026-10-06.md
-🔁 **Iteration Suggestions — wk Sep 28–Oct 4** *(auto-generated)*
-
-Reply "go <n>" (optionally with edits) to brief one. Nothing is created without your go.
-
-**VIDEO**
-
-**1. {{SH-19365-1}} (S38 WL Veronica) — CTA_VARIANT** 🟢
-Hook 50.4% and hold 12.8% — both best in the account; CM-ROAS 1.1 is the only concept making money this week. Every other lever is working; the close is the last multiplier. → New CTA/offer close only; hook and body locked. Metric to beat: ROAS > 1.6.
-
-**2. {{SH-17241-1}} (TikTok UGC WithRights) — INTRO_SWAP** 🟢
-ROAS 1.50 — top video this week — on $955. Hook 30.2% is fine; hold collapses to 3.2% immediately post-hook. → New 5–8s bridge; hook and close locked. Metric to beat: hold > 7%, ROAS > 1.6.
-
-**3. {{SH-16975-2}} (16975 Vid-2) — HOOK_SWAP** 🟢
-$8.7k spend, ROAS 1.05, hook 12.7% — weakest entry rate among any $5k+ video. BODY_EDIT + INTRO_SWAP already in flight; hook is the last remaining axis and the biggest volume drain at scale. → New hook only; body and intro locked. Metric to beat: hook > 25%.
-
-**4. {{SH-16212-3}} (S23 Warehouse LoveYourChoice) — INTRO_SWAP** 🟡
-$3.6k, ROAS 0.94, hook 28.9% is workable but hold crashes to 1.3% — viewers arrive and exit before the offer. Never iterated. → New 5–8s post-hook bridge; hook and CTA locked. Metric to beat: hold > 5%, ROAS > 1.1.
-
-**IMAGE**
-
-**5. {{SH-13376-9}} (JDC Mar-16 v9) — headline variants** 🟢
-ROAS 1.14 on $2.9k — strongest image at scale this week. CTR sliding -5.8% w/w; headline is the clean single axis before fatigue accelerates. → 3 headline options; visual locked. Metric to beat: ROAS > 1.2.
-
-**6. {{SH-19374-10}} (Offer AllOfThisFor) — headline variants** 🟢
-ROAS 1.17 on $658, never iterated. Efficient and underfunded. → 3 headline options; visual locked. Metric to beat: ROAS > 1.2 at $2k+ spend.
-
-**7. {{SH-19377-7}} (MB Pumpkin Bowl OfferFirst) — layout variant** 🟡
-ROAS 1.10; headline (Oct-01) and scale (Sep-29) already actioned. Layout is the last clean axis before the Halloween window closes. → One layout treatment; headline and visual locked. Metric to beat: ROAS > 1.2.
-
-**8. {{SH-15264-6}} (CTV Retro ImageTest) — scale + variants** 🟡
-ROAS 1.13 on $531, no prior iteration — signal sitting unfunded. → Scale + 2 visual variants. Metric to beat: ROAS > 1.1 at $2k+ spend.
-
-**Watchlist ⚠️:** {{SH-16975-3}} — $11.5k at ROAS 0.63 with BODY_EDIT + INTRO_SWAP in flight; no new axes until results land. {{SH-16457-6}} — ROAS 0.49 with headline + layout both exhausted; kill call due.--- 2026-10-01.md
-🔁 **Iteration Suggestions — wk Sep 21–27** *(auto-generated)*
-
-Reply "go <n>" (optionally with edits) to brief one. Nothing is created without your go.
-
-**VIDEO**
-
-**1. {{SH-16975-2}} (16975 Vid-2) — BODY_EDIT** 🟢
-$10.7k spend, ROAS 1.15, 144 orders — top profitable video this week. INTRO_SWAP is already in flight; body is the last untouched axis at this scale. → Tighten proof/offer module only; hook and intro locked. Metric to beat: ROAS > 1.3.
-
-**2. {{SH-19143-3}} (MB Halloween Two-Sizes) — LENGTH_VARIANT** 🟡
-Hold 14.1% — best body retention in the account. HOOK_SWAP in flight from Sep-29. Strong hold + $1.7k spend means a tighter cut converts more of the retained audience once entry lifts. → 12–15s condensed version; hook treatment pending. Metric to beat: ROAS > 1.0.
-
-**3. [SH-18969](https://app.clickup.com/t/868m25zdn) (MB CTV New Version) — SOCIAL_PROOF_INSERT** 🟡
-ROAS 1.17, CTR -23.8% steep fatigue. Hook and length both iterated in prior weeks; hold 4.0% means the body earns whoever arrives. → Insert 5–8s social proof segment into the body; hook and CTA locked. Metric to beat: ROAS > 1.3, CTR stabilizes w/w.
-
-**4. {{SH-18403-2}} (S35 Cravings UGC) — BODY_EDIT** 🟡
-Hook 45.3% (best in account), hold bleeds to 5.7%. INTRO_SWAP in flight tests the bridge — concurrent body edit isolates whether the bleed is mid-body. → Edit proof section only; hook and bridge locked. Metric to beat: hold > 10%.
-
-**IMAGE**
-
-**5. {{SH-19377-7}} (MB Pumpkin Bowl OfferFirst) — headline variants** 🟢
-ROAS 2.04, scale + variants suggested last drop. Visual proven at the highest ROAS in the account — headline is the clean next axis to unlock CTR at growing spend. → 3 headline options; visual locked. Metric to beat: ROAS > 1.9 at $2k+ spend.
-
-**6. {{SH-16457-6}} (JDC 1080 Jul-1 CTV) — layout variant** 🟡
-$8k spend, ROAS exactly 1.00, CTR -4.7%. Headline variants in flight (Sep-29). Layout is the last clean axis before breakeven tips to loss. → One layout treatment; headline and visual locked. Metric to beat: ROAS > 1.15.
-
-**7. {{SH-13376-6}} (JDC Mar-16 v6) — visual refresh** 🟡
-ROAS 1.04 on $4.8k, CTR -10.3%. Layout (Sep-22) and headline variants (Sep-24) both exhausted. Visual is the final axis before a proven spender slips below margin. → New product or lifestyle visual; headline and layout locked. Metric to beat: ROAS > 1.2.
-
-**8. {{SH-15965-7}} (Gifts Offer Proven Retro) — layout variant** 🟡
-ROAS 1.07, CM-ROAS 0.69, $2.2k spend. Scale and headline variants run in prior drops; layout is the one remaining axis on a near-breakeven concept. → One layout treatment; visual and headline locked. Metric to beat: ROAS > 1.2, CM-ROAS > 0.8.
-
-**Watchlist ⚠️:** {{SH-16975-3}} — $26k at ROAS 0.60 with BODY_EDIT + INTRO_SWAP already in flight; no new axes until results land. {{SH-17784-3}} — ROAS 0.39, 4 variations exhausted across the concept; kill call overdue.
+**Watchlist ⚠️:** {{SH-16975-3}} — $11.5k at ROAS 0.63 with 3+ iterations in flight; no new axes until results land. {{SH-16457-6}} — ROAS 0.49 kill call still open.
