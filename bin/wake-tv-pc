@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+# wake-tv-pc — send a Wake-on-LAN magic packet to the TV PC (Bazzite, wired enp7s0)
+# Works from the box only: same L2 segment (192.168.1.0/24 behind the secondary router).
+# Usage: wake-tv-pc [--wait]   (--wait = block until `ssh tv-pc` answers, max 120s)
+import socket, subprocess, sys, time
+
+MAC = "b0:82:e2:ec:2b:a4"
+BCAST = "192.168.1.255"
+
+pkt = b"\xff" * 6 + bytes.fromhex(MAC.replace(":", "")) * 16
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+for port in (9, 7):
+    s.sendto(pkt, (BCAST, port))
+print(f"magic packet sent to {MAC} via {BCAST}")
+
+if "--wait" in sys.argv:
+    t0 = time.time()
+    while time.time() - t0 < 120:
+        r = subprocess.run(["ssh", "-o", "ConnectTimeout=4", "-o", "BatchMode=yes",
+                            "root@100.74.97.97", "true"], capture_output=True)
+        if r.returncode == 0:
+            print(f"tv-pc up after {int(time.time() - t0)}s")
+            sys.exit(0)
+        time.sleep(5)
+    print("tv-pc did not answer within 120s")
+    sys.exit(1)

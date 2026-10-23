@@ -1,0 +1,9 @@
+[Unit]
+Description=memory-sweep every 30 min
+
+[Timer]
+OnCalendar=*:07/30
+Persistent=true
+
+[Install]
+WantedBy=timers.target
