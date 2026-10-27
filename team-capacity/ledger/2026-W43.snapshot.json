@@ -1,0 +1,148 @@
+{
+ "week": "2026-W43",
+ "run": "2026-10-27T15:57:59.657995+02:00",
+ "kinds": {
+  "vid": {
+   "active": 72,
+   "started": 23,
+   "finished": 29,
+   "output": 122,
+   "nf_tasks": 21,
+   "est_h": 211.3,
+   "tracked_h": 222.8,
+   "rev_rounds": 0.7,
+   "proj": 7.0,
+   "proj_parts": {
+    "todo_due": 5,
+    "mid": 7
+   },
+   "queue": {
+    "to do": 7,
+    "in progress": 7,
+    "cs review": 3,
+    "needs fixing": 3
+   }
+  },
+  "img": {
+   "active": 33,
+   "finished": 15,
+   "output": 104,
+   "started": 15,
+   "nf_tasks": 7,
+   "est_h": 35.5,
+   "tracked_h": 53.1,
+   "rev_rounds": 0.5,
+   "proj": 4.0,
+   "proj_parts": {
+    "todo_due": 7,
+    "mid": 1
+   },
+   "queue": {
+    "to do": 28,
+    "in progress": 1,
+    "cs review": 2
+   }
+  }
+ },
+ "per": {
+  "AGU": {
+   "tracked": 35.5,
+   "fin_vid": 7,
+   "est": 37.3
+  },
+  "MAR": {
+   "fin_vid": 8,
+   "est": 48.0,
+   "tracked": 32.305819166666666
+  },
+  "AYC": {
+   "fin_img": 14,
+   "est": 26.25,
+   "tracked": 34.22615777777778
+  },
+  "IGN": {
+   "tracked": 39.0,
+   "fin_vid": 5,
+   "est": 29.0
+  },
+  "ANA": {
+   "tracked": 20.833638611111112,
+   "fin_img": 1,
+   "est": 31.25,
+   "fin_vid": 1
+  },
+  "LEO": {
+   "tracked": 37.8122125,
+   "fin_vid": 3,
+   "est": 28.0
+  },
+  "KAR": {
+   "tracked": 38.483333333333334,
+   "fin_vid": 2,
+   "est": 17.0
+  },
+  "PAO": {
+   "tracked": 37.71666666666667,
+   "fin_img": 1,
+   "est": 30.0,
+   "fin_vid": 3
+  }
+ },
+ "open": {
+  "AYC": {
+   "img:to do": 28,
+   "img:in progress": 1,
+   "img:cs review": 2
+  },
+  "PAO": {
+   "vid:to do": 1,
+   "vid:in progress": 1,
+   "vid:cs review": 2
+  },
+  "KAR": {
+   "vid:to do": 1,
+   "vid:in progress": 1
+  },
+  "LEO": {
+   "vid:in progress": 2
+  },
+  "MAR": {
+   "vid:to do": 1,
+   "vid:in progress": 1,
+   "vid:needs fixing": 2
+  },
+  "AGU": {
+   "vid:in progress": 1,
+   "vid:cs review": 2,
+   "vid:to do": 2
+  },
+  "IGN": {
+   "vid:needs fixing": 1,
+   "vid:in progress": 1
+  },
+  "ANA": {
+   "img:cs review": 1,
+   "vid:to do": 2
+  }
+ },
+ "capacity": {
+  "IGN": 36.0,
+  "LEO": 36.0,
+  "AGU": 36.0,
+  "PAO": 36.0,
+  "KAR": 36.0,
+  "MAR": 36.0,
+  "ANA": 36.0,
+  "AYC": 36.0
+ },
+ "days_off": {
+  "IGN": [],
+  "LEO": [],
+  "AGU": [],
+  "PAO": [],
+  "KAR": [],
+  "MAR": [],
+  "ANA": [],
+  "AYC": []
+ }
+}

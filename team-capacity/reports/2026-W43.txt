@@ -1,0 +1,39 @@
+WEEK SPRINT S43 (Oct 19 – Oct 25)
+
+TOMAS – TOTAL TEAM PERFORMANCE
+
+Days-off
+none logged
+
+VIDEO
+Tasks with activity: 72
+Finished: 29 • started: 23 • hit needs fixing: 21
+Tracked: 222.8h • estimated on finished: 211.3h
+Average revision rounds per finished task: ~0.7
+Output: 122 videos
+Queue now: to do 7 • in progress 7 • cs review 3 • needs fixing 3
+Projection next week: ~7 finished (7 in progress not yet handed off + 5 to-do due next week)
+
+IMAGE
+Tasks with activity: 33
+Finished: 15 • started: 15 • hit needs fixing: 7
+Tracked: 53.1h • estimated on finished: 35.5h
+Average revision rounds per finished task: ~0.5
+Output: 104 images
+Queue now: to do 28 • in progress 1 • cs review 2
+Projection next week: ~4 finished (1 in progress not yet handed off + 7 to-do due next week)
+
+TEAM
+Tracked vs capacity: 275.9h / 288h → 96% used
+Finished tasks: 225.7h tracked vs 246.8h estimated → 0.91 actual/estimate
+Hours on tasks not yet finished: 50.2h (carries forward)
+Finished total: 44
+Estimate reverts this week: 0
+
+Per person (video finished / image finished / tracked h of capacity)
+IGN 5 / 0 / 39.0h of 36h • KAR 2 / 0 / 38.5h of 36h • LEO 3 / 0 / 37.8h of 36h • PAO 3 / 1 / 37.7h of 36h • AGU 7 / 0 / 35.5h of 36h • AYC 0 / 14 / 34.2h of 36h • MAR 8 / 0 / 32.3h of 36h • ANA 1 / 1 / 20.8h of 36h
+
+Output counted from Air (no OUTPUT line): SH-20728: no OUTPUT line, Air=10; SH-20707: no OUTPUT line, Air=3; SH-16550: no OUTPUT line, Air=3; SH-16418: no OUTPUT line, Air=0 (no link); SH-2402: no OUTPUT line, Air=3; SH-1942: no OUTPUT line, Air=3
+
+INSIGHTS
+Team ran hot and efficient: 96% of capacity used, 44 tasks finished at 0.91 actual-vs-estimate, with output of 122 videos and 104 images and zero estimate reverts. Revisions cluster almost entirely in video — 21 of 72 active video tasks hit needs fixing versus 7 in image — though finished tasks still closed in under one round on average. Unfinished work clusters with KAR and LEO, who tracked full weeks (38.5h and 37.8h) for only 2 and 3 finished videos, while MAR shipped 8 in just 32.3h; much of the 50.2h carrying forward sits with those two. ANA is the only real free capacity (20.8h of 36h) — with 28 images in to-do and only 1 in progress, that's where the slack should go.
