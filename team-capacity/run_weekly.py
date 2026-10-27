@@ -88,7 +88,7 @@ def main():
     # report
     reverts = gate_reverts_in(ws, we)
     draft = R.render(sprint, ws, we, m, days, cap, reverts, "(pending)", label)
-    ins = (R.claude_insights(draft) if not a.dry_run else None) or R.fallback_insights(m, cap)
+    ins = (R.claude_insights(draft, m["open"]) if not a.dry_run else None) or R.fallback_insights(m, cap)
     text = R.render(sprint, ws, we, m, days, cap, reverts, ins, label)
     if not cal_ok: text += "\nNote: calendar feed failed, days-off not applied."
     if applied: text += f"\nRollover: {applied} tasks re-dated for next week ({sum(p['carried'] for p in plan)} carried)."

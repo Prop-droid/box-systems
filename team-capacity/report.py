@@ -42,14 +42,16 @@ def fallback_insights(m, cap):
     return (f"Team at {100 * m['tracked_total'] / tot:.0f}% of capacity; over 36h: {', '.join(over) or 'nobody'}. "
             f"{rev} ({V['rev_rounds']} rounds) vs image {I['rev_rounds']}. "
             f"Lowest tracked: {low[0][0] if low else 'n/a'}.")
-def claude_insights(report_body):
+def _clean(t): return t.replace(" — ", ", ").replace("—", ", ").replace(" – ", ", ").replace("–", "-")
+def claude_insights(report_body, open_map=None):
+    if open_map: report_body += "\n\nOpen tasks by person (kind:status -> count): " + str(open_map)
     prompt = ("You are writing the INSIGHTS block of a weekly creative-team report for Tomas (creative strategist). "
-              "Below are the numbers. Write 3-4 plain sentences, no markdown, no bullets, no headers: what moved, where revisions cluster, "
+              "Below are the numbers. Write 3-4 plain sentences, no markdown, no bullets, no headers, no em dashes: what moved, where revisions cluster, "
               "where unfinished work clusters by person, who has free capacity. Use the 3-letter codes. Do not restate every number.\n\n" + report_body)
     try:
         p = subprocess.run([C.CLAUDE_BIN, "-p", "--model", "claude-fable-5"], input=prompt, capture_output=True, text=True, timeout=240)
         txt = p.stdout.strip()
-        if p.returncode == 0 and 80 < len(txt) < 1500 and "#" not in txt[:3]: return txt
+        if p.returncode == 0 and 80 < len(txt) < 1500 and "#" not in txt[:3]: return _clean(txt)
     except Exception: pass
     return None
 def deliver(text, label, post_team, doc_id):
