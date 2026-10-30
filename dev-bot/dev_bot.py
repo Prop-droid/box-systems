@@ -11,7 +11,8 @@ Instances are configured via .env in BOT_DIR (default: script dir):
   CLAUDE_CWD=/home/tomas                 # cwd for claude sessions
   SYSTEM_PROMPT_FILES=/path/a:/path/b    # optional, concatenated; else default guardrails
   MODEL=claude-fable-5
-  EFFORT=xhigh                           # reasoning effort (low|medium|high|xhigh|max)
+  EFFORT=xhigh                           # reasoning effort (low|medium|high|xhigh|max);
+                                         # auto (or empty) = no --effort flag, model picks
   EXTRA_CHANNELS=ops-log                 # optional, extra home channels: plain human
                                          # messages there dispatch tasks too (bot/webhook
                                          # posts still ignored unless trusted + mention)
@@ -91,6 +92,14 @@ def load_env():
         if line and not line.startswith("#") and "=" in line:
             k, v = line.split("=", 1)
             os.environ.setdefault(k, v)
+
+
+def effort_args() -> list[str]:
+    """--effort for claude. EFFORT=auto (or empty) omits the flag so the model picks
+    its own effort per turn; the CLI only accepts low|medium|high|xhigh|max and
+    warns + falls back to default on anything else, so don't pass 'auto' through."""
+    level = os.environ.get("EFFORT", "xhigh").strip().lower()
+    return [] if level in ("", "auto") else ["--effort", level]
 
 
 def system_prompt() -> str:
@@ -350,7 +359,7 @@ async def compact_session(session_id: str, cwd: str | None = None, model: str | 
         flush_cmd = [
             CLAUDE_BIN, "-p", PRE_COMPACT_FLUSH_PROMPT, "--resume", session_id, "--fork-session",
             "--model", model or os.environ.get("MODEL", "claude-fable-5"),
-            "--effort", os.environ.get("EFFORT", "xhigh"),
+            *effort_args(),
             "--append-system-prompt", sys_prompt or system_prompt(),
         ]
         # CLAUDE_INVOKED_BY: memory-compiler hooks skip the fork (the real session's
@@ -482,7 +491,7 @@ async def run_claude(prompt: str, resume: str | None, on_block=None,
     cmd = [
         CLAUDE_BIN, "-p", prompt,
         "--model", model or os.environ.get("MODEL", "claude-fable-5"),
-        "--effort", os.environ.get("EFFORT", "xhigh"),
+        *effort_args(),
         "--dangerously-skip-permissions",
         "--output-format", "stream-json",
         "--verbose",
