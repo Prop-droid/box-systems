@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Dashboard tablet day/night mode + self-heal via Fully Kiosk REST.
-#   night: motion detection ON (low sensitivity), black screensaver, motion wakes
+#   night: black screensaver; camera motion does NOT wake it (touch does) —
+#          a walk-by lit the panel at 140 for 3 min (Tomas 2026-10-31 02:26)
 #   day:   motion detection ON (high sensitivity), screen blanks after idle, motion wakes
 #   relaunch: 09:00 daily — relaunch Fully if it was exited (movie night);
 #          needs Wireless debugging ON on the tablet for the adb path
@@ -48,6 +49,32 @@ f() {
 }
 in_screensaver() {
   curl -s -m 10 "http://$IP:2323/?password=$PW&cmd=deviceInfo&type=json" | grep -q "\"isInScreensaver\":true"
+}
+screen_brightness() { # live brightness as Fully reports it (0 = screensaver dim applied)
+  curl -s -m 10 "http://$IP:2323/?password=$PW&cmd=deviceInfo&type=json" \
+    | python3 -c "import json,sys; print(json.load(sys.stdin).get('screenBrightness',''))" 2>/dev/null
+}
+ensure_dark() { # black screensaver AND brightness at screensaverBrightness.
+  # A startScreensaver / any setting write while ALREADY in the screensaver
+  # leaves isInScreensaver=true with brightness back at 140 (seen 2026-10-31
+  # 02:33) — in_screensaver alone can't tell that apart from dark, so restart.
+  local want
+  want=$(curl -s -m 10 "http://$IP:2323/?password=$PW&cmd=listSettings&type=json" \
+    | python3 -c "import json,sys; print(json.load(sys.stdin).get('screensaverBrightness',''))" 2>/dev/null)
+  [ -z "$want" ] && want=0
+  if ! in_screensaver; then
+    f "cmd=startScreensaver"
+  elif [ "$(screen_brightness)" != "$want" ]; then
+    f "cmd=stopScreensaver"; sleep 2; f "cmd=startScreensaver"
+  else
+    return 0
+  fi
+  sleep 3
+  if in_screensaver && [ "$(screen_brightness)" = "$want" ]; then
+    echo "screensaver (re)started — dark (brightness $want)"
+  else
+    echo "screensaver restart did not reach dark state (brightness=$(screen_brightness), want $want)" >&2
+  fi
 }
 setting() { # setting <key> -> value from cached listSettings dump
   python3 -c "import json,sys; print(json.load(open('$STATE_DIR/tablet-settings.json')).get('$1',''))" 2>/dev/null
@@ -102,11 +129,13 @@ quiet_hours() {
   h=$(date +%H); [ "$h" -ge 23 ] || [ "$h" -lt 8 ]
 }
 apply_settings() { # apply_settings day|night — settings only, no screen commands
-  local sens=90
-  [ "$1" = night ] && sens=50
+  local sens=90 wake=true
+  # Night: motion must not stop the black screensaver — detection stays on so
+  # the 08:00 day run has nothing to restart, only the wake flags flip.
+  [ "$1" = night ] && { sens=50; wake=false; }
   f "cmd=setBooleanSetting&key=motionDetection&value=true"
-  f "cmd=setBooleanSetting&key=screenOnOnMotion&value=true"
-  f "cmd=setBooleanSetting&key=stopScreensaverOnMotion&value=true"
+  f "cmd=setBooleanSetting&key=screenOnOnMotion&value=$wake"
+  f "cmd=setBooleanSetting&key=stopScreensaverOnMotion&value=$wake"
   f "cmd=setStringSetting&key=motionSensitivity&value=$sens"
   f "cmd=setStringSetting&key=timeToScreensaverV2&value=180"
 }
@@ -160,7 +189,7 @@ case "${1:-}" in
     # 09:00 relaunch unit / rearm restore it; only they treat down as notable.
     ensure_alive || { echo "fully down — tolerated, relaunch/rearm will restore"; exit 0; }
     apply_settings night
-    f "cmd=startScreensaver"
+    ensure_dark
     ;;
   day)
     ensure_alive || { echo "fully down — tolerated, relaunch/rearm will restore"; exit 0; }
@@ -180,10 +209,10 @@ case "${1:-}" in
     # Drift check: a mode run that failed leaves stale settings (e.g. night
     # sensitivity 50 all day). Re-assert quietly when they don't match the hour.
     MODE=$(mode_for_hour)
-    WANT=90; [ "$MODE" = night ] && WANT=50
+    WANT=90; WAKE=True; [ "$MODE" = night ] && { WANT=50; WAKE=False; }
     fetch_settings
-    if [ "$(setting motionDetection)" != "True" ] || [ "$(setting motionSensitivity)" != "$WANT" ]; then
-      echo "settings drifted (motionDetection=$(setting motionDetection) sensitivity=$(setting motionSensitivity), want $MODE/$WANT) — re-applying"
+    if [ "$(setting motionDetection)" != "True" ] || [ "$(setting motionSensitivity)" != "$WANT" ] || [ "$(setting stopScreensaverOnMotion)" != "$WAKE" ]; then
+      echo "settings drifted (motionDetection=$(setting motionDetection) sensitivity=$(setting motionSensitivity) stopScreensaverOnMotion=$(setting stopScreensaverOnMotion), want $MODE/$WANT/$WAKE) — re-applying"
       apply_settings "$MODE"
     fi
     # startURL drift: a Fully relaunch after an outage can come back with a stale
@@ -195,7 +224,7 @@ case "${1:-}" in
       f "cmd=loadStartURL"
     fi
     if [ "$MODE" = night ] || [ "${FORCE:-0}" = 1 ]; then
-      in_screensaver || f "cmd=startScreensaver"
+      ensure_dark
     fi
     ;;
   *) echo "usage: $0 night|day|rearm" >&2; exit 2 ;;
