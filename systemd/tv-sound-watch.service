@@ -1,0 +1,10 @@
+[Unit]
+Description=Log Livingroom TV (XR-65A80L) power + Speakers output transitions every 5 s (eARC echo debug)
+
+[Service]
+ExecStart=/usr/bin/python3 %h/systems/tv-sound/bravia.py watch
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=default.target

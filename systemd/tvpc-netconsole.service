@@ -1,0 +1,11 @@
+[Unit]
+Description=Receive tv-pc kernel netconsole on UDP 6666 (hard-freeze capture)
+
+[Service]
+ExecStartPre=-%h/systems/tv-pc/ensure_fw_rule.sh
+ExecStart=/usr/bin/python3 %h/systems/tv-pc/netconsole_listener.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

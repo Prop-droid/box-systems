@@ -1,0 +1,12 @@
+[Unit]
+Wants=adb-server.service
+After=adb-server.service
+Description=Stream Livingroom TV (XR-65A80L) logcat HDMI/CEC/eARC/audio lines via adb (eARC echo debug)
+
+[Service]
+ExecStart=/bin/bash %h/systems/tv-sound/adb_monitor.sh
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=default.target

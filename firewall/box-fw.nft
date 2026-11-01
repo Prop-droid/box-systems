@@ -20,5 +20,6 @@ table inet fw {
 		udp dport { 5353, 21027, 22000 } accept              # mDNS, syncthing discovery+quic
 		tcp dport 22000 accept                               # syncthing
 		ip saddr 192.168.1.89 tcp dport 8765 accept          # Lenovo tablet -> tablet-dash only
+		ip saddr 192.168.1.79 udp dport 6666 accept          # tv-pc netconsole -> tvpc-netconsole.service
 	}
 }

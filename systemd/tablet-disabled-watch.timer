@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily 09:30 tablet debloat check (disabled apps still disabled)
+
+[Timer]
+OnCalendar=*-*-* 09:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

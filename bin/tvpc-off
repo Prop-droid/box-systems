@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# tvpc-off — put the TV PC into a real power-off (S5), not sleep, e.g. before opening the case.
+# From the box, "tv-pc offline" cannot tell S3 (asleep, board live) from S5 (off). This makes it certain:
+# wakes it if needed → `systemctl poweroff` → waits until SSH stops answering.
+# Usage: tvpc-off
+set -u
+SSH="ssh -o ConnectTimeout=4 -o BatchMode=yes root@100.74.97.97"
+if ! $SSH true 2>/dev/null; then
+  echo "tv-pc not answering (asleep or off) → sending WoL"
+  "$HOME/systems/bin/wake-tv-pc" --wait || { echo "no answer after WoL: treat as already OFF, or unplugged"; exit 0; }
+fi
+echo "tv-pc up → systemctl poweroff"
+$SSH 'systemctl poweroff' 2>/dev/null
+for i in $(seq 1 24); do
+  sleep 5
+  $SSH true 2>/dev/null || { echo "tv-pc OFF (S5) after $((i*5))s. Flip the PSU switch before opening the case."; exit 0; }
+done
+echo "still answering after 120s: poweroff did not take"; exit 1

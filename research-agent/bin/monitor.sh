@@ -46,8 +46,17 @@ TEE_PID=$!
 finish() {
   local rc=$?
   if [ "$rc" -ne 0 ]; then
+    # Name the cause when the log makes it obvious. Atria answers HTTP 403 with
+    # code 40302 when the workspace plan has no API tier (seen 2026-11-01); a key
+    # rotation does not fix that, the plan does. HTTP 401 = dead/rotated key.
+    local cause=""
+    if grep -q '40302' "$LOG" 2>/dev/null; then
+      cause=" Cause: Atria plan has no API access (code 40302). Restore the API tier at app.tryatria.com; rotating the key will not help."
+    elif grep -q 'HTTP Error 401' "$LOG" 2>/dev/null; then
+      cause=" Cause: Atria rejected the key (401). Rotate ~/.config/atria/key from app.tryatria.com on Mac + box."
+    fi
     bash "$HOME/systems/lib/tg-notify.sh" "research-monitor FAILED (rc=$rc)" \
-      "Competitor feed NOT updated today. See $LOG or: journalctl --user -u research-monitor.service" high || true
+      "Competitor feed NOT updated today.${cause} See $LOG or: journalctl --user -u research-monitor.service" high || true
   fi
   exec 1>&- 2>&-; [ -n "${TEE_PID:-}" ] && wait "$TEE_PID" 2>/dev/null || true
 }

@@ -83,7 +83,8 @@ check bq-clickup-perf  "bq-clickup-perf PERF_DRY_RUN (writes nothing)" 240 \
   'TOKEN_FILE="$HOME/.config/clickup/pk" PERF_DRY_RUN=1 python3 bq-clickup-perf/bq_to_clickup_perf.py'
 check launch-autofill  "launch-autofill convention lint (reads only)" 240 \
   'AUTOFILL_LINT=1 python3 launch-autofill/autofill.py'
-check iteration-sugg   "iteration-suggestions DRY_RUN (no post)" 240 \
+# iteration-sugg runs a real claude -p (sonnet) call: 3.5-4.2 min in the log, so 240 s timed it out (2026-11-01).
+check iteration-sugg   "iteration-suggestions DRY_RUN (no post)" 480 \
   'DRY_RUN=1 bash iteration-suggestions/run.sh'
 check research-deepdive "research-agent deepdive --dry-run" 90 \
   'bash research-agent/bin/deepdive.sh --dry-run'

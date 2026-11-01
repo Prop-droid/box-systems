@@ -86,3 +86,6 @@ public-share/rch5evij396dmbq/index.html
 laya/.venv/
 laya/*.jsonl
 laya/ft/
+
+# brain MCP re-auth: transient authorize URL (holds PKCE state)
+brain-push/reauth-url.txt

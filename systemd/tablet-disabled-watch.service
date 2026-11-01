@@ -1,0 +1,8 @@
+[Unit]
+Description=Tablet: alert if a debloated (disabled) app was re-enabled, e.g. by a Play Store update
+After=network-online.target
+
+[Service]
+Type=oneshot
+Environment=HOME=%h
+ExecStart=%h/systems/tablet-disabled-watch.sh

@@ -60,6 +60,11 @@ FIELDS = {
 EXCLUDE_NAME = re.compile(
     r"applovin|tiktok|facebook\s*-|bc/cc|retargeting|scaling|-\s*cpp", re.I)
 
+# 40-bag cuts whose ONLY gap is the LP are on hold: Tomas is waiting on the new
+# 40-bag LP URL and keeps LP empty on purpose (2026-10-16, restated 10-23). They
+# go in a one-line "held" note, not the missing count. Set to None to un-hold.
+HOLD_LP_ONLY = re.compile(r"40\s*bag", re.I)
+
 
 def log(msg):
     LOG.parent.mkdir(parents=True, exist_ok=True)
@@ -129,9 +134,13 @@ def empty(task, fid):
 
 
 def main():
-    found = []
+    found, held = [], []
     for t in fetch():
         missing = [label for label, fid in FIELDS.items() if empty(t, fid)]
+        if (missing == ["LP"] and HOLD_LP_ONLY
+                and HOLD_LP_ONLY.search(t.get("name", ""))):
+            held.append(t.get("custom_id") or t["id"])
+            continue
         if missing:
             found.append({
                 "id": t["id"],
@@ -152,6 +161,9 @@ def main():
         kind = "subtask" if x["subtask"] else "task"
         lines.append(f"- **{x['custom_id']}** ({x['status']}, {kind}) "
                      f"[{x['name']}]({x['url']}) — missing: {', '.join(x['missing'])}")
+    if held:
+        lines += ["", f"Held, 40-bag waiting on LP URL ({len(held)}): "
+                  + ", ".join(sorted(held))]
     report = "\n".join(lines) + "\n"
     if not DRY:
         REPORTS.mkdir(parents=True, exist_ok=True)

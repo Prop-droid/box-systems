@@ -1,0 +1,10 @@
+[Unit]
+Description=Log tv-pc temps/loads/fans every 10 s from CoolerControl (hard-freeze capture)
+
+[Service]
+ExecStart=/usr/bin/python3 %h/systems/tv-pc/temp_logger.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

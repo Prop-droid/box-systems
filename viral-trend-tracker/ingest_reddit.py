@@ -21,7 +21,11 @@ def heat(term):
     try:
         r = subprocess.run([RDT, "search", term, "-s", "relevance", "-t", "week",
                             "-n", str(PER_TERM), "--json"], capture_output=True, text=True, timeout=45)
-        children = json.loads(r.stdout)["data"]["data"]["children"]
+        payload = json.loads(r.stdout)
+        if payload.get("ok") is False:  # rdt error envelope, e.g. {"error": {"code": "forbidden"}}
+            err = payload.get("error") or {}
+            raise RuntimeError(f"rdt {err.get('code')}: {err.get('message')}")
+        children = payload["data"]["data"]["children"]
     except Exception as e:
         print(f"FAIL {term}: {e}", file=sys.stderr)
         return None
@@ -56,6 +60,13 @@ def main():
     write_merged("reddit", "reddit", rows, ok)
     write_receipts("reddit", "reddit", receipts)
     if ok < MIN_OK_TERMS:
+        if ok == 0:
+            # Every term failing = the lane, not the terms. The 2026-10-27..11-01
+            # outage was Reddit rejecting the saved cookies ("forbidden"); anonymous
+            # search.json is 403 from this box, so the only fix is fresh cookies.
+            print("reddit lane DOWN: 0 terms returned data. If the errors say 'forbidden', Reddit rejected the saved "
+                  "cookies — refresh ~/.config/rdt-cli/credential.json (export reddit.com cookies from a logged-in "
+                  "browser; `rdt status` must show authenticated) and re-run.", file=sys.stderr)
         sys.exit(1)
 
 

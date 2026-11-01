@@ -170,6 +170,11 @@ command to prove a change works before the timer fires.
   tablet-fully-relaunch units) brings Fully back after Tomas exits it for
   movies — day/night modes exit 0 when Fully is down (intentional exits are
   not failures; 2026-08-24). adb relaunch needs Wireless debugging ON.
+- **tablet-disabled-watch.sh** - daily 09:30 (`tablet-disabled-watch.timer`):
+  checks that every package in `tablet-disabled-expected.txt` is still disabled
+  on the tablet (a Play Store update can re-enable one). Alert only, Discord
+  #ops-log once per distinct problem and once per adb outage. Edit the list when
+  the debloat set changes. Dry run: `DRY_RUN=1 bash tablet-disabled-watch.sh`.
 
 ## systemd user-unit patterns
 
