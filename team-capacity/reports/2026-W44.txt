@@ -1,0 +1,40 @@
+WEEK SPRINT S44 (Oct 26 – Oct 31)
+
+TOMAS – TOTAL TEAM PERFORMANCE
+
+Days-off
+Anastasiia out 2 day(s) (Anastasiia Day Off)
+Aicha out 2 day(s) (Ayca Mis - National holiday; Republic Day Eve (half-day))
+
+VIDEO
+Tasks with activity: 80
+Finished: 35 • started: 37 • hit needs fixing: 15
+Tracked: 226.3h • estimated on finished: 271.0h
+Average revision rounds per finished task: ~0.5
+Output: 147 videos
+Queue now: to do 20 • in progress 7 • cs review 8 • needs fixing 4
+Projection next week: ~12 finished (7 in progress not yet handed off + 15 to-do due next week)
+
+IMAGE
+Tasks with activity: 56
+Finished: 12 • started: 16 • hit needs fixing: 3
+Tracked: 31.9h • estimated on finished: 32.5h
+Average revision rounds per finished task: ~0.3
+Output: 45 images
+Queue now: to do 33 • in progress 3 • cs review 1 • needs fixing 1
+Projection next week: ~6 finished (3 in progress not yet handed off + 8 to-do due next week)
+
+TEAM
+Tracked vs capacity: 258.1h / 259h → 100% used
+Finished tasks: 211.4h tracked vs 303.5h estimated → 0.70 actual/estimate
+Hours on tasks not yet finished: 46.7h (carries forward)
+Finished total: 47
+Estimate reverts this week: 0
+
+Per person (video finished / image finished / tracked h of capacity)
+LEO 4 / 0 / 44.9h of 36h • IGN 8 / 0 / 39.0h of 36h • KAR 6 / 1 / 38.2h of 36h • PAO 7 / 0 / 37.6h of 36h • AGU 6 / 0 / 31.7h of 36h • MAR 6 / 0 / 31.1h of 36h • AYC 0 / 9 / 18.4h of 22h • ANA 0 / 2 / 17.3h of 22h
+
+Output counted from Air (no OUTPUT line): SH-21222: no OUTPUT line, Air=0 (HTTP Error 404: Not Found); SH-21221: no OUTPUT line, Air=0; SH-21153: no OUTPUT line, Air=5; SH-21146: no OUTPUT line, Air=4; SH-21144: no OUTPUT line, Air=0 (no link); SH-21056: no OUTPUT line, Air=10; SH-18482: no OUTPUT line, Air=3; SH-2404: no OUTPUT line, Air=3; SH-2398: no OUTPUT line, Air=3
+
+INSIGHTS
+Video did the moving this week with 35 tasks finished and 147 videos out, the team ran at full capacity, and finished work landed at 0.70 of estimate, so estimates are still running about 30 percent fat. Revisions are a video problem and they cluster on MAR, who holds 3 of the 6 open needs fixing tasks on top of 2 in cs review. Unfinished work piles up on AYC, who has 33 image to-dos queued despite being the top image finisher around two days off, and 46.7h of in-progress hours carry into next week. AGU has the clearest free capacity at 31.7h of 36 with only routine open load, while LEO ran 44.9h against 36 and is the one to watch for overload rather than for slack.

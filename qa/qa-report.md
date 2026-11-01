@@ -1,6 +1,6 @@
 # ~/systems QA smoke report
 
-- Run: 2026-10-18 08:00:13 EEST
+- Run: 2026-11-01 08:00:00 EET
 - Host: tomas-agent-box
 - Checks: 9 pass, 1 fail, 16 gaps (no safe dry-run)
 

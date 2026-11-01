@@ -1,16 +1,19 @@
-📈 **Viral trends — week of Oct 19**
+📈 **Viral trends — week of Oct 26**
 
 **3 trends worth knowing**
 
-- **Functional candy** — Breakout signal this week: Reddit TMS 95.5, cross-platform rising with the highest acceleration on the board. The market is actively sorting "candy that does something" from regular candy. SHA is that product without needing to say it.
+- **healthy dessert**: Highest momentum score this week (TMS 68.6), rising simultaneously on YouTube (77.7), Reddit, and competitor ad spend. SHA is a healthy dessert at 70 calories; this audience is actively searching for exactly what SHA is, and competitors are already buying into it.
 
-- **GLP-1 snacks** — Fastest-accelerating watchlisted term (velocity 0.42, acceleration 0.62); top YouTube video has 1.7M views on GLP-1 snacks at Costco. Audience is hunting low-cal, filling snacks to fit their routine. SHA answers the search at 70 cal / 26g fiber with zero drug-adjacent framing required.
+- **low calorie dessert**: TMS 65.1, accelerating; sparks are up nearly 5x over 8 weeks across X and Reddit. SHA's 70-calorie number has an organic search wave to land on right now.
 
-- **Candy salad** — Rising on Reddit, X, and YouTube; SmartSweets is already running "Candy Salad, 86% Less Sugar" ads, confirming the format works for better-for-you candy. SHA's variety pack is a built-in candy salad.
+- **late night snacks**: Heat 1.334, second-highest of all tracked terms, consistent across YouTube (62M+ views), Reddit, and X for six weeks running. SHA's nightly treat positioning is a direct fit with no stretch required.
 
 **1 suggested brief**
 
-**Title:** My Nightly Candy Salad
-**Angle:** Creator pours multiple SHA flavors into a bowl, builds their nightly candy mix as pure ritual with no health framing.
-**Format:** Short vertical video, 15-20s
-**Hook:** Caption cold open, "building my candy salad" over a bag-pour sound, flavor mix reveal at the end. Nightly treat territory, not supplement territory.
+**Title:** What I Actually Eat at Night
+
+**Angle:** Real person walks through their late-night snack rotation, and Shameless is the only thing that actually tastes like candy.
+
+**Format:** Short video, 15 to 25 seconds, UGC-style
+
+**Hook:** Phone screen reads 11:43pm. Hand reaches into a Shameless bag, pours a few pieces into palm, eats one. No voiceover. Caption cold-opens: "this is the only candy I keep in the house."

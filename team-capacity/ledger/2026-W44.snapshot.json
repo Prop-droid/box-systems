@@ -1,0 +1,178 @@
+{
+ "week": "2026-W44",
+ "run": "2026-10-31T06:00:00.414713+02:00",
+ "kinds": {
+  "vid": {
+   "active": 80,
+   "finished": 35,
+   "output": 147,
+   "started": 37,
+   "nf_tasks": 15,
+   "est_h": 271.0,
+   "tracked_h": 226.3,
+   "rev_rounds": 0.5,
+   "proj": 12.0,
+   "proj_parts": {
+    "todo_due": 15,
+    "mid": 7
+   },
+   "queue": {
+    "to do": 20,
+    "cs review": 8,
+    "in progress": 7,
+    "needs fixing": 4
+   }
+  },
+  "img": {
+   "active": 56,
+   "started": 16,
+   "finished": 12,
+   "output": 45,
+   "nf_tasks": 3,
+   "est_h": 32.5,
+   "tracked_h": 31.9,
+   "rev_rounds": 0.3,
+   "proj": 6.0,
+   "proj_parts": {
+    "mid": 3,
+    "todo_due": 8
+   },
+   "queue": {
+    "in progress": 3,
+    "to do": 33,
+    "cs review": 1,
+    "needs fixing": 1
+   }
+  }
+ },
+ "per": {
+  "ANA": {
+   "tracked": 17.30272388888889,
+   "fin_img": 2,
+   "est": 0.0
+  },
+  "IGN": {
+   "tracked": 39.0,
+   "fin_vid": 8,
+   "est": 50.0
+  },
+  "PAO": {
+   "fin_vid": 7,
+   "est": 56.0,
+   "tracked": 37.583333333333336
+  },
+  "LEO": {
+   "tracked": 44.85544055555555,
+   "fin_vid": 4,
+   "est": 37.0
+  },
+  "AGU": {
+   "tracked": 31.666666666666657,
+   "fin_vid": 6,
+   "est": 36.0
+  },
+  "MAR": {
+   "tracked": 31.068551388888892,
+   "fin_vid": 6,
+   "est": 42.0
+  },
+  "KAR": {
+   "tracked": 38.21666666666666,
+   "fin_vid": 6,
+   "est": 58.0,
+   "fin_img": 1
+  },
+  "AYC": {
+   "fin_img": 9,
+   "est": 24.5,
+   "tracked": 18.446538888888888
+  }
+ },
+ "open": {
+  "ANA": {
+   "img:in progress": 2,
+   "img:cs review": 1,
+   "vid:to do": 3,
+   "vid:in progress": 1
+  },
+  "MAR": {
+   "vid:to do": 2,
+   "vid:cs review": 2,
+   "vid:needs fixing": 3,
+   "vid:in progress": 1
+  },
+  "PAO": {
+   "vid:to do": 2,
+   "vid:cs review": 3,
+   "vid:in progress": 1
+  },
+  "IGN": {
+   "vid:to do": 2,
+   "vid:cs review": 1,
+   "vid:in progress": 1
+  },
+  "LEO": {
+   "vid:to do": 3,
+   "vid:in progress": 1,
+   "vid:cs review": 2
+  },
+  "AYC": {
+   "img:to do": 33,
+   "img:needs fixing": 1,
+   "img:in progress": 1
+  },
+  "KAR": {
+   "vid:to do": 3,
+   "vid:in progress": 1,
+   "vid:needs fixing": 1,
+   "vid:cs review": 1
+  },
+  "AGU": {
+   "vid:to do": 5,
+   "vid:in progress": 1,
+   "vid:cs review": 1
+  }
+ },
+ "capacity": {
+  "IGN": 36.0,
+  "LEO": 36.0,
+  "AGU": 36.0,
+  "PAO": 36.0,
+  "KAR": 36.0,
+  "MAR": 36.0,
+  "ANA": 21.6,
+  "AYC": 21.6
+ },
+ "days_off": {
+  "IGN": [],
+  "LEO": [],
+  "AGU": [],
+  "PAO": [],
+  "KAR": [],
+  "MAR": [],
+  "ANA": [
+   [
+    "2026-10-26",
+    7.2,
+    "Anastasiia Day Off"
+   ],
+   [
+    "2026-10-27",
+    7.2,
+    "Anastasiia Day Off"
+   ]
+  ],
+  "AYC": [
+   [
+    "2026-10-28",
+    7.2,
+    "Republic Day Eve (half-day)"
+   ],
+   [
+    "2026-10-29",
+    7.2,
+    "Ayca Mis - National holiday"
+   ]
+  ]
+ }
+}
