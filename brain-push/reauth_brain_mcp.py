@@ -26,7 +26,7 @@ The authorize URL is printed to stdout (journalctl --user -u brain-reauth) and t
 ~/systems/brain-push/reauth-url.txt (deleted on exit). Completion or failure is
 announced through lib/tg-notify.sh.
 """
-import argparse, base64, hashlib, json, os, secrets, subprocess, sys, threading, time
+import argparse, base64, hashlib, json, os, secrets, signal, subprocess, sys, threading, time
 import urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -184,6 +184,9 @@ def main():
 
     n = 0
     expires_at = 0
+    # `systemctl --user stop brain-reauth` sends SIGTERM; turn it into SystemExit so the
+    # finally block below still removes the serve path and the listener.
+    signal.signal(signal.SIGTERM, lambda *_: sys.exit("terminated"))
     try:
         if not Catcher.event.wait(a.timeout):
             notify("brain re-auth expired", f"authorize URL not used within {a.timeout // 3600}h; "
