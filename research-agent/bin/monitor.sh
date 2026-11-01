@@ -1,7 +1,9 @@
 #!/bin/bash
 # Research agent — competitor monitor (Phase 2).
-# Cheap, NO-LLM. Pulls active competitor ads via the Atria skill, diffs ad IDs
-# against last-seen state, and appends NEW ads to the feed the /research tab reads.
+# Cheap, NO-LLM. Pulls active competitor ads via the Atria skill (falls back to the
+# public Meta Ad Library under Camoufox, bin/adlib_pull.py, when the Atria API is
+# unavailable), diffs ad IDs against last-seen state, and appends NEW ads to the
+# feed the /research tab reads.
 # Also rebuilds watchlist.json from the live followed-brand list.
 #
 # Manual run:  bash monitor.sh
@@ -51,9 +53,9 @@ finish() {
     # rotation does not fix that, the plan does. HTTP 401 = dead/rotated key.
     local cause=""
     if grep -q '40302' "$LOG" 2>/dev/null; then
-      cause=" Cause: Atria plan has no API access (code 40302). Restore the API tier at app.tryatria.com; rotating the key will not help."
+      cause=" Cause: Atria plan has no API access (code 40302) AND the Meta Ad Library fallback (bin/adlib_pull.py via Camoufox) failed too — see the log."
     elif grep -q 'HTTP Error 401' "$LOG" 2>/dev/null; then
-      cause=" Cause: Atria rejected the key (401). Rotate ~/.config/atria/key from app.tryatria.com on Mac + box."
+      cause=" Cause: Atria rejected the key (401) and the Meta Ad Library fallback failed too. Rotate ~/.config/atria/key from app.tryatria.com on Mac + box."
     fi
     bash "$HOME/systems/lib/tg-notify.sh" "research-monitor FAILED (rc=$rc)" \
       "Competitor feed NOT updated today.${cause} See $LOG or: journalctl --user -u research-monitor.service" high || true
@@ -72,15 +74,38 @@ command -v python3 >/dev/null || { echo "FAIL: python3 not on PATH"; exit 2; }
 # 1) Pull fresh active ads (writes atria-swipe-<date>.jsonl into ATRIA_OUT_DIR).
 #    MONITOR_BRAND_IDS = space-separated Atria brand ids to watch ONLY those
 #    (e.g. "m107585658730958 m112448499199569"). Unset = all followed brands.
+#    Atria first; when it fails (plan-gated 403/40302 since 2026-11-01) fall back to
+#    the public Meta Ad Library rendered under Camoufox (bin/adlib_pull.py). Same
+#    file shape, so steps 2-3, the lanes engine and the CCC Competitors tab are
+#    unchanged. The fallback needs MONITOR_BRAND_IDS — it cannot read Atria's roster.
+ADLIB_SCRIPT="${ADLIB_SCRIPT:-$SCRIPT_DIR/adlib_pull.py}"
+ADLIB_PY="${ADLIB_PY:-$HOME/.local/share/uv/tools/scrapling/bin/python}"
+PULL_SOURCE=""
+ATRIA_ERR="$(mktemp)"
 echo ">> atria pull ${MONITOR_BRAND_IDS:+(brands: $MONITOR_BRAND_IDS)} ..."
-if ! python3 "$ATRIA_SCRIPT" ${MONITOR_BRAND_IDS:-} >>"$LOG" 2>&1; then
+if python3 "$ATRIA_SCRIPT" ${MONITOR_BRAND_IDS:-} >>"$LOG" 2>"$ATRIA_ERR"; then
+  PULL_SOURCE=atria
+elif grep -q '40302' "$ATRIA_ERR"; then
+  echo "atria: plan has no API surface (403/40302) — skipping the retry."
+else
   echo "atria pull errored — retrying once in 60s ..."
   sleep 60
-  if ! python3 "$ATRIA_SCRIPT" ${MONITOR_BRAND_IDS:-} >>"$LOG" 2>&1; then
-    echo "FAIL: atria pull errored twice (see log). Aborting without touching state."
+  python3 "$ATRIA_SCRIPT" ${MONITOR_BRAND_IDS:-} >>"$LOG" 2>>"$ATRIA_ERR" && PULL_SOURCE=atria
+fi
+cat "$ATRIA_ERR" >>"$LOG"; rm -f "$ATRIA_ERR"
+if [ -z "$PULL_SOURCE" ]; then
+  echo ">> fallback: Meta Ad Library pull via Camoufox ..."
+  [ -x "$ADLIB_PY" ] || { echo "FAIL: $ADLIB_PY missing (scrapling uv tool env). Aborting without touching state."; exit 3; }
+  [ -n "${MONITOR_BRAND_IDS:-}" ] || { echo "FAIL: the fallback needs MONITOR_BRAND_IDS (monitor.conf). Aborting without touching state."; exit 3; }
+  if "$ADLIB_PY" "$ADLIB_SCRIPT" $MONITOR_BRAND_IDS >>"$LOG" 2>&1; then
+    PULL_SOURCE=meta-ad-library
+  else
+    echo "FAIL: atria AND Meta Ad Library pulls errored (see log). Aborting without touching state."
     exit 3
   fi
 fi
+export PULL_SOURCE
+echo "   source: $PULL_SOURCE"
 
 # 2) Find the newest swipe JSONL
 LATEST="$(ls -t "$ATRIA_OUT_DIR"/atria-swipe-*.jsonl 2>/dev/null | head -1 || true)"
@@ -95,6 +120,7 @@ from datetime import datetime, timezone
 
 latest, seen_path, feed_path, watch_path, status_path = sys.argv[1:6]
 now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+src = os.environ.get("PULL_SOURCE", "atria")   # atria | meta-ad-library
 
 ads = []
 for line in open(latest, encoding="utf-8"):
@@ -112,7 +138,14 @@ if not first_run:
     try: seen = set(json.load(open(seen_path)))
     except Exception: seen = set()
 
-new_ads = [a for a in ads if ad_key(a) and ad_key(a) not in seen]
+# "New" = never seen before AND launched recently. The seen-state is cumulative
+# (not just last night's pull) and the launch guard exists because the Ad Library
+# fallback reads the newest ~120 ads per brand in relevancy order: an older ad
+# drifting into that window is not a launch.
+def recent(a):
+    d = a.get("days_running")
+    return d is None or d <= 14
+new_ads = [a for a in ads if ad_key(a) and ad_key(a) not in seen and recent(a)]
 
 # --- emit feed entries ---
 def feed_item(a):
@@ -129,6 +162,7 @@ def feed_item(a):
         "summary": f"Angles: {angles}. Running {a.get('variant_count',1)} creator/code variant(s). Format {a.get('format','?')}.",
         "url": a.get("ad_library_url") or a.get("link_url") or "",
         "thumbnail": media[0] if media else "",
+        "via": src,
     }
 
 emitted = 0
@@ -169,14 +203,14 @@ with open(feed_path, "a", encoding="utf-8") as f:
                     f.write(json.dumps(feed_item(a), ensure_ascii=False) + "\n")
                     emitted += 1
 
-# --- update seen state (all current keys) ---
+# --- update seen state (cumulative: everything ever seen + all current keys) ---
 all_keys = sorted({ad_key(a) for a in ads if ad_key(a)})
 def write_atomic(path, obj, **kw):
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as fh:
         json.dump(obj, fh, **kw)
     os.replace(tmp, path)
-write_atomic(seen_path, all_keys)
+write_atomic(seen_path, sorted(seen | set(all_keys)))
 
 # --- rebuild watchlist.json from live brands ---
 from collections import Counter, defaultdict
@@ -193,7 +227,7 @@ for bname, n in sorted(brand_counts.items(), key=lambda x: -x[1]):
         result = f"{n} active, no change"
     watch.append({
         "source": f"atria:{bname.lower().replace(' ','-')}",
-        "label": f"{bname} (Atria)", "type": "competitor-ads",
+        "label": f"{bname} ({'Atria' if src == 'atria' else 'Meta Ad Library'})", "type": "competitor-ads",
         "cadence": "daily", "enabled": True, "last_checked": now,
         "last_result": result,
     })
@@ -206,10 +240,11 @@ if os.path.exists(status_path):
     except Exception: status = {}
 status["last_monitor_run"] = now
 status["monitors_ok"] = True
+status["source"] = src
 status.pop("note", None)
 write_atomic(status_path, status, indent=2)
 
-print(f"ads={len(ads)} new={len(new_ads)} emitted_feed={emitted} first_run={first_run}")
+print(f"ads={len(ads)} new={len(new_ads)} emitted_feed={emitted} first_run={first_run} source={src}")
 PY
 
 echo "[$(date)] monitor DONE"

@@ -62,6 +62,13 @@ command to prove a change works before the timer fires.
 - **research-agent/** — three lanes, one dir:
   - `bin/monitor.sh` — daily 01:45, cheap NO-LLM Atria competitor-ad diff into the
     CCC /research feed (brand set in `monitor.conf`). Manual: `bash bin/monitor.sh`.
+    Source chain: Atria API first; on failure (plan-gated 403/40302 since
+    2026-11-01) `bin/adlib_pull.py` renders the public Meta Ad Library under
+    Camoufox (scrapling uv-tool python) and writes the same
+    `atria-swipe-<date>-gr-ns-plus10.jsonl`, so CCC/lanes need no change.
+    `status.json.source` says which ran. Seen-state is cumulative; a "new" ad must
+    also have launched ≤14d ago. Test one brand without touching the real dir:
+    `ATRIA_OUT_DIR=/tmp/x ADLIB_SCROLLS=1 bin/adlib_pull.py m107585658730958`.
   - `bin/deepdive.sh` — headless research pass draining one queued question.
     Dry run: `bash bin/deepdive.sh --dry-run`. NOTE: its original timer
     (`research-deepdive.timer`, daily 01:00) was REPURPOSED to the lanes engine —
