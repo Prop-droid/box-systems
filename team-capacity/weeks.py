@@ -23,3 +23,8 @@ def weekdays_1700(mon_ms):
 def fmt_range(ws, we):
     a, b = from_ms(ws), from_ms(we)
     return f"{a.strftime('%b %d')} – {b.strftime('%b %d')}"
+def label_for(we_ms):
+    """ISO label of the week a window REPORTS: the week of the last Friday at or before the window end.
+    Window starts are Saturdays (previous run end), so labelling by start would repeat last week's label."""
+    d = from_ms(we_ms); fri = d - timedelta(days=(d.weekday() - 4) % 7)
+    label, wk = iso_label(fri); return label, wk, ms(monday_of(fri))

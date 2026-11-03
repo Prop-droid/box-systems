@@ -5,7 +5,7 @@ set -uo pipefail
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
 NOTIFY="$HOME/systems/lib/tg-notify.sh"
-TIMERS="bq-clickup-perf verdict-miner iteration-suggestions compliance-scrub trend-gap winners-refresh comments-digest research-monitor ad-rank vtt-ingest vtt-digest research-deepdive sha-weekly-report creative-feedback-synth gbrain-weekly raw-ingest-scan agents-weekly agents-monthly box-doctor qa-smoke night-queue-resume self-improve-digest correction-capture skill-telemetry ccc-review ea-calendar launch-details-scan claude-auth-check tablet-disabled-watch"
+TIMERS="bq-clickup-perf verdict-miner iteration-suggestions compliance-scrub trend-gap winners-refresh comments-digest research-monitor ad-rank vtt-ingest vtt-digest research-deepdive sha-weekly-report creative-feedback-synth gbrain-weekly raw-ingest-scan agents-weekly agents-monthly box-doctor qa-smoke night-queue-resume self-improve-digest correction-capture skill-telemetry ccc-review ea-calendar launch-details-scan claude-auth-check tablet-disabled-watch tablet-voice-micaudit"
 WD_DIR="$HOME/systems/watchdog"; mkdir -p "$WD_DIR/reports"
 fails=(); oks=()
 for t in $TIMERS; do
@@ -14,7 +14,7 @@ for t in $TIMERS; do
 done
 systemctl --user is-active syncthing.service >/dev/null 2>&1 || fails+=("syncthing INACTIVE")
 tailscale status >/dev/null 2>&1 || fails+=("tailscale DOWN")
-for svc in camofox creative-command-center tablet-dash agentic-bots; do systemctl --user is-active "$svc.service" >/dev/null 2>&1 || fails+=("$svc.service INACTIVE"); done
+for svc in camofox creative-command-center tablet-dash agentic-bots tablet-voice; do systemctl --user is-active "$svc.service" >/dev/null 2>&1 || fails+=("$svc.service INACTIVE"); done
 [ -e "$HOME/.gbrain/brain.pglite" ] || fails+=("gbrain data missing")
 TS="$(date "+%Y-%m-%d %H:%M")"
 REPORT="$WD_DIR/reports/$(date +%Y-%m-%d).md"

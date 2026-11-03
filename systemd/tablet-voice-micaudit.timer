@@ -1,0 +1,9 @@
+[Unit]
+Description=Every 10 min: tablet-voice mic audit (the lit rule, checked without trusting the page)
+
+[Timer]
+OnCalendar=*:0/10
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,19 +1,16 @@
-📈 **Viral trends — week of Oct 26**
+📈 **Viral trends — week of Nov 02**
 
 **3 trends worth knowing**
 
-- **healthy dessert**: Highest momentum score this week (TMS 68.6), rising simultaneously on YouTube (77.7), Reddit, and competitor ad spend. SHA is a healthy dessert at 70 calories; this audience is actively searching for exactly what SHA is, and competitors are already buying into it.
+- **late night snacks** — Reddit 10k+ engagement + YouTube 62M views, accelerating this week (velocity 0.019, acceleration 0.079). Exactly SHA's nightly treat territory; people are actively searching for a snack ritual they don't have to justify.
 
-- **low calorie dessert**: TMS 65.1, accelerating; sparks are up nearly 5x over 8 weeks across X and Reddit. SHA's 70-calorie number has an organic search wave to land on right now.
+- **low sugar candy** — highest watchlist heat score this week (1.56), YouTube 11.6M views, X 183k impressions; SmartSweets is actively running Meta ads here right now. SHA's 3g sugar / 26g fiber lands as a direct stat counter to whatever they're spending on.
 
-- **late night snacks**: Heat 1.334, second-highest of all tracked terms, consistent across YouTube (62M+ views), Reddit, and X for six weeks running. SHA's nightly treat positioning is a direct fit with no stretch required.
+- **freeze dried candy** — TMS 59.3 RISING, fastest-accelerating candy format term this week (acceleration 0.46), 30M YouTube views. Candy buyers are chasing novelty in the category; SHA's gummy format needs creative that meets that curiosity rather than ignoring it.
 
 **1 suggested brief**
 
-**Title:** What I Actually Eat at Night
-
-**Angle:** Real person walks through their late-night snack rotation, and Shameless is the only thing that actually tastes like candy.
-
-**Format:** Short video, 15 to 25 seconds, UGC-style
-
-**Hook:** Phone screen reads 11:43pm. Hand reaches into a Shameless bag, pours a few pieces into palm, eats one. No voiceover. Caption cold-opens: "this is the only candy I keep in the house."
+*Title:* The Nightly Snack That Actually Makes Sense
+*Angle:* Post-dinner sofa ritual — two bags in frame, stat duel plays out visually: their usual candy (45g sugar, 185 cal) vs. Shameless (3g sugar, 70 cal). No lecture, just the numbers.
+*Format:* Short video, 15–20s
+*Hook direction:* Cold open on two hands reaching into two bags at once — stat labels pop in silent, no VO until the payoff CTA.

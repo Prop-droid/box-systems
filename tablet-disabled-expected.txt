@@ -34,3 +34,39 @@ com.google.android.apps.mediahome.launcher
 com.google.android.apps.youtube.kids
 com.google.android.apps.youtube.music
 com.google.android.videos
+
+# Debloat round 2, 2026-11-01 18:01 (Tomas: "list ok")
+# Lenovo and preloads
+com.tblenovo.center
+com.tblenovo.userguide
+com.motorola.demo
+android.autoinstalls.config.Lenovo.tablet
+com.netflix.mediaclient
+com.steadfastinnovation.android.projectpapyrus
+# Google and AOSP leftovers
+com.google.android.apps.youtube.music.setupwizard
+com.google.android.apps.restore
+com.google.android.onetimeinitializer
+com.google.android.feedback
+com.google.android.gms.location.history
+com.google.android.tag
+com.google.android.ims
+com.google.android.printservice.recommendation
+com.android.egg
+com.android.protips
+com.android.traceur
+com.android.dreams.basic
+com.android.dreams.phototable
+com.android.bluetoothmidiservice
+# Qualcomm telemetry
+com.qualcomm.qti.qms.service.connectionsecurity
+com.qualcomm.qti.qms.service.trustzoneaccess
+com.qualcomm.qti.qdma
+com.qualcomm.qti.devicestatisticsservice
+com.qualcomm.qti.qccauthmgr
+com.qti.diagservices
+com.qualcomm.qti.xrvd.service
+com.qti.qualcomm.deviceinfo
+# Third-party: orphan Vanced microG, unused launcher with an accessibility service
+com.mgoogle.android.gms
+app.prolauncher

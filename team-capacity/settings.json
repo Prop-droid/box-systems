@@ -2,5 +2,10 @@
  "writes": false,
  "post_team": false,
  "doc_id": "1m8PC6fsylcZzL71MaVnOvdryOfjqcGsTRjPNCHo_uyQ",
- "sheet_id": null
+ "sheet_id": null,
+ "email_to": [
+  "tomas.s@ejam.com",
+  "katherine@ejam.com"
+ ],
+ "email_doc_link": false
 }

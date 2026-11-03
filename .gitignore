@@ -89,3 +89,7 @@ laya/ft/
 
 # brain MCP re-auth: transient authorize URL (holds PKCE state)
 brain-push/reauth-url.txt
+
+# tablet-voice: local venv + openWakeWord model files (setup_models.sh fetches and checks them); logs are **/logs/
+tablet-voice/.venv/
+tablet-voice/models/

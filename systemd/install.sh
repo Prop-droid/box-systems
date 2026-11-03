@@ -14,7 +14,11 @@ SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEST="$HOME/.config/systemd/user"
 mkdir -p "$DEST"
 
-cp -v "$SRC"/*.service "$SRC"/*.timer "$DEST"/
+for f in "$SRC"/*.service "$SRC"/*.timer; do
+  # A unit already symlinked to this dir is "the same file": cp would abort the whole script (set -e) before enabling anything.
+  [ "$f" -ef "$DEST/$(basename "$f")" ] && continue
+  cp -v "$f" "$DEST"/
+done
 systemctl --user daemon-reload
 
 for t in "$SRC"/*.timer; do

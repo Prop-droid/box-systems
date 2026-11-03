@@ -128,6 +128,24 @@ quiet_hours() {
   [ -n "$until" ] && [ "$(date +%s)" -lt "$until" ] 2>/dev/null && return 0
   h=$(date +%H); [ "$h" -ge 23 ] || [ "$h" -lt 8 ]
 }
+LOCAL_URL="http://localhost:8765/"   # tablet loopback proxy -> box :8765 (secure context)
+LAN_URL="http://192.168.1.6:8765/"    # direct, no mic (fallback)
+urlenc() { python3 -c 'import sys,urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$1"; }
+proxy_ok() { # dashboard reachable through the tablet's loopback proxy?
+  [ "$(timeout 15 ssh -o ConnectTimeout=5 -o BatchMode=yes tablet \
+      'curl -s -m 4 -o /dev/null -w "%{http_code}" http://127.0.0.1:8765/' 2>/dev/null)" = 200 ]
+}
+dash_url() { # which startURL Fully should use right now (stdout); notes go to stderr
+  if ! curl -s -m 4 -o /dev/null http://127.0.0.1:8765/; then
+    setting startURL; return  # box server itself is down: both URLs would fail, change nothing
+  fi
+  proxy_ok && { echo "$LOCAL_URL"; return; }
+  echo "dash-proxy unreachable: restarting it over ssh" >&2
+  timeout 15 ssh -o ConnectTimeout=5 -o BatchMode=yes tablet \
+    'setsid nohup ~/bin/dash-proxy.sh >/dev/null 2>&1 < /dev/null &' >/dev/null 2>&1
+  sleep 3
+  if proxy_ok; then echo "$LOCAL_URL"; else echo "dash-proxy still down: LAN URL fallback" >&2; echo "$LAN_URL"; fi
+}
 apply_settings() { # apply_settings day|night — settings only, no screen commands
   local sens=90 wake=true
   # Night: motion must not stop the black screensaver — detection stays on so
@@ -217,10 +235,14 @@ case "${1:-}" in
     fi
     # startURL drift: a Fully relaunch after an outage can come back with a stale
     # pre-subnet-change URL (2026-09-01: stuck on dead 192.168.0.107 error page).
-    DASH_URL="http://192.168.1.6:8765/"
+    # Since 2026-11-02 the page loads through the tablet's loopback proxy (Termux
+    # ~/bin/dash-proxy.sh), so http://localhost:8765 is a secure context for the voice mic.
+    # Proxy down -> restart it over ssh; still down -> fall back to the LAN URL so the
+    # dashboard keeps working without voice (the next healthy rearm switches back).
+    DASH_URL=$(dash_url)
     if [ "$(setting startURL)" != "$DASH_URL" ]; then
-      echo "startURL drifted ($(setting startURL)) — repointing to $DASH_URL"
-      f "cmd=setStringSetting&key=startURL&value=http%3A%2F%2F192.168.1.6%3A8765%2F"
+      echo "startURL is $(setting startURL), want $DASH_URL: repointing"
+      f "cmd=setStringSetting&key=startURL&value=$(urlenc "$DASH_URL")"
       f "cmd=loadStartURL"
     fi
     if [ "$MODE" = night ] || [ "${FORCE:-0}" = 1 ]; then

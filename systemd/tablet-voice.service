@@ -1,0 +1,36 @@
+[Unit]
+Description=tablet-voice: wall-tablet voice backend (wake re-check, VAD, faster-whisper, Tier 0 intents), ws :8766
+After=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+WorkingDirectory=%h/systems/tablet-voice
+Environment=PYTHONUNBUFFERED=1
+Environment=HF_HUB_OFFLINE=1
+Environment=VOICE_HOST=0.0.0.0
+Environment=VOICE_PORT=8766
+Environment=VOICE_DASH=http://127.0.0.1:8765
+Environment=VOICE_STT_THREADS=4
+# Spec 14 V3 values. V4 changes VOICE_STAGE to pipeline; V12 sets VOICE_DRY_RUN=0 (completion stays off).
+Environment=VOICE_STAGE=pipeline
+Environment=VOICE_DRY_RUN=1
+Environment=VOICE_TTS_VIA=auto
+Environment=VOICE_OWW_REJECT=0
+Environment=VOICE_REQUIRE_FULLY_FOR_WAKE=1
+Environment=VOICE_ALLOW_COMPLETE=0
+Environment=VOICE_READ_NEEDS_WAKE_TEXT=0
+# Optional overrides, outside git, mode 600 (leading dash: may be absent). FULLY_PW belongs here only if
+# D1 were "no"; with page speech (D1 = yes) the box needs no copy of the Fully password.
+EnvironmentFile=-%h/.config/tablet-voice/env
+ExecStart=%h/systems/tablet-voice/.venv/bin/python server.py
+Restart=on-failure
+RestartSec=5
+MemoryHigh=900M
+MemoryMax=1200M
+MemorySwapMax=0
+CPUWeight=200
+
+[Install]
+WantedBy=default.target

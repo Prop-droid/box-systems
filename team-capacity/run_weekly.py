@@ -28,7 +28,7 @@ def main():
         nws, nwe = we + 1, we + 7 * 86400000
     else:
         ws, we = W.window(now, state.get("last_end_ms")); nws, nwe = W.next_week(now)
-    label, wk = W.iso_label(W.from_ms(ws)); sprint = f"S{wk}"
+    label, wk, hdr_ws = W.label_for(we); sprint = f"S{wk}"   # label by window END week; header range starts at that week's Monday
     print(f"[{now:%F %T}] window {iso(ws)} -> {iso(we)} label {label} dry_run={a.dry_run} writes={S['writes']}", flush=True)
     try:
         tasks = CU.list_tasks(ws - 14 * 86400000)
@@ -87,9 +87,9 @@ def main():
         print(f"applied {applied}/{len(plan)}")
     # report
     reverts = gate_reverts_in(ws, we)
-    draft = R.render(sprint, ws, we, m, days, cap, reverts, "(pending)", label)
+    draft = R.render(sprint, hdr_ws, we, m, days, cap, reverts, "(pending)", label)
     ins = (R.claude_insights(draft, m["open"]) if not a.dry_run else None) or R.fallback_insights(m, cap)
-    text = R.render(sprint, ws, we, m, days, cap, reverts, ins, label)
+    text = R.render(sprint, hdr_ws, we, m, days, cap, reverts, ins, label)
     if not cal_ok: text += "\nNote: calendar feed failed, days-off not applied."
     if applied: text += f"\nRollover: {applied} tasks re-dated for next week ({sum(p['carried'] for p in plan)} carried)."
     print("\n" + text + "\n")

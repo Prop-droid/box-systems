@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# tvpc-shot — grab what the TV PC is showing right now (gamescope compositor output, game + Steam UI overlays).
+# Usage: tvpc-shot [name]   → ~/Downloads/tvpc-shots/<name|timestamp>.png + -small.jpg (1280px, for reading)
+# Non-disruptive: no input sent, game keeps running. Fails if the PC is asleep/off or not in Game Mode.
+set -u
+H=root@100.74.97.97; SSH="ssh -o ConnectTimeout=4 -o BatchMode=yes $H"
+N="${1:-$(date +%Y%m%d-%H%M%S)}"; OUT="$HOME/Downloads/tvpc-shots"; mkdir -p "$OUT"
+$SSH true 2>/dev/null || { echo "tv-pc not answering (asleep/off). wake-tv-pc first."; exit 1; }
+$SSH 'rm -f /tmp/tvpc-shot.png; cd /tmp; sudo -u tomas XDG_RUNTIME_DIR=/run/user/1000 gamescopectl screenshot /tmp/tvpc-shot.png >/dev/null 2>&1; for i in 1 2 3 4 5 6; do [ -s /tmp/tvpc-shot.png ] && exit 0; sleep 1; done; exit 1' \
+  || { echo "no screenshot: gamescope not running (Desktop Mode?) or hung"; exit 2; }
+scp -q -o BatchMode=yes "$H:/tmp/tvpc-shot.png" "$OUT/$N.png" || exit 3
+python3 -c "import sys;from PIL import Image;im=Image.open(sys.argv[1]);im.thumbnail((1280,720));im.convert('RGB').save(sys.argv[2],quality=80)" "$OUT/$N.png" "$OUT/$N-small.jpg"
+echo "$OUT/$N-small.jpg"

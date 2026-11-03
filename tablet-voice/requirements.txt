@@ -1,0 +1,11 @@
+# tablet-voice venv pins (14d section 1: the versions measured on this box).
+# Build: uv venv --python /usr/bin/python3.13 .venv && uv pip install --python .venv/bin/python -r requirements.txt
+faster-whisper==1.2.1
+ctranslate2==4.8.1
+onnxruntime==1.28.0
+numpy==2.5.2
+av==18.1.0
+tokenizers==0.23.1
+huggingface_hub==1.27.0
+websockets==15.0.1
+# after the Moonshine A/B (13 section 4 item 6): sherpa-onnx==2.0.1 (cp313 manylinux wheel exists)

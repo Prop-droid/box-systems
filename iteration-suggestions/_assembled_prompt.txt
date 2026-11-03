@@ -30,106 +30,110 @@ RULES:
 - Interpret the data tables: spend/revenue/roas/orders/cpa are last-week figures; hook_rate = 3s views / impressions %, hold_rate = throughplays %, ctr_change_pct = week-over-week CTR change (fatigue signal).
 - Keep total body under ~350 words. Punchy, numbers-first, no fluff. Do not invent numbers not present in the data.
 
-## Report data week: 2026-10-19 to 2026-10-25 (label the drop with this week)
-## Today: 2026-11-01
+## Report data week: 2026-10-26 to 2026-11-01 (label the drop with this week)
+## Today: 2026-11-03
 
 ### DATA: 03_top_spend
-+------------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
-|  creative  |                           ad_name                            | channel  |  spend  | revenue | roas | orders |  cpa   |
-+------------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
-| SH-16975-3 | RELAUNCH SH-16975-3_SHA_META_VID_johnbshop0 · cruva=76580681 | facebook | 10398.0 |  5963.0 | 0.57 |   89.0 | 116.84 |
-| Unmapped   | Cruva · @spiicyfinds · 2026-09-19 · cruva=767380088646387636 | facebook |  8581.0 |  9529.0 | 1.11 |  101.0 |  84.96 |
-| Unmapped   | JeremyMorrison_ShamelessSuperVarietyPack_20260908_trybe=929b | facebook |  5073.0 |  3037.0 |  0.6 |   42.0 |  120.8 |
-| SH-18044-5 | SH-18044-5_SHA_OG_META_IMG-1080x1350_AYC_BundleKit_Retro_Ima | facebook |  5037.0 |  4705.0 | 0.93 |   57.0 |  88.36 |
-| SH-16212-3 | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho | facebook |  4845.0 |  3602.0 | 0.74 |   43.0 | 112.67 |
-| Unmapped   | PROMOTE Cruva · @spiicyfinds · cruva=7673800886463876365     | facebook |  4226.0 |  3613.0 | 0.85 |   45.0 |   93.9 |
-| Unmapped   | Cruva · @northerndlites · 2026-09-19 · cruva=764012894274086 | facebook |  3839.0 |  2864.0 | 0.75 |   36.0 | 106.63 |
-| Unmapped   | RELAUNCH Cruva · @yaboyhotway · cruva=7670269625459936543    | facebook |  3812.0 |  2751.0 | 0.72 |   40.0 |  95.29 |
-| SH-16975-2 | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  | facebook |  3277.0 |  3042.0 | 0.93 |   32.0 | 102.41 |
-| SH-3028    | SHA_CC_WK22_Images_Broad__post3_786852690771899              | facebook |  3215.0 |  1410.0 | 0.44 |   18.0 | 178.61 |
-| SH-16180-1 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  | facebook |  2903.0 |  1475.0 | 0.51 |   18.0 | 161.29 |
-| Unmapped   | Cruva · @megfoundwhattt · 2026-09-19 · cruva=766384439620231 | facebook |  2528.0 |  1558.0 | 0.62 |   18.0 | 140.44 |
-| SH-16192   | RELAUNCH SH-16192_10_SHA_OG_META_VID_PAO_QVC_Proven          | facebook |  2314.0 |  1227.0 | 0.53 |   20.0 | 115.71 |
-| SH-16450   | SH-16450_SHA_2026_S25_SS_Launch_Online-Exclusive_ImageTest_T | facebook |  2232.0 |  1398.0 | 0.63 |   18.0 |  124.0 |
-| SH-18158-7 | SH-18158-7_SHA_OG_META_IMG-1080x1350_AYC_Fiber_SugarQuitter_ | facebook |  2119.0 |  1123.0 | 0.53 |   20.0 | 105.97 |
-+------------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
++-------------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
+|  creative   |                           ad_name                            | channel  |  spend  | revenue | roas | orders |  cpa   |
++-------------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
+| SH-16192-2  | 2026 - WK33 - US-SHSS - CT -Single_Asset - SH-16192-2_SHA_OG | applovin | 11161.0 |  5883.0 | 0.53 |   92.0 | 121.31 |
+| SH-16975-3  | RELAUNCH SH-16975-3_SHA_META_VID_johnbshop0 · cruva=76580681 | facebook |  7569.0 |  5656.0 | 0.75 |   93.0 |  81.38 |
+| SH-18044-5  | SH-18044-5_SHA_OG_META_IMG-1080x1350_AYC_BundleKit_Retro_Ima | facebook |  7072.0 |  7349.0 | 1.04 |   92.0 |  76.87 |
+| SH-16212-3  | 2026 - WK33 - US-SHSS - CT -Single_Asset - SH-16212-3_SHA_20 | applovin |  6984.0 |  4639.0 | 0.66 |   58.0 | 120.41 |
+| Unmapped    | PROMOTE Cruva · @spiicyfinds · cruva=7673800886463876365     | facebook |  6559.0 |  6710.0 | 1.02 |   84.0 |  78.08 |
+| SH-16192    | 2026 - WK32 - US-SHSS - CT -Single_Asset - SH-16192_10_SHA_O | applovin |  5355.0 |  2861.0 | 0.53 |   46.0 | 116.41 |
+| SH-16519-10 | 2026 - WK30 - US-SHSS - Endcard Test - Single_Asset - SH-165 | applovin |  4649.0 |  3402.0 | 0.73 |   40.0 | 116.22 |
+| SH-16192    | RELAUNCH SH-16192_10_SHA_OG_META_VID_PAO_QVC_Proven          | facebook |  4401.0 |  3714.0 | 0.84 |   58.0 |  75.88 |
+| Unmapped    | Cruva · @northerndlites · 2026-09-19 · cruva=764012894274086 | facebook |  4170.0 |  3028.0 | 0.73 |   52.0 |  80.19 |
+| Unmapped    | RELAUNCH Cruva · @yaboyhotway · cruva=7670269625459936543    | facebook |  4154.0 |  3951.0 | 0.95 |   52.0 |  79.88 |
+| Unmapped    | Cruva · @spiicyfinds · 2026-09-19 · cruva=767380088646387636 | facebook |  2861.0 |  2158.0 | 0.75 |   27.0 | 105.96 |
+| SH-16519-4  | 2026 - WK27 - US-SHSS - CT - Single_Asset - SH-16519-4_SHA_M | applovin |  2794.0 |  1842.0 | 0.66 |   21.0 | 133.06 |
+| SH-16212-3  | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho | facebook |  1850.0 |  1273.0 | 0.69 |   19.0 |  97.38 |
+| SH-19393-6  | 2026 - WK38 - US-SHSS - CT -Single_Asset - SH-19393-6_SHA_OG | applovin |  1661.0 |  1410.0 | 0.85 |   19.0 |  87.42 |
+| SH-20948-5  | SH-20948-5_SHA_2026_S42_OG_40Bag_LizardMeme_Proven_Retro_Tom | facebook |  1560.0 |  2192.0 | 1.41 |   21.0 |  74.27 |
++-------------+--------------------------------------------------------------+----------+---------+---------+------+--------+--------+
 
 ### DATA: 04_top_roas
 +------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 |  creative  |                           ad_name                            | channel  | spend  | revenue | roas | orders |
 +------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
-| SH-18046-3 | SH-18046-3_SHA_2026_S35_OG_Relaunch_Top20_LifetimeImageWinne | facebook |  628.0 |   893.0 | 1.42 |    9.0 |
-| SH-17789-7 | SH-17789-7_SHA_OG_META_IMG-1080x1350_AYC_IngredientPanel_Unp | facebook |  525.0 |   685.0 |  1.3 |    9.0 |
-| Unmapped   | Cruva · @spiicyfinds · 2026-09-19 · cruva=767380088646387636 | facebook | 8605.0 |  9529.0 | 1.11 |  101.0 |
-| Unmapped   | NikkiHolder_Product_20261022_trybe=db05c890                  | facebook |  538.0 |   592.0 |  1.1 |    6.0 |
-| SH-16917-1 | RELAUNCH SH-16917-1_SHA_META_VID_kasenscorner · cruva=765691 | facebook |  665.0 |   652.0 | 0.98 |    9.0 |
-| SH-18044-5 | SH-18044-5_SHA_OG_META_IMG-1080x1350_AYC_BundleKit_Retro_Ima | facebook | 5074.0 |  4735.0 | 0.93 |   58.0 |
-| SH-16975-2 | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  | facebook | 3277.0 |  3042.0 | 0.93 |   32.0 |
-| Unmapped   | PROMOTE Cruva · @spiicyfinds · cruva=7673800886463876365     | facebook | 4247.0 |  3613.0 | 0.85 |   45.0 |
-| SH-18964-6 | SH-18964-6_SHA_MB_META_IMG-1080x1350_AYC_Announcement_Unprov | facebook |  550.0 |   421.0 | 0.77 |    5.0 |
-| Unmapped   | Cruva · @megfoundwhattt · 2026-09-19 · cruva=766384439620231 | facebook | 2760.0 |  2109.0 | 0.76 |   23.0 |
+| SH-19523-4 | SH-19523-4_SHA_META_IMG-1080x1350_AYC_OfferFirst_Retro_Image | facebook |  646.0 |  1418.0 |  2.2 |   13.0 |
+| SH-16313-2 | SH-16313-2_SHA_2026_S24_BRPK_Retro_ImageTest_Tom_FER_META_IM | facebook |  580.0 |  1159.0 |  2.0 |   13.0 |
+| SH-18046-3 | PROMOTE SH-18046-3_SHA_2026_S35_OG_Relaunch_Top20_LifetimeIm | facebook |  678.0 |   974.0 | 1.44 |    9.0 |
+| SH-20948-5 | SH-20948-5_SHA_2026_S42_OG_40Bag_LizardMeme_Proven_Retro_Tom | facebook | 1569.0 |  2192.0 |  1.4 |   21.0 |
+| SH-19523-5 | SH-19523-5_SHA_META_IMG-1080x1350_AYC_OfferFirst_Retro_Image | facebook |  929.0 |   999.0 | 1.08 |   12.0 |
+| SH-18044-5 | SH-18044-5_SHA_OG_META_IMG-1080x1350_AYC_BundleKit_Retro_Ima | facebook | 7088.0 |  7349.0 | 1.04 |   92.0 |
+| SH-20952-5 | SH-20952-5_CL_SHA_OG_META_VID-1080x1350_IGN_4Pack_Launch_Ret | facebook |  824.0 |   845.0 | 1.03 |   11.0 |
+| Unmapped   | PROMOTE Cruva · @spiicyfinds · cruva=7673800886463876365     | facebook | 6574.0 |  6710.0 | 1.02 |   84.0 |
+| SH-17164-3 | SH-17164-3_SHA_2026_S25_CC_Offer_SugarQuitter_POVSideScript_ | facebook |  940.0 |   951.0 | 1.01 |   13.0 |
+| SH-20990-2 | SH-20990-2_SHA_2026_S43_OG_Offer_SnackDealer_Restocked_Meme_ | facebook |  507.0 |   496.0 | 0.98 |    6.0 |
 +------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 
 ### DATA: 05_losers
 +------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 |  creative  |                           ad_name                            | channel  | spend  | revenue | roas | orders |
 +------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
-| SH-3028    | SHA_CC_WK22_Images_Broad__post3_786852690771899              | facebook | 3215.0 |  1410.0 | 0.44 |   18.0 |
-| SH-19844-3 | SH-19844-3_SHA_OG_META_VID-1080x1920_PAO_WL_StephanieJoplin2 | facebook | 1726.0 |   672.0 | 0.39 |    9.0 |
-| Unmapped   | Cruva · @jaytriedthat · 2026-10-17 · cruva=76752035586349663 | facebook | 1389.0 |   402.0 | 0.29 |    6.0 |
-| SH-21000-1 | SH-21000-1_SHA_2026_S43_WL_JenHatmaker1_CommentReply_Retro_T | facebook | 1040.0 |   208.0 |  0.2 |    2.0 |
+| SH-20987-1 | SH-20987-1_SHA_2026_S43_WL_MariaLovesFall2_OCT26_Tom_Agu_MET | facebook | 1463.0 |   149.0 |  0.1 |    2.0 |
+| Unmapped   | Cruva · @shark.findz · 2026-09-19 · cruva=767764583393167284 | facebook | 1240.0 |   316.0 | 0.26 |    5.0 |
+| SH-9119-6  | 2026 - US-SHSS - CT - SH-9119-6_SHA_2026_S4__TIKTOK_9x16_OG_ | applovin | 1143.0 |   299.0 | 0.26 |    4.0 |
+| Unmapped   | NikkiHolder_Product_20261022_trybe=db05c890                  | facebook | 1095.0 |   375.0 | 0.34 |    6.0 |
 +------------+--------------------------------------------------------------+----------+--------+---------+------+--------+
 
 ### DATA: 10_hook_hold
 +------------+--------------------------------------------------------------+-----------+-----------+---------+
 |  creative  |                        ad_name_short                         | hook_rate | hold_rate |  spend  |
 +------------+--------------------------------------------------------------+-----------+-----------+---------+
-| SH-19844-3 | SH-19844-3_SHA_OG_META_VID-1080x1920_PAO_WL_StephanieJoplin2 |      49.0 |       4.8 |  1726.0 |
-| SH-21000-1 | SH-21000-1_SHA_2026_S43_WL_JenHatmaker1_CommentReply_Retro_T |      45.0 |       5.3 |  1040.0 |
-| SH-16917-1 | RELAUNCH SH-16917-1_SHA_META_VID_kasenscorner · cruva=765691 |      42.9 |       3.7 |   665.0 |
-| SH-19370-2 | SH-19370-2_SHA_2026_S38_WL_RachelMansfield1_AUG26_Tom_LEO_ME |      40.5 |       4.8 |   533.0 |
-| SH-16212-3 | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho |      39.0 |       1.6 |  4848.0 |
-| SH-16192   | RELAUNCH SH-16192_10_SHA_OG_META_VID_PAO_QVC_Proven          |      38.1 |       1.1 |  2335.0 |
-| SH-16975-3 | RELAUNCH SH-16975-3_SHA_META_VID_johnbshop0 · cruva=76580681 |      38.0 |       2.6 | 10455.0 |
-| SH-19843-2 | SH-19843-2_SHA_2026_S41_WL_CortneyAnderson1_SEP26_Tom_Mar_ME |      30.7 |       5.6 |  1233.0 |
-| SH-17336-2 | SH-17336-2_[Nathalie Dolan] - SHA_2026_S30_CC_AlmondTrauma_M |      30.7 |       0.7 |   555.0 |
-| SH-16192-2 | SH-21103_SH-16192-2_SHA_OG_META_VID-1080x1080_PAO_QVC_Proven |      27.7 |       0.9 |   555.0 |
-| Unmapped   | TOF · Cruva · @tinygoldenmoments · cruva=7639756857678105869 |      26.2 |       2.9 | 39299.0 |
-| SH-19360-2 | SH-19360-2_SHA_2026_S38_OG_Fiber_BoxHaul-OneBag_B-roll+Narat |      18.9 |       1.6 |   545.0 |
-| SH-16145-6 | SH-21103_SH-16145-6_CL_SHA_OG_META_VID-1080x1350_IGN_SourBer |      18.9 |       2.2 |   813.0 |
-| SH-18969   | SH-18969_CTV_Mini_Newvertion_H1.mp4 - SH-18969_SHA_2026_S38_ |      18.3 |       4.3 |   642.0 |
-| SH-19366-1 | [WL exp 10-26] SH-19366-1_SHA_META_VID_TaylorWynn1_WL_BC-pro |      17.7 |       3.7 |   619.0 |
+| SH-20990-2 | SH-20990-2_SHA_2026_S43_OG_Offer_SnackDealer_Restocked_Meme_ |      38.6 |       4.3 |   507.0 |
+| SH-21000-1 | SH-21000-1_SHA_2026_S43_WL_JenHatmaker1_CommentReply_Retro_T |      36.0 |       3.1 |   524.0 |
+| SH-20987-1 | SH-20987-1_SHA_2026_S43_WL_MariaLovesFall2_OCT26_Tom_Agu_MET |      35.7 |       4.4 |  1463.0 |
+| SH-16975-3 | SH-16975-3_SHA_META_VID-1080x1920_7658068191888805134.mp4    |      32.1 |       2.7 |  7892.0 |
+| SH-16192   | RELAUNCH SH-16192_10_SHA_OG_META_VID_PAO_QVC_Proven          |      24.5 |       1.2 |  9768.0 |
+| SH-20948-5 | SH-20948-5_SHA_2026_S42_OG_40Bag_LizardMeme_Proven_Retro_Tom |      24.1 |       6.2 |  1570.0 |
+| Unmapped   | promocodepal_Product_20261031_trybe=2c53cf59                 |      22.2 |       2.0 | 27905.0 |
+| SH-20986-1 | SH-20986-1_SHA_2026_S43_WL_MariaLovesFall1_OCT26_Tom_LEO_MET |      21.5 |       5.0 |   516.0 |
+| SH-19842-2 | SH-19842-2_SHA_2026_S41_WL_BrookeTreadway1_SEP26_Tom_KAR_MET |      18.5 |       6.9 |   735.0 |
+| SH-17164-3 | SH-17164-3_SHA_2026_S25_CC_Offer_SugarQuitter_POVSideScript_ |      14.1 |       2.9 |   953.0 |
+| SH-20952-5 | SH-20952-5_CL_SHA_OG_META_VID-1080x1350_IGN_4Pack_Launch_Ret |      12.6 |       2.8 |   852.0 |
+| SH-15191-5 | RELAUNCH SH-15191-5_SHA_OG_META_VID_KAR_LoveYourChoices      |      12.2 |       1.8 |   520.0 |
+| SH-16212-3 | SH-16212-3_SHA_2026_S23_META_1080x1920_Warehouse_LoveYourCho |       8.1 |       1.7 |  8839.0 |
+| SH-16192-2 | SH-21103_SH-16192-2_SHA_OG_META_VID-1080x1080_PAO_QVC_Proven |       0.2 |       0.7 | 11207.0 |
+| SH-9119-6  | SH-9119-6_SHA_2026_S4__TIKTOK_9x16_OG___Retro_intro test_TOM |      NULL |      NULL |  1164.0 |
 +------------+--------------------------------------------------------------+-----------+-----------+---------+
 
 ### DATA: 11_fatigue
-+------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
-|  creative  |                        ad_name_short                         | spend_last | ctr_prior | ctr_last | ctr_change_pct |
-+------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
-| SH-16975-2 | SH-16975-2_SHA_META_VID-1080x1920_7657879075947613453.mp4 -  |     3277.0 |      1.15 |     1.02 |          -10.9 |
-| SH-16180-1 | SH-16180-1_SHA_META_VID-1080x1920_7619826148914105631.mp4 -  |     2906.0 |      1.11 |     0.95 |          -14.5 |
-| SH-19844-3 | SH-19844-3_SHA_OG_META_VID-1080x1920_PAO_WL_StephanieJoplin2 |     1726.0 |      3.66 |     3.14 |          -14.2 |
-| SH-18046-3 | SH-18046-3_SHA_2026_S35_OG_Relaunch_Top20_LifetimeImageWinne |     1109.0 |      1.27 |     1.07 |          -16.1 |
-+------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
++-------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
+|  creative   |                        ad_name_short                         | spend_last | ctr_prior | ctr_last | ctr_change_pct |
++-------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
+| Unmapped    | promocodepal_Product_20261031_trybe=2c53cf59                 |    27905.0 |      1.37 |     1.21 |          -11.8 |
+| SH-16192-2  | SH-21103_SH-16192-2_SHA_OG_META_VID-1080x1080_PAO_QVC_Proven |    11207.0 |      4.65 |     4.45 |           -4.2 |
+| SH-16192    | RELAUNCH SH-16192_10_SHA_OG_META_VID_PAO_QVC_Proven          |     9768.0 |      4.28 |      3.4 |          -20.4 |
+| SH-16975-3  | SH-16975-3_SHA_META_VID-1080x1920_7658068191888805134.mp4    |     7892.0 |      1.64 |     1.63 |           -0.5 |
+| SH-18044-5  | SH-18044-5_SHA_OG_META_IMG-1080x1350_AYC_BundleKit_Retro_Ima |     7097.0 |      0.83 |     0.74 |          -11.3 |
+| SH-16519-10 | 2026 - WK30 - US-SHSS - Endcard Test - Single_Asset - SH-165 |     4649.0 |      4.35 |     4.18 |           -3.9 |
+| SH-18970-1  | 2026 - WK38 - US-SHMB - CT - Single_Asset - SH-18970-1_SHA_2 |     1397.0 |      4.25 |     3.71 |          -12.7 |
+| SH-9119-6   | SH-9119-6_SHA_2026_S4__TIKTOK_9x16_OG___Retro_intro test_TOM |     1164.0 |      3.71 |     3.17 |          -14.7 |
++-------------+--------------------------------------------------------------+------------+-----------+----------+----------------+
 
 ### DATA: 12_concepts
 +-----------------+-------------+---------+---------+------+------------+--------+--------+------------+----------------+
 | clickup_project | top_variant |  spend  | revenue | roas | margin_pct | cmroas | orders | variations | contrib_margin |
 +-----------------+-------------+---------+---------+------+------------+--------+--------+------------+----------------+
-| SH-19360        | SH-19360-2  |  1025.0 |   903.0 | 0.88 |       64.5 |   0.57 |     11 |          3 |         -443.0 |
-| SH-18046        | SH-18046-3  |  1459.0 |  1535.0 | 1.05 |       64.4 |   0.68 |     19 |         14 |         -471.0 |
-| SH-16469        | SH-16469    |  1287.0 |   791.0 | 0.61 |       63.9 |   0.39 |     13 |          2 |         -781.0 |
-| SH-19843        | SH-19843-2  |  1407.0 |   880.0 | 0.63 |       62.3 |   0.39 |     13 |          3 |         -858.0 |
-| SH-16194        | SH-16194-1  |  1196.0 |   372.0 | 0.31 |       64.6 |    0.2 |      4 |          3 |         -956.0 |
-| SH-21000        | SH-21000-1  |  1181.0 |   303.0 | 0.26 |       67.7 |   0.17 |      3 |          4 |         -976.0 |
-| SH-19844        | SH-19844-3  |  1877.0 |   730.0 | 0.39 |       64.0 |   0.25 |     10 |          2 |        -1410.0 |
-| SH-18158        | SH-18158-7  |  2142.0 |  1123.0 | 0.52 |       62.0 |   0.33 |     20 |          9 |        -1446.0 |
-| SH-16450        | SH-16450    |  2502.0 |  1638.0 | 0.65 |       63.5 |   0.42 |     20 |          3 |        -1461.0 |
-| SH-16192        | SH-16192    |  2335.0 |  1227.0 | 0.53 |       62.8 |   0.33 |     20 |          1 |        -1564.0 |
-| SH-16180        | SH-16180-1  |  2906.0 |  1475.0 | 0.51 |       64.4 |   0.33 |     18 |          1 |        -1956.0 |
-| SH-18044        | SH-18044-5  |  5182.0 |  4735.0 | 0.91 |       64.8 |   0.59 |     58 |         11 |        -2115.0 |
-| SH-3028         | SH-3028     |  3215.0 |  1410.0 | 0.44 |       65.1 |   0.29 |     18 |          2 |        -2297.0 |
-| SH-16212        | SH-16212-3  |  5108.0 |  3905.0 | 0.76 |       64.8 |    0.5 |     47 |          2 |        -2576.0 |
-| SH-16975        | SH-16975-3  | 13732.0 |  9005.0 | 0.66 |       65.6 |   0.43 |    121 |          4 |        -7828.0 |
+| SH-19523        | SH-19523-5  |  1616.0 |  2525.0 | 1.56 |       64.9 |   1.01 |     26 |          5 |           24.0 |
+| SH-20948        | SH-20948-5  |  1603.0 |  2192.0 | 1.37 |       64.6 |   0.88 |     21 |          6 |         -187.0 |
+| SH-17164        | SH-17164-3  |  1190.0 |  1132.0 | 0.95 |       64.6 |   0.61 |     16 |          6 |         -459.0 |
+| SH-18046        | SH-18046-3  |  1266.0 |  1231.0 | 0.97 |       64.6 |   0.63 |     12 |         15 |         -471.0 |
+| SH-18970        | SH-18970-1  |  1398.0 |   838.0 |  0.6 |       55.5 |   0.33 |     10 |          3 |         -932.0 |
+| SH-9119         | SH-9119-6   |  1164.0 |   299.0 | 0.26 |       67.1 |   0.17 |      4 |          9 |         -963.0 |
+| SH-8654         | SH-8654-2   |  1469.0 |   680.0 | 0.46 |       64.5 |    0.3 |      7 |          4 |        -1030.0 |
+| SH-20987        | SH-20987-1  |  1783.0 |   149.0 | 0.08 |       68.0 |   0.06 |      2 |          3 |        -1681.0 |
+| SH-19541        | SH-19541-6  |  2930.0 |  1690.0 | 0.58 |       63.6 |   0.37 |     31 |         10 |        -1856.0 |
+| SH-11606        | SH-19393-6  |  2847.0 |  1450.0 | 0.51 |       65.4 |   0.33 |     20 |          7 |        -1899.0 |
+| SH-18044        | SH-18044-5  |  7097.0 |  7349.0 | 1.04 |       64.8 |   0.67 |     92 |          3 |        -2332.0 |
+| SH-16975        | SH-16975-3  |  7960.0 |  6245.0 | 0.78 |       64.2 |    0.5 |    101 |         22 |        -3954.0 |
+| SH-16519        | SH-16519-10 |  7580.0 |  5435.0 | 0.72 |       64.1 |   0.46 |     63 |         12 |        -4095.0 |
+| SH-16212        | SH-16212-3  |  8862.0 |  5912.0 | 0.67 |       65.0 |   0.43 |     77 |          5 |        -5022.0 |
+| SH-16192        | SH-16192-2  | 21090.0 | 12546.0 | 0.59 |       63.4 |   0.38 |    198 |          5 |       -13142.0 |
 +-----------------+-------------+---------+---------+------+------------+--------+--------+------------+----------------+
 
 ### PREVIOUS DROPS (do not repeat task + iteration-type combos):

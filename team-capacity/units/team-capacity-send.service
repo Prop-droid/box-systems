@@ -1,0 +1,7 @@
+[Unit]
+Description=team-capacity weekly report email (Monday 07:00 Vilnius, report computed Saturday)
+[Service]
+Type=oneshot
+WorkingDirectory=%h/systems/team-capacity
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/python3 %h/systems/team-capacity/send_weekly.py
