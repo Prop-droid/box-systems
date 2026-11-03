@@ -6,6 +6,6 @@ After=network-online.target
 Type=oneshot
 User=tomas
 Environment=ADB=/usr/bin/adb
-Environment=TABLET_IP=192.168.0.161
+Environment=TABLET_IP=192.168.1.89
 Environment=HOME=/home/tomas
 ExecStart=/home/tomas/systems/tablet-night-mode.sh day

@@ -270,7 +270,7 @@ Full manual = the `fleet-control` skill. Load-bearing subset for this repo:
   in cron paths, `|| true` if best-effort.
 - **Per-host ssh keys/aliases** live in `~/.ssh/config` — use the alias
   (`github-personal`, `nobara`, key-pinned Mac), never assume the default key.
-- **Tablet** (Lenovo P11 Pro) is LAN adb at `192.168.0.161` (port rotates across
+- **Tablet** (Lenovo P11 Pro) is LAN adb at `192.168.1.89` (LAN moved to 192.168.1.x on 2026-10-31; port rotates across
   reboots — rediscover the serial like `tablet-screen.sh` does).
 - **Alerts (TELEGRAM-ONLY, Tomas 2026-08-31):** box alerts go to the Telegram
   fleet group's 🔔 Ops Log topic via `~/systems/lib/tg-notify.sh "Title" "body"

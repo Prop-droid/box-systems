@@ -27,7 +27,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 PORT = 8093
-FULLY_FALLBACK_IP = "192.168.0.161"
+FULLY_FALLBACK_IP = "192.168.1.89"
 
 
 def tablet_ip():
