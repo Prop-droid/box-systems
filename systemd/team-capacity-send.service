@@ -1,5 +1,5 @@
 [Unit]
-Description=team-capacity weekly report email (Monday 07:00 Vilnius, report computed Saturday)
+Description=team-capacity weekly report DM via ClickUp Chat (Monday 07:00 Vilnius, report computed Saturday)
 [Service]
 Type=oneshot
 WorkingDirectory=%h/systems/team-capacity

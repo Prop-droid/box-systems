@@ -1,5 +1,5 @@
 [Unit]
-Description=team-capacity Monday email timer (Mon 07:00 Vilnius)
+Description=team-capacity Monday DM timer (Mon 07:00 Vilnius)
 [Timer]
 OnCalendar=Mon *-*-* 07:00:00
 Persistent=true
