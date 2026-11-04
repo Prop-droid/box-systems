@@ -93,3 +93,6 @@ brain-push/reauth-url.txt
 # tablet-voice: local venv + openWakeWord model files (setup_models.sh fetches and checks them); logs are **/logs/
 tablet-voice/.venv/
 tablet-voice/models/
+
+# creative-bot runtime state (thread -> session map), same as the other bots above
+creative-bot/sessions.json
