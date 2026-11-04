@@ -1,8 +1,20 @@
-# atria-weekly (STAGED, not enabled)
+# atria-weekly
 
 Weekly Atria **followed-brands** competitor swipe pull + strategist NEW-ads diff.
-Staged by fable-window task 15 on 2026-07-04. Nothing here is installed or
-enabled until you run the steps below.
+Staged by fable-window task 15 on 2026-07-04, enabled 2026-07-05 (`atria-weekly.timer`,
+Mon 07:30).
+
+**Source chain (2026-11-04):** Atria API first. Atria has answered 403/40302
+("plan does not include the API surface") since 2026-11-01, so on any Atria
+failure the runner falls back to the public Meta Ad Library rendered under
+Camoufox (`~/systems/research-agent/bin/adlib_pull.py`, `ADLIB_SUFFIX=""`) over
+`followed-roster.txt` = the brand set Atria had us following (88 brands, seeded
+from the 2026-10-26 Atria snapshot; refreshed from every successful Atria pull;
+edit by hand to add/drop brands). The fallback writes the same no-suffix
+`atria-swipe-<date>.jsonl`, so the diff step and every consumer are unchanged.
+The diff keys on `platform_native_id` (the Meta ad id both sources share).
+Smoke test without touching the real dir:
+`ATRIA_ROSTER=<2-line roster> ATRIA_OUT_DIR=/tmp/x ADLIB_SCROLLS=0 CLAUDE_BIN=/bin/false bash run_atria_weekly.sh`.
 
 ## What it does
 
@@ -64,7 +76,10 @@ ls -la ~/brain/projects/2026-06/competitor-ads-scrape/atria/atria-weekly-diff-$(
 
 - Atria API key at `~/.config/atria/key` (chmod 600). If it 401s, refresh:
   `ssh mac 'cat ~/.config/atria/key'` -> box, `chmod 600`. The script exits 3
-  with this hint if the key file is missing.
+  with this hint if the key file is missing. Exit 4 = Atria AND the Meta Ad
+  Library fallback both failed (state untouched; read the log).
+- Fallback runtime: ~88 brand pages at 15-45s each = 25-45 min; the unit allows
+  90 min (`TimeoutStartSec=5400`).
 - Headless claude runs share the session usage cap; a limit-hit run is transient
   and the fallback covers it. 07:30 Mon is chosen to sit outside peak hours.
 - First enabled run in `OUT_DIR` may have no prior followed snapshot there (the

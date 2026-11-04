@@ -13,6 +13,7 @@ Interpreter: the scrapling uv tool env (scrapling 0.4.9 + camoufox):
     ~/.local/share/uv/tools/scrapling/bin/python
 Usage:  adlib_pull.py m107585658730958 m112448499199569 ...   (id = "m" + FB page id)
 Env:    ATRIA_OUT_DIR     output dir (default = the Atria swipe dir in ~/brain)
+        ADLIB_SUFFIX      file suffix override; "" = plain atria-swipe-<date>.jsonl (weekly followed job)
         ATRIA_RUN_DATE    YYYY-MM-DD (default today)
         ADLIB_SCROLLS     extra scroll loads per brand, ~30 ads each (default 3)
         ADLIB_TIMEOUT_MS  per-page Playwright timeout (default 90000)
@@ -348,7 +349,10 @@ def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     today = run_date.isoformat()
     slug = re.sub(r"[^a-z0-9]+", "-", (first_name or ids[0]).lower()).strip("-")
-    suffix = f"-{slug}" + (f"-plus{len(ids)-1}" if len(ids) > 1 else "")
+    # ADLIB_SUFFIX overrides the file suffix verbatim; "" = the plain no-suffix
+    # atria-swipe-<date>.jsonl that the weekly followed-brands job globs for.
+    suffix = os.environ["ADLIB_SUFFIX"] if "ADLIB_SUFFIX" in os.environ else (
+        f"-{slug}" + (f"-plus{len(ids)-1}" if len(ids) > 1 else ""))
     jsonl_path = OUT_DIR / f"atria-swipe-{today}{suffix}.jsonl"
     md_path = OUT_DIR / f"atria-swipe-{today}{suffix}.md"
     tmp = jsonl_path.with_suffix(".jsonl.tmp")

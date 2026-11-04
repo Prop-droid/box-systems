@@ -1,9 +1,10 @@
 [Unit]
 Description=atria-weekly (Atria followed-brands competitor swipe pull + strategist NEW-ads diff)
-# STAGED by fable-window task 15 (2026-07-04). Not installed/enabled by default.
+# Staged by fable-window task 15 (2026-07-04); enabled 2026-07-05 via atria-weekly.timer (Mon 07:30).
 
 [Service]
 Type=oneshot
 ExecStart=%h/systems/atria-weekly/run_atria_weekly.sh
-# Weekly followed-brands pull is heavier than the daily gr-ns monitor; allow room.
-TimeoutStartSec=1200
+# Weekly followed-brands pull is heavier than the daily gr-ns monitor; the Meta Ad
+# Library fallback renders ~88 brand pages under Camoufox (~15-45s each), so allow 90 min.
+TimeoutStartSec=5400

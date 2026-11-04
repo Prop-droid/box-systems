@@ -51,7 +51,14 @@ command to prove a change works before the timer fires.
 - **atria-weekly/** — weekly FULL followed-brands Atria swipe pull + headless-claude
   NEW-ads diff (deterministic python diff as fallback). Complementary to the daily
   brand-filtered research-monitor. Schedule: Mon 07:30 (enabled 2026-07-05).
-  Entry: `run_atria_weekly.sh`. No dry-run; it's read-only pulls + local files.
+  Entry: `run_atria_weekly.sh`. Source chain (2026-11-04): Atria API first; on any
+  Atria failure (plan-gated 403/40302 on 2026-11-01..03) it falls back to the Meta
+  Ad Library under Camoufox (`research-agent/bin/adlib_pull.py`, `ADLIB_SUFFIX=""`)
+  over `followed-roster.txt` (88 brands; refreshed from every successful Atria
+  pull). Same no-suffix output file, diff keys on `platform_native_id`. Unit allows
+  90 min. Smoke without touching the real dir: `ATRIA_KEY_FILE=/tmp/badkey
+  ATRIA_ROSTER=<2-line roster> ATRIA_OUT_DIR=/tmp/x ADLIB_SCROLLS=0
+  CLAUDE_BIN=/bin/false bash run_atria_weekly.sh` (401 forces the fallback path).
 
 - **viral-trend-tracker/trend_gap.py** — Mon 10:30 (`trend-gap.timer`): joins
   VTT digests 7-28d old against ClickUp tasks created since; unbriefed trends
