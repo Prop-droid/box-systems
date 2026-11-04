@@ -63,7 +63,7 @@ EXCLUDE_NAME = re.compile(
 # 40-bag cuts whose ONLY gap is the LP are on hold: Tomas is waiting on the new
 # 40-bag LP URL and keeps LP empty on purpose (2026-10-16, restated 10-23). They
 # go in a one-line "held" note, not the missing count. Set to None to un-hold.
-HOLD_LP_ONLY = re.compile(r"40\s*bag", re.I)
+HOLD_LP_ONLY = re.compile(r"40[\s_-]*bag", re.I)
 
 
 def log(msg):
