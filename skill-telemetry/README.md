@@ -7,9 +7,19 @@ Per 30-day window it counts, from every transcript:
 - **tool mix + per-tool error rate** (errors attributed by joining `tool_result.is_error`
   back to the `tool_use` name within each session)
 - **skill invocations** per skill, with week-over-week deltas
+- **direct SKILL.md reads** per skill (Read tool, or cat/head/sed in Bash): how
+  headless and dispatched sessions use a skill without the Skill tool
+- **Hermes-side usage** from Hermes's own ledger `~/.hermes/skills/.usage.json`
+  (all-time count + last-used date; a skill is "in window" by last-used date)
 - **never-used local skills** — catalog skills that load into the listing every
-  session but never fired (dead always-on context; token-audit flagged the
-  catalog at ~16k chars)
+  session but are silent on all three signals above (dead always-on context;
+  token-audit flagged the catalog at ~16k chars)
+
+Bot and Hermes-dispatched Claude sessions write to `~/.claude/projects` like any
+other session, so they are already in the transcript counts (2026-11-11: the
+"Hermes sessions log separately" theory was checked and is wrong; `~/.hermes/sessions`
+holds request dumps, not transcripts). The `skill-usage-query` skill is a thin
+wrapper around `telemetry.py --no-save` for ad-hoc questions.
 
 ## Files
 - `telemetry.py` — scan + render; writes `reports/<date>.md`, persists `stats.json` for deltas.
@@ -27,7 +37,7 @@ error-rate findings reach Discord with the other proposals. Registered in
 ```bash
 python3 telemetry.py --days 30            # print + write report + update stats.json
 python3 telemetry.py --days 7 --no-save   # ad-hoc window, don't touch the delta baseline
-python3 test_telemetry.py                 # 4 tests
+python3 test_telemetry.py                 # 7 tests
 ```
 
 ## Interpreting
