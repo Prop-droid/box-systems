@@ -1,0 +1,9 @@
+[Unit]
+Description=Daily CCC cache warm (06:30 Europe/Vilnius, after the UTC day rolls)
+
+[Timer]
+OnCalendar=*-*-* 06:30:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

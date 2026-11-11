@@ -1,0 +1,7 @@
+[Unit]
+Description=ccc-warm (pre-load the CCC leaderboard and Work board caches)
+
+[Service]
+Type=oneshot
+ExecStart=%h/creative-command-center/scripts/warm.sh
+TimeoutStartSec=300
