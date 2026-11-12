@@ -12,7 +12,9 @@ Instances are configured via .env in BOT_DIR (default: script dir):
   SYSTEM_PROMPT_FILES=/path/a:/path/b    # optional, concatenated; else default guardrails
   MODEL=claude-fable-5
   EFFORT=xhigh                           # reasoning effort (low|medium|high|xhigh|max);
-                                         # auto (or empty) = no --effort flag, model picks
+                                         # auto (or empty) = no --effort flag, model picks.
+                                         # A message that starts with `max:` or `xhigh:` runs
+                                         # that one turn at that level (split_effort).
   EXTRA_CHANNELS=ops-log                 # optional, extra home channels: plain human
                                          # messages there dispatch tasks too (bot/webhook
                                          # posts still ignored unless trusted + mention)
@@ -70,14 +72,23 @@ DEFAULT_GUARDRAILS = (
 )
 
 
+# Lean one-shot call (2026-11-12 usage audit): no MCP servers, no settings/hooks, no tools,
+# no skills, no transcript. With cwd=/tmp (no project memory) a title call sends about
+# 500 tokens; the plain `claude -p` form sent about 46,000. Text-in/text-out helpers only.
+LEAN_ARGS = ["--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--setting-sources", "",
+             "--tools", "", "--disable-slash-commands", "--no-session-persistence"]
+LEAN_CWD = "/tmp"
+
+
 def thread_title(text: str, fallback: str) -> str:
     """2-4 word thread name via a cheap haiku call; falls back to truncated text."""
     try:
         p = subprocess.run(
-            [CLAUDE_BIN, "-p", "--model", "claude-haiku-4-5-20251001"],
+            [CLAUDE_BIN, "-p", "--model", "claude-haiku-4-5-20251001", *LEAN_ARGS,
+             "--system-prompt", "You write short ticket titles. Reply with the title only."],
             input="Name this task in 2-4 plain words, like a short ticket title. "
                   f"Reply with the title only, no quotes or punctuation.\n\nTask:\n{text[:600]}",
-            capture_output=True, text=True, timeout=25, cwd=str(Path.home()))
+            capture_output=True, text=True, timeout=25, cwd=LEAN_CWD)
         t = " ".join((p.stdout or "").split()).strip("\"'.,:;")
         if 0 < len(t) <= 80:
             return t
@@ -94,12 +105,29 @@ def load_env():
             os.environ.setdefault(k, v)
 
 
-def effort_args() -> list[str]:
+def effort_args(override: str | None = None) -> list[str]:
     """--effort for claude. EFFORT=auto (or empty) omits the flag so the model picks
     its own effort per turn; the CLI only accepts low|medium|high|xhigh|max and
-    warns + falls back to default on anything else, so don't pass 'auto' through."""
-    level = os.environ.get("EFFORT", "xhigh").strip().lower()
+    warns + falls back to default on anything else, so don't pass 'auto' through.
+    override = a one-turn level from split_effort() (a `max:` message prefix)."""
+    level = (override or os.environ.get("EFFORT", "xhigh")).strip().lower()
     return [] if level in ("", "auto") else ["--effort", level]
+
+
+# One-turn effort override (2026-11-12): the bots run at a moderate default (.env EFFORT);
+# a request that starts with `max:` or `xhigh:` runs that one turn at that level.
+# The request sits at the very start of the prompt (resumed thread) or right after the
+# Discord-context marker (fresh session). Relayed bot dispatches are wrapped, so they never match.
+EFFORT_PREFIX = re.compile(
+    r"(\A|\[Latest request addressed to you\]\n)[ \t]*(max|xhigh)[ \t]*:[ \t]*", re.I)
+
+
+def split_effort(prompt: str) -> tuple[str, str | None]:
+    """(prompt without the effort prefix, level or None)."""
+    m = EFFORT_PREFIX.search(prompt)
+    if not m:
+        return prompt, None
+    return prompt[:m.start()] + m.group(1) + prompt[m.end():], m.group(2).lower()
 
 
 def system_prompt() -> str:
@@ -272,8 +300,13 @@ def with_attachments(content: str, paths: list[str]) -> str:
             f"{listing}\nUse these files as part of the task.]")
 
 
-COMPACT_AT = 250_000  # tokens; ~300k+ contexts get 529-load-shed on every call (INTEL wedge, 2026-08-13)
-HARD_COMPACT_AT = 275_000  # past this a turn must wait for compaction; below it a new message wins
+# Lowered 250k/275k -> 150k/180k on 2026-11-12 (usage audit): every request re-reads the whole
+# context and a cold resume re-writes it, so cost grows with context size. These stay below the
+# CLI's own auto-compact window (autoCompactWindow 200000 in ~/.claude/settings.json), so the
+# between-turn compaction here (with the memory flush) runs first.
+# History: ~300k+ contexts got 529-load-shed on every call (INTEL wedge, 2026-08-13).
+COMPACT_AT = 150_000  # tokens; compact after the reply once the session is past this
+HARD_COMPACT_AT = 180_000  # past this a turn must wait for compaction; below it a new message wins
 
 
 def session_context_tokens(session_id: str, cwd: str | None = None) -> int:
@@ -464,6 +497,7 @@ async def run_turn(thread, prompt: str, resume: str | None, runner=None,
     """One task turn with its status board. A 30-min timeout auto-continues once in the
     same session (2026-10-06); a second one pings Tomas instead of silently stopping."""
     runner = runner or run_claude  # resolved at call time: codex_bot patches run_claude
+    effort_once = split_effort(prompt)[1]  # a `max:` turn keeps its level when it auto-continues
     for attempt in (1, 2):
         board = StatusBoard(thread)
         async with thread.typing():
@@ -472,7 +506,7 @@ async def run_turn(thread, prompt: str, resume: str | None, runner=None,
         timed_out = reply.startswith("⏱️")
         if timed_out and resume and attempt == 1:
             await board.finish("⏱️", "30 min hit — auto-continuing")
-            prompt = AUTO_CONTINUE_PROMPT
+            prompt = (f"{effort_once}: " if effort_once else "") + AUTO_CONTINUE_PROMPT
             continue
         await board.finish("⏱️" if timed_out else "❌" if reply.startswith("❌") else "✅")
         break
@@ -488,10 +522,11 @@ async def run_claude(prompt: str, resume: str | None, on_block=None,
                      sys_prompt: str | None = None) -> tuple[str, str | None]:
     """Streams claude's work via on_block(content_block). Returns (reply_text, session_id).
     cwd/model/sys_prompt override the instance .env config (used by general_bot)."""
+    prompt, effort_once = split_effort(prompt)
     cmd = [
         CLAUDE_BIN, "-p", prompt,
         "--model", model or os.environ.get("MODEL", "claude-fable-5"),
-        *effort_args(),
+        *effort_args(effort_once),
         "--dangerously-skip-permissions",
         "--output-format", "stream-json",
         "--verbose",

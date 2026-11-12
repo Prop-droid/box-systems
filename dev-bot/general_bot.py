@@ -93,9 +93,10 @@ def route(message: str) -> str:
         f"Reply with ONLY the agent key ({', '.join(PROFILES)}). No other words."
     )
     try:
-        p = subprocess.run([CLAUDE_BIN, "-p", "--model", "claude-haiku-4-5-20251001"],
+        p = subprocess.run([CLAUDE_BIN, "-p", "--model", "claude-haiku-4-5-20251001",
+                            *dev_bot.LEAN_ARGS],  # text-only routing: no tools, MCP or settings
                            input=prompt, capture_output=True, text=True, timeout=60,
-                           cwd=str(Path.home()))
+                           cwd=dev_bot.LEAN_CWD)
         out = (p.stdout or "").strip().lower()
         for k in sorted(PROFILES, key=len, reverse=True):  # 'ea' is inside 'creative'
             if k in out:

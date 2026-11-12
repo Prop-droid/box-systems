@@ -127,12 +127,12 @@ def classify_agent(text: str) -> str:
     keys = {agent_key(k) for k in AGENT_DOMAINS} | {"unsure"}
     try:
         p = subprocess.run(
-            [dev_bot.CLAUDE_BIN, "-p", "--model", "claude-haiku-4-5-20251001"],
+            [dev_bot.CLAUDE_BIN, "-p", "--model", "claude-haiku-4-5-20251001", *dev_bot.LEAN_ARGS],
             input=("You route incoming tasks to a 5-agent fleet:\n" + menu +
                    "\n\nReply with exactly one word: the agent key that should handle the "
                    "message below, or unsure if it could reasonably belong to several.\n\n"
                    f"MESSAGE:\n{text[:500]}"),
-            capture_output=True, text=True, timeout=25, cwd=str(Path.home()))
+            capture_output=True, text=True, timeout=25, cwd=dev_bot.LEAN_CWD)
         words = (p.stdout or "").strip().lower().split()
         if words and words[-1].strip('."\'`') in keys:
             return words[-1].strip('."\'`')
