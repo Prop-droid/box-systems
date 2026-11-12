@@ -137,8 +137,13 @@ def call_claude(prompt: str) -> dict[str, list[str]] | None:
     """Prompt via stdin (never positional — --allowed-tools is variadic). Returns id -> keys."""
     try:
         p = subprocess.run(
-            ["claude", "-p", "--model", MODEL, "--output-format", "text"],
-            input=prompt, capture_output=True, text=True, timeout=400,
+            # Lean one-shot (2026-11-12 usage audit): text in, JSON text out. No MCP servers,
+            # settings, hooks, tools, skills or transcript; cwd=/tmp so no project memory loads.
+            # The plain form sent about 46,000 tokens of fixed context on every batch.
+            ["claude", "-p", "--model", MODEL, "--output-format", "text",
+             "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--setting-sources", "",
+             "--tools", "", "--disable-slash-commands", "--no-session-persistence"],
+            input=prompt, capture_output=True, text=True, timeout=400, cwd="/tmp",
         )
     except subprocess.TimeoutExpired:
         log("WARN: claude timed out")
