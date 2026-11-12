@@ -49,7 +49,12 @@ def claude_insights(report_body, open_map=None):
               "Below are the numbers. Write 3-4 plain sentences, no markdown, no bullets, no headers, no em dashes: what moved, where revisions cluster, "
               "where unfinished work clusters by person, who has free capacity. Use the 3-letter codes. Do not restate every number.\n\n" + report_body)
     try:
-        p = subprocess.run([C.CLAUDE_BIN, "-p", "--model", "claude-fable-5"], input=prompt, capture_output=True, text=True, timeout=240)
+        # Sonnet + lean one-shot (2026-11-12 usage audit): the prompt carries all the numbers, so no MCP
+        # servers, settings, tools, skills or project memory. Was claude-fable-5 with ~46,000 tokens of fixed context.
+        p = subprocess.run([C.CLAUDE_BIN, "-p", "--model", os.environ.get("TEAM_CAPACITY_MODEL", "sonnet"),
+                            "--strict-mcp-config", "--mcp-config", '{"mcpServers":{}}', "--setting-sources", "",
+                            "--tools", "", "--disable-slash-commands", "--no-session-persistence"],
+                           input=prompt, capture_output=True, text=True, timeout=240, cwd="/tmp")
         txt = p.stdout.strip()
         if p.returncode == 0 and 80 < len(txt) < 1500 and "#" not in txt[:3]: return _clean(txt)
     except Exception: pass

@@ -279,14 +279,13 @@ Full manual = the `fleet-control` skill. Load-bearing subset for this repo:
   (`github-personal`, `nobara`, key-pinned Mac), never assume the default key.
 - **Tablet** (Lenovo P11 Pro) is LAN adb at `192.168.1.89` (LAN moved to 192.168.1.x on 2026-10-31; port rotates across
   reboots — rediscover the serial like `tablet-screen.sh` does).
-- **Alerts (TELEGRAM-ONLY, Tomas 2026-08-31):** box alerts go to the Telegram
-  fleet group's 🔔 Ops Log topic via `~/systems/lib/tg-notify.sh "Title" "body"
-  [priority]`; agent-facing feeds (digests Tomas replies to) via
-  `~/systems/lib/tg-post.sh "<topic>" <tg-instance> [file]` (auto-creates the
-  topic, registers reply-ownership, archives for agent recall).
-  `discord-notify.sh` and `discord-post.sh` are now shims to these — never post
-  to Discord. ntfy remains only for phone topics (usage-guard
-  `tomas-usage-guard-7c31`, `tomas-ph-1ea8ac8e`).
+- **Alerts (Discord; Tomas 2026-09-18 reversed the Telegram-only rule of 2026-08-31):**
+  box alerts go to Discord #ops-log via `~/systems/lib/discord-notify.sh "Title"
+  "body" [priority]`; agent-facing feeds (digests Tomas replies to) go to the
+  owning bot's channel via `~/systems/lib/discord-post.sh <channel-id> <TOKEN_VAR>
+  [file]`. `tg-notify.sh` and `tg-post.sh` are now shims to these, so old callers
+  keep working; do not add new Telegram callers. ntfy remains only for phone
+  topics (usage-guard `tomas-usage-guard-7c31`, `tomas-ph-1ea8ac8e`).
 - **No creative-strategy pings Sat/Sun (Tomas 2026-10-10):** any job posting
   Shameless/creative signal (#creative, Creative Feed, ClickUp/phone pushes) must
   stay silent on weekends and let Monday's run catch up. Precedents:
