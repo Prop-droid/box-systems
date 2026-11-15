@@ -17,7 +17,7 @@ MAP = {
 # (temp C -> target rpm points, temp C where the fan goes to 100% duty).
 # Flat plateaus in the gaming band: gaming PECI swings 58-63C, a sloped curve there = audible ramping.
 # 2026-11-14 Tomas: temps low, lower case fans (front pair beat 'wub' at ~1660) -> 1300 plateaus.
-CASE_CPU = [(30,1100),(40,1100),(45,1200),(50,1300),(75,1300)], 85
+CASE_CPU = [(30,1200),(40,1200),(45,1350),(50,1500),(75,1500)], 85
 # 2026-10-31, Tomas: less noise but keep the GPU's air -> only the CPU fan drops, 1850 -> 1300 in games.
 # 100% points moved 75 -> 85C so the warmer CPU can't spin the case fans up to ~3000 rpm.
 # 2026-11-13, Tomas: top exhaust on CPU_OPT mirrors this pwm (it was the main idle noise) -> idle floor 30% duty.
@@ -25,7 +25,7 @@ CASE_CPU = [(30,1100),(40,1100),(45,1200),(50,1300),(75,1300)], 85
 # 23:50 Tomas 'lower the speed' (hum): flat 30% floor to 70C, ramp only near the limit.
 CPU = [(30,860),(70,860),(78,1100)], 85
 # GPU edge (amdgpu temp1): desktop 40-48C, gaming ~64C (hotspot 83) on 2026-10-22.
-CASE_GPU = [(48,1100),(55,1200),(60,1300),(80,1300)], 90
+CASE_GPU = [(48,1200),(55,1350),(60,1500),(80,1500)], 90
 # 2026-11-14 Tomas: front pair (fan4 = CHA_FAN2, 2 fans, they beat) lower still -> 30% floor, ramp only when hot.
 FRONT_CPU = [(30,1094),(70,1094),(78,1300)], 85
 FRONT_GPU = [(48,1094),(70,1094),(78,1300)], 90
