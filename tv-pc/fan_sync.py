@@ -16,16 +16,23 @@ MAP = {
 }
 # (temp C -> target rpm points, temp C where the fan goes to 100% duty).
 # Flat plateaus in the gaming band: gaming PECI swings 58-63C, a sloped curve there = audible ramping.
-CASE_CPU = [(30,1100),(40,1100),(45,1400),(50,1700),(75,1700)], 85
+# 2026-11-14 Tomas: temps low, lower case fans (front pair beat 'wub' at ~1660) -> 1300 plateaus.
+CASE_CPU = [(30,1100),(40,1100),(45,1200),(50,1300),(75,1300)], 85
 # 2026-10-31, Tomas: less noise but keep the GPU's air -> only the CPU fan drops, 1850 -> 1300 in games.
 # 100% points moved 75 -> 85C so the warmer CPU can't spin the case fans up to ~3000 rpm.
-CPU = [(30,1100),(40,1100),(45,1200),(50,1300),(75,1300)], 85
+# 2026-11-13, Tomas: top exhaust on CPU_OPT mirrors this pwm (it was the main idle noise) -> idle floor 30% duty.
+# 2026-11-13 game test: PECI avg 48 / max 54, pkg max 64 at the 1300 plateau -> plateau 1100.
+# 23:50 Tomas 'lower the speed' (hum): flat 30% floor to 70C, ramp only near the limit.
+CPU = [(30,860),(70,860),(78,1100)], 85
 # GPU edge (amdgpu temp1): desktop 40-48C, gaming ~64C (hotspot 83) on 2026-10-22.
-CASE_GPU = [(48,1100),(55,1400),(60,1700),(80,1700)], 90
+CASE_GPU = [(48,1100),(55,1200),(60,1300),(80,1300)], 90
+# 2026-11-14 Tomas: front pair (fan4 = CHA_FAN2, 2 fans, they beat) lower still -> 30% floor, ramp only when hot.
+FRONT_CPU = [(30,1094),(70,1094),(78,1300)], 85
+FRONT_GPU = [(48,1094),(70,1094),(78,1300)], 90
 GRAPHS = {  # profile uid -> (fan, curve, (temp device, sensor))
  "tvpc-fan2-quiet": ("fan2", CPU, (NCT, "temp8")),
  "tvpc-fan1-cpu": ("fan1", CASE_CPU, (NCT, "temp8")), "tvpc-fan1-gpu": ("fan1", CASE_GPU, (GPU, "temp1")),
- "tvpc-fan4-cpu": ("fan4", CASE_CPU, (NCT, "temp8")), "tvpc-fan4-gpu": ("fan4", CASE_GPU, (GPU, "temp1")),
+ "tvpc-fan4-cpu": ("fan4", FRONT_CPU, (NCT, "temp8")), "tvpc-fan4-gpu": ("fan4", FRONT_GPU, (GPU, "temp1")),
 }
 # The channels stay assigned to tvpc-fan{1,4}-quiet; those become Mix (max) profiles over the graphs above.
 MIX = {"tvpc-fan1-quiet": ["tvpc-fan1-cpu", "tvpc-fan1-gpu"], "tvpc-fan4-quiet": ["tvpc-fan4-cpu", "tvpc-fan4-gpu"]}
