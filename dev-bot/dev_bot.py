@@ -15,6 +15,9 @@ Instances are configured via .env in BOT_DIR (default: script dir):
                                          # auto (or empty) = no --effort flag, model picks.
                                          # A message that starts with `max:` or `xhigh:` runs
                                          # that one turn at that level (split_effort).
+  CLAUDE_CODE_AUTO_COMPACT_WINDOW=1000000  # optional, this bot's context window (CLI env);
+  COMPACT_AT=750000                      # optional, with HARD_COMPACT_AT: the between-turn
+  HARD_COMPACT_AT=900000                 # compaction points (defaults 150k/180k)
   EXTRA_CHANNELS=ops-log                 # optional, extra home channels: plain human
                                          # messages there dispatch tasks too (bot/webhook
                                          # posts still ignored unless trusted + mention)
@@ -103,6 +106,13 @@ def load_env():
         if line and not line.startswith("#") and "=" in line:
             k, v = line.split("=", 1)
             os.environ.setdefault(k, v)
+    # Per-bot context size (2026-11-13). The CLI window itself comes from
+    # CLAUDE_CODE_AUTO_COMPACT_WINDOW in the same .env (child claude inherits it; it wins
+    # over autoCompactWindow in ~/.claude/settings.json). Keep COMPACT_AT < HARD_COMPACT_AT
+    # < that window, so the between-turn compaction here runs before the CLI's own.
+    global COMPACT_AT, HARD_COMPACT_AT
+    COMPACT_AT = int(os.environ.get("COMPACT_AT", COMPACT_AT))
+    HARD_COMPACT_AT = int(os.environ.get("HARD_COMPACT_AT", HARD_COMPACT_AT))
 
 
 def effort_args(override: str | None = None) -> list[str]:
@@ -305,6 +315,8 @@ def with_attachments(content: str, paths: list[str]) -> str:
 # CLI's own auto-compact window (autoCompactWindow 200000 in ~/.claude/settings.json), so the
 # between-turn compaction here (with the memory flush) runs first.
 # History: ~300k+ contexts got 529-load-shed on every call (INTEL wedge, 2026-08-13).
+# These are the defaults; a bot's .env can raise them (COMPACT_AT, HARD_COMPACT_AT) together
+# with CLAUDE_CODE_AUTO_COMPACT_WINDOW. dev-bot runs at a 1M window since 2026-11-13 (Tomas).
 COMPACT_AT = 150_000  # tokens; compact after the reply once the session is past this
 HARD_COMPACT_AT = 180_000  # past this a turn must wait for compaction; below it a new message wins
 
