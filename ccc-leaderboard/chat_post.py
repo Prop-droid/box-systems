@@ -27,7 +27,7 @@ msg += block("🎬 Top 5 videos · launched last 30 days", d["last30"]["videos"]
 msg += block("🖼️ Top 5 images · launched last 30 days", d["last30"]["images"], 5)
 msg += block(f"🏁 Top 5 videos · launched since {rg['quarter']['from']}", d["quarter"]["videos"], 5)
 msg += block(f"🏁 Top 5 images · launched since {rg['quarter']['from']}", d["quarter"]["images"], 5)
-msg += [f"Full boards with thumbnails and margins: {boards_url}"]
+msg += [f"Full boards with thumbnails, hook, retention, CTR and CVR: {boards_url}"]
 text = "\n".join(msg)
 
 open(os.environ.get("MSG_FILE", "/dev/null"), "w").write(text)
