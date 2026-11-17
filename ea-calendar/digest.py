@@ -97,6 +97,17 @@ def render(events, today, tomorrow):
     return "\n".join(lines).strip()
 
 
+def followups():
+    """Open call follow-ups block from wispr-calls. A failure here never breaks the digest."""
+    try:
+        r = subprocess.run(["/usr/bin/python3", "/home/tomas/systems/wispr-calls/brief.py"],
+                           capture_output=True, text=True, timeout=20)
+        return ("\n\n" + r.stdout.strip()) if r.returncode == 0 and r.stdout.strip() else ""
+    except Exception as e:
+        log(f"call follow-ups block skipped: {e}")
+        return ""
+
+
 def post(body):
     if DRY:
         log("dry run, not posting")
@@ -114,6 +125,7 @@ def main():
     end = day_start + datetime.timedelta(days=2)
     events = fetch(day_start, end)
     body = render(events, day_start.date(), (day_start + datetime.timedelta(days=1)).date())
+    body += followups()
     log(f"events today+tomorrow: {len(events)}")
     print(body)
     post(body)

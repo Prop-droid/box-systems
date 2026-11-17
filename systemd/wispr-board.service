@@ -1,0 +1,15 @@
+[Unit]
+Description=Call follow-up board (Wispr Flow calls, tailnet address only)
+After=network-online.target tailscaled.service
+
+[Service]
+Type=simple
+# The Tailscale address of the box. Do not change it to 0.0.0.0 and do not put it on the funnel.
+Environment=WISPR_BOARD_HOST=100.107.26.69
+Environment=WISPR_BOARD_PORT=8099
+ExecStart=/usr/bin/python3 -I %h/systems/wispr-calls/serve.py
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

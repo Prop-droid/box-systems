@@ -1,0 +1,5 @@
+[Unit]
+Description=wispr-calls (Wispr Flow call text from the Mac -> follow-up board)
+[Service]
+Type=oneshot
+ExecStart=%h/systems/wispr-calls/run.sh

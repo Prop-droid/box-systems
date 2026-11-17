@@ -190,6 +190,20 @@ command to prove a change works before the timer fires.
   #ops-log once per distinct problem and once per adb outage. Edit the list when
   the debloat set changes. Dry run: `DRY_RUN=1 bash tablet-disabled-watch.sh`.
 
+- **wispr-calls/** - Mon-Fri hourly 08:40-20:40 (`wispr-calls.timer`): `run.sh`
+  reads Wispr Flow Notetaker call text from the Mac over `ssh mac` (read-only,
+  no audio), `extract.py` parses the "Next Steps" / "Decisions Made" parts of
+  each Wispr summary (no LLM; owners come from the call's speaker map), and
+  `build_board.py` writes the follow-up board (focus order: Mine, Owed to me, Creative team; all other people's items sit in one closed "Not in focus" block; the team roster is `focus.json`). It also writes `board/board.json`, which the CCC `/calls` page reads (CCC forwards ticks to `wispr-board.service`; one tick state for both pages). `wispr-board.service` (always on)
+  serves it at `http://100.107.26.69:8099/` on the Tailscale address only and
+  keeps the done ticks in `state/done.json`. `brief.py` prints the open "Mine"
+  block that `ea-calendar/digest.py` adds to the 08:00 digest (Mon-Fri).
+  Data lives outside git in `~/.local/share/wispr-calls/` (colleague call text:
+  never commit it, never push it to the company brain, never put the board on
+  funnel 8443). A sleeping Mac is normal (exit 0, last data stays); the run
+  fails after 100 h without a good sync, or at once with `SCHEMA_CHANGED` when
+  Wispr changes `flow.sqlite` (fix `export_mac.py`). Dry run: `bash run.sh`.
+
 ## systemd user-unit patterns
 
 - Every cron job = a `Type=oneshot` `.service` + an `OnCalendar` `.timer` with
