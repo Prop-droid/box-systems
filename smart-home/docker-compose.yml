@@ -1,0 +1,44 @@
+# Smart-home stack: Mosquitto + Zigbee2MQTT + Home Assistant.
+# Runtime data lives in /home/tomas/smart-home (not in git: it holds the Zigbee network key).
+name: smart-home
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - /home/tomas/smart-home/mosquitto/data:/mosquitto/data
+    environment:
+      - TZ=Europe/Vilnius
+
+  zigbee2mqtt:
+    image: ghcr.io/koenkk/zigbee2mqtt:latest
+    container_name: zigbee2mqtt
+    restart: unless-stopped
+    depends_on:
+      - mosquitto
+    ports:
+      - "8080:8080"
+    volumes:
+      - /home/tomas/smart-home/z2m:/app/data
+      - /run/udev:/run/udev:ro
+    devices:
+      - /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_44e36a033df5ef11b8049ba29ed47d52-if00-port0:/dev/ttyUSB0
+    environment:
+      - TZ=Europe/Vilnius
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: homeassistant
+    restart: unless-stopped
+    network_mode: host
+    depends_on:
+      - mosquitto
+    volumes:
+      - /home/tomas/smart-home/ha:/config
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=Europe/Vilnius

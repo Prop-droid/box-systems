@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+# raea-tv — run raea on the TV PC (RX 9060 XT). The agent box has no raea engine: this is how raea runs from here.
+# Usage: raea-tv render edit.tsx -o out/x.mp4     (any raea verb; run it from inside a raea workspace)
+# Mirrors the workspace to tv-pc:~/raea-render/<workspace>/ (exact copy; .git and the root .claude left out), runs
+# raea there in the same folder, then copies back whatever it wrote. raea's exit code is passed through.
+# Exit 75 = tv-pc could not do the job now (a game is running, it is asleep with a game open, or unreachable).
+# Sleep: a PC that raea-tv woke goes back to sleep RAEA_TV_LINGER seconds (default 180) after the last job, so a
+# run of calls costs one wake (about 15 s). A watchdog timer on the PC does that, so it also sleeps if the box
+# dies mid-job. The watchdog lets go for good once a game starts or someone else suspends and wakes the PC.
+# A PC that was already on is left on. A PC that wakes with a game still open is put straight back to sleep and
+# not woken again for 12 h (or until a call finds it awake).
+# Only the workspace travels: paths outside it (and ~/.raea settings, API keys) are not on the PC.
+set -u
+exec </dev/null
+PC=tv-pc; ROOT=root@100.74.97.97
+SSH="ssh -o ConnectTimeout=4 -o BatchMode=yes"
+LINGER=${RAEA_TV_LINGER:-180}; [ "$LINGER" -ge 10 ] 2>/dev/null || LINGER=180
+STATE=${XDG_STATE_HOME:-$HOME/.local/state}/raea-tv; mkdir -p "$STATE"
+PARKED=$STATE/game-parked                  # "the PC is asleep with a game in memory": don't resume it unattended
+ARGS=("$@"); ours=0; fresh=0               # ours = raea-tv woke this PC (now or in an earlier call) and must put it back
+say() { echo "raea-tv: $*" >&2; }
+busy() { say "$1"; exit 75; }
+
+GAME='pgrep -f "[S]teamLaunch AppId=" >/dev/null'   # exit 0 = Steam has a game running (bracket: never matches itself)
+# home dir, raea version and "is a game running" in one round trip; false when the PC doesn't answer
+preflight() {
+  mapfile -t P < <(timeout 15 $SSH $PC "echo \"\$HOME\"; raea --version; $GAME && echo game || echo idle" 2>/dev/null)
+  [ "${#P[@]}" = 3 ]
+}
+
+# The sleep watchdog, set on the PC as root. It looks every N seconds and suspends the PC once no job is running.
+#   lease begin N        an earlier call left it set (= raea-tv woke this PC): set it afresh, print "held". Else "free".
+#   lease arm N [force]  set it. "force" suspends at the first look, game or not.
+# Prints nothing when the PC does not answer.
+lease() {
+  timeout 12 $SSH $ROOT "sh -s -- $*" 2>/dev/null <<'EOF'
+held=0; systemctl is-active -q 'raea-tv-sleep-*.timer' && held=1
+[ "$1" = begin ] && [ $held = 0 ] && { echo free; exit 0; }
+systemctl stop 'raea-tv-sleep-*.timer' 2>/dev/null
+cat > /run/raea-tv-tick <<'TICK'
+# written by raea-tv on the agent box. $1 = this watchdog's timer, $2 = suspend count when it was set, $3 = force
+[ "$(cat /sys/power/suspend_stats/success)" = "$2" ] || { systemctl stop "$1"; exit 0; }  # someone else slept and woke the PC: theirs now
+if [ "$3" != force ]; then
+  pgrep -f '[S]teamLaunch AppId=' >/dev/null && { systemctl stop "$1"; exit 0; }          # someone is playing: theirs now
+  job() { pgrep '^raea' >/dev/null || pgrep -x rsync >/dev/null; }
+  job && exit 0; sleep 3; job && exit 0                                                   # a job is running: look again later
+fi
+systemctl stop "$1"; systemctl suspend
+TICK
+u=raea-tv-sleep-$(date +%s%N)
+systemd-run -q --collect --unit="$u" --on-active="$2" --on-unit-inactive="$2" \
+  /bin/sh /run/raea-tv-tick "$u.timer" "$(cat /sys/power/suspend_stats/success)" "${3:-}" && echo held
+EOF
+}
+
+ws=$PWD; while [ "$ws" != / ] && [ ! -e "$ws/.raea/workspace" ]; do ws=$(dirname "$ws"); done
+[ -e "$ws/.raea/workspace" ] || { say "not inside a raea workspace (no .raea/workspace above $PWD)"; exit 2; }
+name=$(basename "$ws"); remote="raea-render/$name"; UNPULLED=$STATE/unpulled.$name
+
+exec 9>"$STATE/lock"; flock 9              # one job at a time
+# restart the watchdog's countdown from the end of the job (if this fails, the one set at the start still fires)
+trap '[ $ours = 1 ] && lease arm "$LINGER" >/dev/null && say "tv-pc goes back to sleep ${LINGER}s after the last job"' EXIT
+trap 'exit 130' INT TERM HUP
+
+case $(lease begin "$LINGER") in
+  held) ours=1 ;;
+  free) ;;
+  *) [ -n "$(find "$PARKED" -mmin -720 2>/dev/null)" ] && busy "tv-pc is asleep with a game open, not waking it (to override: rm $PARKED)"
+     t0=$SECONDS
+     "$HOME/systems/bin/wake-tv-pc" --wait >&2 || busy "tv-pc did not wake"
+     if [ $((SECONDS - t0)) -ge 5 ]; then  # it really was asleep (a wake that returns at once = it was on all along)
+       fresh=1
+       [ "$(lease arm "$LINGER")" = held ] || busy "tv-pc woke but its sleep watchdog could not be set: IT IS STILL ON"
+       ours=1
+     elif [ "$(lease begin "$LINGER")" = held ]; then
+       ours=1
+     fi ;;
+esac
+preflight || busy "tv-pc is up but raea did not answer there"
+if [ "${P[2]}" = game ]; then
+  if [ $fresh = 1 ]; then                  # a parked game resumed with nobody there: back to sleep at once
+    touch "$PARKED"; lease arm 1 force >/dev/null; ours=0
+    for _ in 1 2 3 4 5 6 7 8 9 10; do timeout 3 $SSH $PC true 2>/dev/null || break; sleep 1; done
+    busy "tv-pc woke with a game still open: it is asleep again and stays so for 12 h (to override: rm $PARKED)"
+  fi
+  ours=0; busy "a game is running on tv-pc"  # someone is playing: the watchdog lets go at its next look
+fi
+rm -f "$PARKED"
+
+RS=(rsync -a --exclude /.git/ --exclude /.claude/ -e "$SSH")
+pull() { "${RS[@]}" --update "$PC:$remote/" "$ws/"; }
+if [ -e "$UNPULLED" ]; then                # an earlier run's results never came back: fetch them before the mirror wipes them
+  pull || busy "could not fetch an earlier run's results from tv-pc:~/$remote (to drop them: rm $UNPULLED)"
+  rm -f "$UNPULLED"
+fi
+# the mirror keeps a throwaway git repo of its own (raea commits a new project); the box's real .git never travels
+MK="mkdir -p $(printf %q "$remote") && cd $(printf %q "$remote") && { [ -d .git ] || { git init -q . && git config user.name raea-tv && git config user.email raea-tv@tv-pc.invalid; }; }"
+$SSH $PC "$MK" && "${RS[@]}" --delete "$ws/" "$PC:$remote/" || busy "sync to tv-pc failed"
+
+: > "$UNPULLED"
+rws="${P[0]}/$remote"; cmd=raea
+[ ${#ARGS[@]} -gt 0 ] && cmd="raea $(printf '%q ' "${ARGS[@]//"$ws"/"$rws"}")"
+$SSH $PC "cd $(printf %q "$rws${PWD#"$ws"}") && $cmd"; rc=$?
+if pull; then rm -f "$UNPULLED"; else say "copying results back failed: they stay on tv-pc and the next raea-tv run fetches them"; fi
+[ $rc = 255 ] && busy "lost tv-pc mid-run, run it again"
+exit $rc
