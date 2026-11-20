@@ -96,3 +96,7 @@ tablet-voice/models/
 
 # creative-bot runtime state (thread -> session map), same as the other bots above
 creative-bot/sessions.json
+
+# scratch + local secrets (SearXNG secret_key lives in the settings file)
+tmp/
+vane/searxng-settings.yml
