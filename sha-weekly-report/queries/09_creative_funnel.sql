@@ -6,7 +6,7 @@ WITH a AS (
     SUM(spend) spend, SUM(revenue) revenue, SUM(clicks) clicks, SUM(impressions) impr,
     SUM(lp_views) lp_views, SUM(add_to_cart) atc, SUM(orders) orders
   FROM `ejam-dwh.production.creative_dashboard`
-  WHERE brand='SHA' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}' GROUP BY sh, ad_id )
+  WHERE brand = 'SHA' AND channel = 'facebook' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}' GROUP BY sh, ad_id )
 SELECT COALESCE(creative, sh) AS creative, lp,
   ROUND(spend,0) AS spend, ROUND(SAFE_DIVIDE(revenue,spend),2) AS roas,
   ROUND(100*SAFE_DIVIDE(clicks,impr),2) AS ctr_pct,

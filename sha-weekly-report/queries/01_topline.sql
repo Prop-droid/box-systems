@@ -7,7 +7,7 @@ WITH lw AS (
     SUM(orders) AS orders, SUM(conversions) AS conversions,
     SUM(clicks) AS clicks, SUM(impressions) AS impressions
   FROM `ejam-dwh.production.creative_dashboard`
-  WHERE brand='SHA' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}'
+  WHERE brand = 'SHA' AND channel = 'facebook' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}'
 ),
 pw AS (
   SELECT 'prior_week' AS bucket,
@@ -15,7 +15,7 @@ pw AS (
     SUM(orders) AS orders, SUM(conversions) AS conversions,
     SUM(clicks) AS clicks, SUM(impressions) AS impressions
   FROM `ejam-dwh.production.creative_dashboard`
-  WHERE brand='SHA' AND dt BETWEEN '{{PRIOR_FROM}}' AND '{{PRIOR_TO}}'
+  WHERE brand = 'SHA' AND channel = 'facebook' AND dt BETWEEN '{{PRIOR_FROM}}' AND '{{PRIOR_TO}}'
 ),
 r4 AS (
   SELECT '4wk_avg' AS bucket,
@@ -25,7 +25,7 @@ r4 AS (
     CAST(ROUND(SUM(clicks)/4) AS INT64) AS clicks,
     CAST(ROUND(SUM(impressions)/4) AS INT64) AS impressions
   FROM `ejam-dwh.production.creative_dashboard`
-  WHERE brand='SHA' AND dt BETWEEN '{{ROLLING_FROM}}' AND '{{ROLLING_TO}}'
+  WHERE brand = 'SHA' AND channel = 'facebook' AND dt BETWEEN '{{ROLLING_FROM}}' AND '{{ROLLING_TO}}'
 )
 SELECT bucket, spend, revenue, cogs, orders, conversions, clicks, impressions,
   ROUND(SAFE_DIVIDE(revenue, spend),2) AS roas,

@@ -9,7 +9,7 @@ SELECT
   SUM(orders) AS orders,
   ROUND(SAFE_DIVIDE(SUM(spend), NULLIF(SUM(orders),0)),2) AS cpa
 FROM `ejam-dwh.production.creative_dashboard`
-WHERE brand='SHA' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}' AND spend > 100
+WHERE brand = 'SHA' AND channel = 'facebook' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}' AND spend > 100
 GROUP BY 1, 2, 3
 ORDER BY spend DESC
 LIMIT 15

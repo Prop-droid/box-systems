@@ -5,7 +5,7 @@ WITH a AS (
     IFNULL(REGEXP_EXTRACT(ad_name, r'(https?://[^ ?]+)'), '(unmapped)') AS url,
     spend, revenue, orders, clicks, impressions, lp_views, add_to_cart
   FROM `ejam-dwh.production.creative_dashboard`
-  WHERE brand='SHA' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}' )
+  WHERE brand = 'SHA' AND channel = 'facebook' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}' )
 SELECT
   lp, url,
   ROUND(SUM(spend),0) AS spend,

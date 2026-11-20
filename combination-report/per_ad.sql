@@ -22,7 +22,7 @@ WITH per_ad AS (
     SUM(spend) spend,
     SUM(revenue+IFNULL(upsale_revenue,0)-IFNULL(cogs,0)-IFNULL(transaction_fee,0)-IFNULL(agency_fees,0)) cm
   FROM `ejam-dwh.production.creative_dashboard`
-  WHERE brand="SHA" AND dt BETWEEN "@from" AND "@to"
+  WHERE brand="SHA" AND channel="facebook" AND dt BETWEEN "@from" AND "@to"
     AND asset_type="VIDEO" AND spend>0 AND video_length IS NOT NULL
   GROUP BY 1
   HAVING sh != "unmapped"

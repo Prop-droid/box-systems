@@ -13,7 +13,7 @@ WITH per_var AS (
     SUM(orders) AS ord,
     COUNT(DISTINCT ad_id) AS n_ads
   FROM `ejam-dwh.production.creative_dashboard`
-  WHERE brand = 'SHA'
+  WHERE brand = 'SHA' AND channel = 'facebook'
     AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}'
   GROUP BY 1, 2
 ),

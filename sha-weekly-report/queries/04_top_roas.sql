@@ -8,7 +8,7 @@ SELECT
   ROUND(SAFE_DIVIDE(SUM(revenue), SUM(spend)),2) AS roas,
   SUM(orders) AS orders
 FROM `ejam-dwh.production.creative_dashboard`
-WHERE brand='SHA' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}'
+WHERE brand = 'SHA' AND channel = 'facebook' AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}'
 GROUP BY 1, 2, 3
 HAVING spend > 500
 ORDER BY roas DESC

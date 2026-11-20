@@ -52,10 +52,10 @@ WRITE the report in EXACTLY this structure (markdown, no preamble, no closing re
 # Shameless Snacks Weekly Paid-Acquisition Report
 **Week:** {{LAST_FROM}} to {{LAST_TO}}
 **Source:** `ejam-dwh.production.creative_dashboard`
-**Scope:** first-order paid-acquisition only. Not full P&L, no subscription LTV.
+**Scope:** Meta (Facebook + Instagram) only; AppLovin and Google are excluded at the query. First-order paid-acquisition only. Not full P&L, no subscription LTV.
 
 ## TL;DR
-4-6 bullets. Lead with: spend, revenue, ROAS, cmROAS (break-even = 1.0), and contribution margin in dollars. Then WoW delta. Then 4-wk avg context. Then the single biggest action. Use verdict tags where relevant (KILL / ITERATE / WATCH / SCALE-BUDGET).
+4-6 bullets. Lead with: spend, revenue, ROAS, cmROAS (break-even = 1.0), and contribution margin in dollars. Then WoW delta. Then 4-wk avg context. Then the single biggest creative move. Use only the creative tags ITERATE or NEW-BRIEF.
 
 ## 1. Topline (WoW + 4-week baseline)
 Convert the topline data into a markdown table with columns: Metric / Last wk / Prior wk / 4-wk avg / WoW Delta. Include spend, revenue, COGS, orders, conversions, clicks, impressions, ROAS, margin, net_contrib, CPA. Compute the Delta% column yourself. Then add four computed economics rows using the topline numbers:
@@ -69,28 +69,28 @@ After the table: lead with the economics verdict. Is the account above or below 
 Markdown table from top-15. Add a "Top-5 takeaways" sub-bullet list highlighting:
 - Total burn from top-3 vs their return
 - Any "Unmapped" sh_ref entries (broad audience tests not tied to ClickUp briefs)
-- Profitable lines in the top-15 that deserve more budget
+- Profitable lines in the top-15 worth iterating on (what to make more of)
 
 ## 3. Real winners (ROAS > 1.0, $500+ spend)
 Markdown table. Then 3-5 bullets identifying recurring themes (Warehouse / UGC / specific designer codes / specific angles). Bold the highest-ROAS line.
 
 ## 4. Losers burning cash ($1K+ spend, ROAS < 0.5)
-Markdown table. Compute combined "spend → return" waste at the bottom. Then 3 specific action callouts:
-1. Worst ROAS line: recommend kill
-2. Worst audience-level loser (Unmapped AUD_* entries): recommend audience pause
+Markdown table. Compute combined "spend → return" waste at the bottom. Then 3 creative callouts:
+1. Worst line: name what failed in the creative (hook, body, offer, format) and the NEW-BRIEF that should replace its concept slot
+2. Worst audience-level loser (Unmapped AUD_* entries): the creative lesson only, no audience call
 3. Any pattern where a hook/angle is winning under one editor (AYC/PAO) but losing under another (JDC/FER): flag for creative cross-check
 
 ## 5. By AI angle
 Markdown table. Then reads on:
 - Which angle has the best ROAS at non-trivial scale ($1K+ spend)
-- Which angle is being over-funded relative to its ROAS
+- Which angle is being over-produced relative to its cmROAS (brief less of it, brief what instead)
 - % of spend on creatives WITHOUT an ai_angle tag (allocation blindness flag)
 
 ## 6. Landing page performance
 Markdown table using the short LP slug as the LP column (columns: LP / Spend / ROAS / CTR% / CPC / LP views / LP-to-ATC% / ATC / ATC-to-order% / Orders / CPA). Directly under the table, add an "LP URLs" key: one bullet per LP slug mapping it to its full url (format: `slug: https://full/url`), pulled from the url column. Then:
 - Name the best-converting LP (highest LP-to-ATC% AND ATC-to-order% at $500+ spend) and the worst, by slug.
 - Call out any LP with strong traffic (high LP views / CTR) but weak LP-to-ATC%. The page isn't converting the clicks it's getting.
-- Then 3-5 LP recommendations, each naming a specific LP slug + a verb (SHIFT-SPEND-TO / FIX-CHECKOUT-ON / TEST-NEW-LP-FOR / RETIRE): shift budget toward the best ATC-to-order% LP, fix the LP leaking most between LP-view and ATC, test a new LP variant for an angle whose creatives convert poorly on the current page.
+- Then 2-4 LP reads, each naming a specific LP slug + a verb (FIX-COPY-ON / TEST-NEW-LP-FOR / BRIEF-FOR): fix the copy on the LP leaking most between LP-view and ATC, test a new LP variant for an angle whose creatives convert poorly on the current page, brief new creative for the angle of the best-converting LP. No spend-shifting or retire calls.
 - Caveat: an LP showing 0% LP-to-ATC with orders > 0 (e.g. a "shopify" direct-checkout slug) skips the add-to-cart event. Judge it on orders / ROAS, not on its ATC rate.
 
 ## 7. Funnel analysis (where we drop customers)
@@ -98,19 +98,19 @@ Markdown table from the funnel-stage data: Stage / Last wk / Prior wk, for Impre
 - Identify the single biggest drop-off stage (the step losing the largest share of users) and quantify the leak.
 - For each step, say whether its conversion RATE improved or decayed WoW. Separate a VOLUME problem (fewer impressions/clicks) from a RATE problem (a step converting worse than before).
 - Diagnose upper-funnel vs lower-funnel: if CTR is healthy but LP-view-to-ATC or ATC-to-order is weak, the leak is the landing page / offer, not the creative.
-- Using the per-creative funnel data, flag 2-4 specific creatives that drive clicks (good CTR) but stall on the LP (low LP-to-ATC%). These are LP-CHANGE candidates. Name the SH creative, its CTR, its LP-to-ATC%, the LP it's on, and recommend testing it on a higher-converting LP.
+- Using the per-creative funnel data, flag 2-4 specific creatives that drive clicks (good CTR) but stall on the LP (low LP-to-ATC%). These are message-match gaps: the ad promises something the page doesn't pay off. Name the SH creative, its CTR, its LP-to-ATC%, the LP it's on, and recommend ITERATE (rework the creative's promise to match the page) or note the LP copy gap. Never recommend moving the ad to another LP.
 
 ## 8. Hook & Hold (attention vs your own baseline)
 Build a markdown table from the hook_hold data: Concept / Hook Rate % / Hold Rate % / Spend. Then compute the account average hook rate and hold rate from the same table (sum of 3s views / sum of impressions across all rows shown). Flag which concepts are above vs below the account average hook rate -- for a single brand account, the own average is the right benchmark, not a generic industry number. Call out 2-3 specific creatives by exact variation code (SH-####-#) that stand out (high hook + low hold = strong open, weak close; low hook = the creative is not stopping the scroll; high hold = the message lands when they do watch).
 
 ## 9. Fatigue watch (cascade)
-Build a markdown table from the fatigue data: Concept / Spend Last Wk / CTR Prior / CTR Last / CTR Change %. Then: identify the worst fatiguing creatives (biggest CTR drop on meaningful spend). Note that fatigue = spend held up but CTR declining -- the algorithm keeps buying but the audience has seen it. A 15%+ CTR drop on $1K+ spend is a refresh signal. A 25%+ drop is urgent. For the worst 2-3 cases, recommend: WATCH (flag, not yet critical), or ITERATE (build fresh variation on the same concept). Name specific exact variation codes (SH-####-#).
+Build a markdown table from the fatigue data: Concept / Spend Last Wk / CTR Prior / CTR Last / CTR Change %. Then: identify the worst fatiguing creatives (biggest CTR drop on meaningful spend). Note that fatigue = spend held up but CTR declining -- the algorithm keeps buying but the audience has seen it. A 15%+ CTR drop on $1K+ spend is a refresh signal. A 25%+ drop is urgent. For the worst 2-3 cases, recommend ITERATE (build a fresh variation on the same concept): now for a 25%+ drop, queued for 15-25%. Name specific exact variation codes (SH-####-#).
 
 ## 10. Concepts (not just ads)
-Build a markdown table from the concepts data: Concept / Spend / Revenue / ROAS / cmROAS / Margin % / Orders / Variations / Contrib Margin. Rank by contribution margin (already done in data). Then: identify which CONCEPTS are margin-positive (cmROAS > 1.0) vs margin-negative. Note how many variations each winning concept has -- a winner with only 1-2 variations is underexplored. Recommend which concepts to make more variations of (ITERATE) and which to stop funding (KILL). Name specific concepts with their top_variant code, cmROAS and contrib margin.
+Build a markdown table from the concepts data: Concept / Spend / Revenue / ROAS / cmROAS / Margin % / Orders / Variations / Contrib Margin. Rank by contribution margin (already done in data). Then: identify which CONCEPTS are margin-positive (cmROAS > 1.0) vs margin-negative. Note how many variations each winning concept has -- a winner with only 1-2 variations is underexplored. Recommend which concepts to make more variations of (ITERATE) and which to stop making (no new variations, NEW-BRIEF a replacement concept for that slot). Name specific concepts with their top_variant code, cmROAS and contrib margin.
 
 ## 11. Recommendations for the upcoming days (this week)
-5-7 specific tactical actions for the next 1-7 days. Format each as a verdict tag followed by the action. Use EXACTLY these verdict tags: ITERATE (make more variations of a margin-positive concept), WATCH (fatiguing, refresh signal -- act within days), KILL (cmROAS well below 1.0 on meaningful spend -- stop funding now), SWITCH-LP (creative converts clicks but LP bleeds ATC), SCALE-BUDGET (cmROAS > 1.0 and underserved). Format: "ITERATE SH-####-# (cmROAS X.X, margin +X%) -- [one-line rationale]". Each action MUST name a specific exact variation code (SH-####-#) or audience slug. Reference brand canon when relevant (26g fiber, daily-fiber CTA). No em-dashes or en-dashes -- use plain hyphens.
+5-7 specific tactical actions for the next 1-7 days. Format each as a verdict tag followed by the action. Use EXACTLY these two tags: ITERATE (a new variation of an existing concept: hook swap, body edit, format swap, creator swap, fresh take on a fatiguing winner) and NEW-BRIEF (a fresh concept: replace a failed concept's slot, or fill a persona / angle gap). Format: "ITERATE SH-####-# (cmROAS X.X, margin +X%) -- [what to change and why]" or "NEW-BRIEF [angle / persona] -- [the concept, and the SH-####-# it replaces or learns from]". Each action MUST name a specific exact variation code (SH-####-#) it builds on or replaces. Reference brand canon when relevant (26g fiber, daily-fiber CTA). No em-dashes or en-dashes -- use plain hyphens.
 
 ## 12. Recommendations for upcoming weeks (next 2-3 weeks)
 3-5 strategic moves. Each MUST:
@@ -120,6 +120,8 @@ Build a markdown table from the concepts data: Concept / Spend / Revenue / ROAS 
 
 ## 13. Data caveats
 3-5 bullets max. Standard caveats: paid-acquisition only, no LTV, Facebook-only data source, tagging gaps. Also: add-to-cart isn't fired on direct-checkout LPs (e.g. the "shopify" slug) so their LP-to-ATC reads 0; LP views can exceed clicks (multi-source / refresh) so click-to-LP-view isn't a clean funnel step; LP slugs come from the URL in ad_name, so creatives with no URL fall into "(unmapped)". hook_rate and hold_rate are only computed for asset_type=VIDEO rows -- image ads show NULL.
+
+NO MEDIA-BUYING CALLS anywhere in the report: never recommend kill, pause, scale, budget, bid, audience or LP-switch moves, and never use the words KILL, PAUSE, SCALE-BUDGET, WATCH or SWITCH-LP as verdicts. The reader decides only what creative to make next (ITERATE or NEW-BRIEF). Spend and cmROAS are evidence for that choice, not instructions to the buyer.
 
 VOICE: senior creative-strategist. Direct, specific, performance-aware. No corporate filler. No em-dashes. Use contractions. Reference exact variation codes (SH-####-#) by name. Tables tight, paragraphs short.
 

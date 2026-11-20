@@ -10,5 +10,5 @@ SELECT
   CAST(SUM(orders) AS INT64) AS orders,
   ROUND(100*SAFE_DIVIDE(SUM(orders),NULLIF(SUM(add_to_cart),0)),1) AS atc_to_order_pct
 FROM `ejam-dwh.production.creative_dashboard`
-WHERE brand='SHA' AND dt BETWEEN '{{PRIOR_FROM}}' AND '{{LAST_TO}}'
+WHERE brand = 'SHA' AND channel = 'facebook' AND dt BETWEEN '{{PRIOR_FROM}}' AND '{{LAST_TO}}'
 GROUP BY week ORDER BY week

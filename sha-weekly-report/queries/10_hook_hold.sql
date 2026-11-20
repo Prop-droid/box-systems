@@ -14,7 +14,7 @@ WITH base AS (
     SUM(spend) AS total_spend
   FROM `ejam-dwh.production.creative_dashboard`
   WHERE
-    brand = 'SHA'
+    brand = 'SHA' AND channel = 'facebook'
     AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}'
     AND asset_type = 'VIDEO'
   GROUP BY creative

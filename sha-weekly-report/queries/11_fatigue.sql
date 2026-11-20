@@ -10,7 +10,7 @@ WITH lw AS (
     SUM(clicks) AS clicks_last,
     SUM(impressions) AS imp_last
   FROM `ejam-dwh.production.creative_dashboard`
-  WHERE brand = 'SHA'
+  WHERE brand = 'SHA' AND channel = 'facebook'
     AND dt BETWEEN '{{LAST_FROM}}' AND '{{LAST_TO}}'
   GROUP BY creative
   HAVING SUM(spend) > 1000
@@ -21,7 +21,7 @@ pw AS (
     SUM(clicks) AS clicks_prior,
     SUM(impressions) AS imp_prior
   FROM `ejam-dwh.production.creative_dashboard`
-  WHERE brand = 'SHA'
+  WHERE brand = 'SHA' AND channel = 'facebook'
     AND dt BETWEEN '{{PRIOR_FROM}}' AND '{{PRIOR_TO}}'
   GROUP BY creative
 ),
