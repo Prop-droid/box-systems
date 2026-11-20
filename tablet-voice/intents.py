@@ -1,7 +1,11 @@
 """intents.py: Tier 0 intent matcher for tablet-voice (regex plus fuzzy rules, no LLM, English only).
 
 norm, lev, strip_wake (14d 6e), match (14d 7b, rules in that order) and best_task (14d 7c: act only at
-score >= 0.72 with a lead >= 0.08). Logic copied unchanged from the validated prototype (proto/intents.py).
+score >= 0.72 with a lead >= 0.08). Started as the validated prototype (proto/intents.py, left as it was); the
+F2 buy/by fix (2026-11-04, ~/personal/tablet-upgrade/reports/voice-build/f2-buyby) changed match(): fix_buy on every
+task.add title, "by" as a due marker before today/tomorrow, P_ADD only with a spoken add verb (or a mishearing
+of it) and never for text that starts like a question or another command (P_NOT_ADD), and no write when a
+default-list or remind title still names a list.
 """
 import re
 from difflib import SequenceMatcher
@@ -47,11 +51,22 @@ def strip_wake(text: str, wake_audio: bool = False, max_tokens: int = 5):
 
 LIST = r"(?P<list>personal|work|shopping|grocery|groceries)"
 P_ADD = re.compile(
-    r"^(?:please\s+)?(?:(?:add|and|at|ad|ed|had|put|create)\s+)?(?:a\s+task\s+)?(?P<title>.+?)\s+"
+    r"^(?:please\s+)?(?:(?P<verb>add|and|at|ad|ed|had|put|create)\s+)?(?:a\s+task\s+)?(?P<title>.+?)\s+"
     r"(?:to|on|onto|in|into|for)\s+(?:the\s+|my\s+)?" + LIST + r"\s*(?:list|tasks?|to\s?do(?:\s+list)?)?"
-    r"(?:\s+(?:for\s+|due\s+)?(?P<due>today|tomorrow))?$")
-P_ADD_DEFAULT = re.compile(r"^(?:add|put|create)\s+(?:a\s+task\s+)?(?P<title>.+?)(?:\s+(?:for\s+|due\s+)?(?P<due>today|tomorrow))?$")
-P_REMIND = re.compile(r"^remind me to\s+(?P<title>.+?)(?:\s+(?P<due>today|tomorrow))?$")
+    r"(?:\s+(?:for\s+|due\s+|(?P<by>by)\s+)?(?P<due>today|tomorrow))?$")
+# P_ADD's verb is optional and P_ADD runs first, so text that starts like a question (also after a misheard add), a
+# completion or a remind skips it and reaches its own rule: "what's on my work list for tomorrow" is a read, not an add.
+P_NOT_ADD = re.compile(r"(?:(?:and|at|ad|ed|had)\s+)?(?:what(?:'?s)?|which|when|where|who|why|how|is|are|do (?:i|we|you)|"
+                       r"does|did|any(?:thing)?|i(?:'ve| have)? (?:finished|completed|done|did)|i'm done|i am done|done|"
+                       r"(?:mark|tick|check|cross) off)\b|(?:remind me to|complete|finish)\b|"
+                       r"(?:mark|tick|check|cross)\s+.+?\s+(?:as\s+)?(?:done|complete|completed|finished)\b")
+P_ADD_DEFAULT = re.compile(r"^(?:add|put|create)\s+(?:a\s+task\s+)?(?P<title>.+?)(?:\s+(?:for\s+|due\s+|by\s+)?(?P<due>today|tomorrow))?$")
+P_REMIND = re.compile(r"^remind me to\s+(?P<title>.+?)(?:\s+(?:by\s+)?(?P<due>today|tomorrow))?$")
+# P_ADD missed, yet the title still names a list ("call the dentist to my work list next week"): refuse, never
+# write that whole phrase into Personal. It needs the preposition and a list noun, so "drive to work tomorrow",
+# "send the slides to my work email" and "check the shopping list" still write.
+P_LIST_PHRASE = re.compile(r"\b(?:to|on|onto|in|into|for)\s+(?:the\s+|my\s+)?(?:personal|work|shopping|grocery|groceries)"
+                           r"\s*(?:list|tasks?|to\s?do)\b")
 P_DONE = [
     re.compile(r"^(?:mark|tick|check|cross)\s+(?:off\s+)?(?P<title>.+?)\s+(?:as\s+|has\s+|is\s+)?(?:done|complete|completed|finished)$"),
     re.compile(r"^(?:tick|check|cross)\s+off\s+(?P<title>.+)$"),
@@ -65,6 +80,21 @@ P_TOMORROW = re.compile(r"\btomorrow'?s?\s+(?:schedule|calendar|plan|agenda|even
                         r"\bwhat(?:'s| is| do i have)\b.*\btomorrow\b")
 P_THEME = re.compile(r"\b(?:(?P<off>turn off|disable)\s+)?(?P<mode>dark|night|light|bright|day|auto|automatic)\s*(?:mode|theme)\b")
 P_CANCEL = re.compile(r"^(?:never ?mind|cancel|stop|nothing|forget it)$")
+# F2: Whisper hears "add buy milk" as "add by milk". A leading by/bye becomes buy unless a deadline follows. No "bi":
+# it never fired on audio, and norm() turns "bi-weekly" into "bi weekly". Regex: the accuracy-first judge's, as given.
+RULE_A = re.compile(r"^(?:by|bye)\s+(?!(?:today|tonight|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|"
+                    r"sunday|next|this|noon|midnight|midday|morning|afternoon|evening|lunchtime|bedtime|weekend|eod|"
+                    r"eow|then|later|now|soon|january|february|march|april|may|june|july|august|september|october|"
+                    r"november|december|(?:end|close)\s+of|the\s+(?:end|weekend|time|morning|afternoon|evening|"
+                    r"first|second|third|twenty|thirty|\w*(?:fourth|fifth|sixth|seventh|eighth|ninth|tenth|eleventh|"
+                    r"twelfth|teenth|tieth))|(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|"
+                    r"twelve)\s+(?:am|pm|a\s?m|p\s?m|o'?clock|thirty|fifteen|forty|oh))\b|the\s+\d|\d)\S")
+
+
+def fix_buy(title: str) -> str:
+    """task.add titles only (norm form): "by milk" -> "buy milk"; "by friday send the invoice" stays."""
+    return re.sub(r"^\S+", "buy", title, count=1) if RULE_A.match(title) else title
+
 
 def match(text: str) -> dict:
     """text = transcript AFTER strip_wake. Returns {'intent': ..., slots...} or {'intent': None}."""
@@ -73,10 +103,12 @@ def match(text: str) -> dict:
         return {"intent": None}
     if P_CANCEL.match(t):
         return {"intent": "cancel"}
-    m = P_ADD.match(t)
-    if m and len(m.group("title")) >= 2:
+    m = None if P_NOT_ADD.match(t) else P_ADD.match(t)
+    # A write needs the add verb (or a mishearing of it): on the F2 audio all 18 verbless matches were wrong titles
+    # ("goodbye milk", "i'd be rent"), and verbless text naming a list is mostly a question or a completion.
+    if m and m.group("verb") and len(m.group("title")) >= 2:
         lst = {"grocery": "shopping", "groceries": "shopping"}.get(m.group("list"), m.group("list"))
-        return {"intent": "task.add", "title": m.group("title"), "list": lst, "due": m.group("due")}
+        return {"intent": "task.add", "title": fix_buy(m.group("title")), "list": lst, "due": m.group("due")}
     for p in P_DONE:
         m = p.match(t)
         if m:
@@ -93,10 +125,14 @@ def match(text: str) -> dict:
         return {"intent": "schedule.tomorrow"}
     m = P_REMIND.match(t)
     if m:
-        return {"intent": "task.add", "title": m.group("title"), "list": "personal", "due": m.group("due")}
+        if P_LIST_PHRASE.search(m.group("title")):
+            return {"intent": None}
+        return {"intent": "task.add", "title": fix_buy(m.group("title")), "list": "personal", "due": m.group("due")}
     m = P_ADD_DEFAULT.match(t)
     if m and len(m.group("title")) >= 2:
-        return {"intent": "task.add", "title": m.group("title"), "list": "personal", "due": m.group("due")}
+        if P_LIST_PHRASE.search(m.group("title")):
+            return {"intent": None}
+        return {"intent": "task.add", "title": fix_buy(m.group("title")), "list": "personal", "due": m.group("due")}
     return {"intent": None}
 
 def best_task(query: str, tasks: list) -> dict:
@@ -122,6 +158,7 @@ def best_task(query: str, tasks: list) -> dict:
     return {"status": "ok", "task": scored[0][1], "score": round(scored[0][0], 2)}
 
 
-# Intent classes used by the server's decision table (spec 14 V4, section 0 item 11).
+# Intent classes used by the server's decision table (spec 14 V4, section 0 item 11). "answer" comes only from the
+# Opus layer (spec 16, llm.py); server.decide() also gives it the wake-text rule.
 WRITE_INTENTS = frozenset({"task.add", "task.complete"})
-READ_INTENTS = frozenset({"next.event", "schedule.tomorrow", "theme", "cancel"})
+READ_INTENTS = frozenset({"next.event", "schedule.tomorrow", "theme", "cancel", "answer"})

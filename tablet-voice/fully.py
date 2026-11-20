@@ -58,9 +58,9 @@ def call(cmd: str, peer=None, params=None, timeout=2.0) -> dict:
 
 
 def speak(text: str, peer=None) -> dict:
-    # no `engine` argument (a changing engine argument rebuilds Fully's TTS engine), en_US with an underscore,
+    # no `engine` argument (a changing engine argument rebuilds Fully's TTS engine), en_GB with an underscore (British voice since 2026-11-13),
     # queue=1 so a reply never cuts other speech queued on the tablet (14b 4a to 4d, 14d 8)
-    return call("textToSpeech", peer, {"text": text, "locale": "en_US", "queue": "1"})
+    return call("textToSpeech", peer, {"text": text, "locale": "en_GB", "queue": "1"})
 
 
 def stop(peer=None) -> dict:

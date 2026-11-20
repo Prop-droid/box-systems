@@ -5,24 +5,30 @@ Box side of the wall tablet's voice control. The dashboard page (Fully Kiosk on 
 the tablet, over `ws://localhost:8766/` (Termux socat forward) to this service on the box (:8766). Here it is
 endpointed (Silero VAD, the model bundled with faster-whisper), the wake is re-checked (openWakeWord
 `hey_jarvis` with numpy and onnxruntime, plus a jarvis-like token in the transcript), transcribed
-(faster-whisper base.en int8, resident), matched against Tier 0 intents and answered. Audio stays in RAM for
-one session and is never written. Listening happens only while the tablet screen is lit; the page enforces
+(faster-whisper base.en int8, resident), understood and answered. Understanding is Claude Opus 5.5 through the
+box's Claude subscription (spec 16, `llm.py`: one warm `claude -p` child, about 1.8 s a command) with the Tier 0
+rules of `intents.py` as the fallback and as a logged second opinion. Audio stays in RAM for one session and is
+never written. Listening happens only while the tablet screen is lit; the page enforces
 that and this service refuses wakes from a page that says it is dark.
 
 Design and rollout: `~/personal/tablet-upgrade/research_notes/Lenovo P11 Pro kiosk upgrade/14_voice_build_spec.md`
 (steps V3 and V4 are this folder; protocol in its section 5) and `14d_box_voice_service.md`. Build report:
-`15a_box_impl_report.md` in the same folder.
+`15a_box_impl_report.md` in the same folder. The Opus layer: `16_opus_understanding_spec.md` there; its real-binary
+smoke (`smoke.py`, `smoke.json`) and test outputs are in `~/personal/tablet-upgrade/reports/voice-build/opus-llm/`.
 
 ## Files
 
 - `server.py`: config, access control, `/health`, `/stats`, protocol v1, sessions, decision table, logging
 - `audio.py` (StreamVAD, openWakeWord check), `stt.py` (Whisper, junk gate), `intents.py` (Tier 0 matcher),
+  `llm.py` (spec 16: WarmClaude, the prompt, the output schema, the mapping to the Tier 0 intent shape),
   `actions.py` (dashboard calls and reply text), `fully.py` (optional Fully REST speech, inert without FULLY_PW)
 - `wsprobe.py` (hello probe, play a WAV as a session), `selftest.py` (the 9 V4 clips), `setup_models.sh`
 - `mic_audit.sh`: the lit-rule audit that does not trust the page (spec 14 section 0 item 12, V7), run every
   10 minutes by `~/systems/systemd/tablet-voice-micaudit.{service,timer}`; adb only, no Fully password
-- `tests/`: `test_intents.py`, `test_actions.py` (no network), `test_server.py` + `harness.py` +
-  `fake_dash.py` (integration on test ports only), `test_mic_audit.py` + `fake_adb.sh` (the audit, no device),
+- `tests/`: `test_intents.py`, `test_actions.py`, `test_stt_gate.py` (no network), `test_server.py` + `harness.py` +
+  `fake_dash.py` (integration on test ports only), `test_llm.py` + `fake_claude.py` (the Opus layer against a fake
+  claude that speaks stream-json; `--server DIR` adds server.py on the test ports), `test_mic_audit.py` +
+  `fake_adb.sh` (the audit, no device),
   `proto/`: the 14d prototype, kept for reference
 - `models/` (gitignored): the three openWakeWord v0.5.1 ONNX files; `logs/` (gitignored): `sessions-YYYY-MM-DD.jsonl`, 30 days
 
@@ -32,11 +38,20 @@ Design and rollout: `~/personal/tablet-upgrade/research_notes/Lenovo P11 Pro kio
   ASCII-only line. Session lines carry the transcript (`heard`, `text`), the intent with its slots and the
   reply (`say`) only for turns addressed to the box: a tap, a transcript with the name, or a turn that ran,
   refused or spoke. A wake with no name and nothing run (silent reject, junk, silent result) keeps only
-  `heard_len`, `transcript: "not_kept"`, the scores and the intent name. Replies built from calendar or task
-  data are logged by length only.
+  `heard_len`, `transcript: "not_kept"`, the scores and the intent names. Replies built from calendar or task
+  data are logged by length only (an Opus `answer` too: its intent is logged as `{"name": "answer", "say_len": N}`).
+  Every session line also carries, for V13: `rules_intent` (what the Tier 0 rules made of it), `llm_intent` (what
+  Opus returned, null when it was not used), `llm_used`, `llm_ms` and `llm_fallback`: null when Opus decided, else
+  `timeout`, `error`, `invalid`, `paused` (usage-guard file), `off` (VOICE_LLM=off), `backoff` or `skip` (not asked:
+  junk, nothing after the wake phrase, or a wake with neither the name in the transcript nor openWakeWord behind it,
+  where every intent ends silent). Three failed claude processes in a row give one `llm_backoff` line and 5 minutes
+  of rules only. A spare that writes anything before it is asked gives one `llm_idle_output` line, is replaced
+  unused and counts as one of those failures (`/health` llm counts `idle_output`). No token, prompt or answer text
+  is ever logged.
 - stdout, which systemd keeps in the persistent user journal (months on this box): a redacted copy of every
-  line. Session lines lose `heard`, `text`, `say` and the slots (`intent` is the name only, `heard_len` is
-  added); stats lines lose the room loudness percentiles (`rms*`). Never PCM, never a password.
+  line. Session lines lose `heard`, `text`, `say` and the slots (`intent`, `rules_intent` and `llm_intent` are
+  names only, `heard_len` is added); stats lines lose the room loudness percentiles (`rms*`). Never PCM, never a
+  password.
 - Lines anyone who reaches the port can cause (refusals, the websockets library's handshake errors, bad hellos,
   over-cap wakes, stray `end`s, handler errors) pass at most 5 a minute per peer and 60 a minute in all; the rest
   are counted in one `suppressed` line per minute.
@@ -56,9 +71,19 @@ Design and rollout: `~/personal/tablet-upgrade/research_notes/Lenovo P11 Pro kio
 | VOICE_READ_NEEDS_WAKE_TEXT | 0 | 0 | D11: reads after a wake need "jarvis" in the transcript |
 | VOICE_DASH | http://127.0.0.1:8765 | same | tablet-dash base URL |
 | VOICE_STT_THREADS | 4 | 4 | CTranslate2 threads |
+| VOICE_LLM | claude | off | spec 16: claude = Opus understands every command, the rules are the fallback; off = rules only |
+| VOICE_LLM_MODEL | claude-opus-5-5 | same | `--model` for the claude child |
+| VOICE_LLM_EFFORT | low | low | `--effort` (low, medium, high, xhigh, max) |
+| VOICE_LLM_TIMEOUT_MS | 3500 | 3500 | one Opus call, the cold path (spawn and call) included; then the rules answer |
+| VOICE_LLM_BIN | (unset) | ~/.local/bin/claude | the claude binary |
 
 Test-only overrides (never in the unit): VOICE_LOG_DIR, VOICE_MODELS, VOICE_TABLET_IP_FILE,
-VOICE_EXIT_ON_STDIN_EOF, VOICE_FULLY_URL, VOICE_TUNE (a JSON object of `TUNE` numbers). A browser `hello` may ask
+VOICE_EXIT_ON_STDIN_EOF, VOICE_FULLY_URL, VOICE_TUNE (a JSON object of `TUNE` numbers), VOICE_LLM_PAUSE_FILE (default
+`~/.claude/PAUSE_CLAUDE_BG`, the usage-guard pause: while it exists no Opus call is made), VOICE_LLM_CONFIG_DIR
+(default `~/.local/state/tablet-voice/claude`). The claude child gets the service environment minus
+ANTHROPIC_API_KEY, plus CLAUDE_CONFIG_DIR set to that folder (created mode 700), in /tmp; its auth is
+CLAUDE_CODE_OAUTH_TOKEN from the user manager environment (headless only). Never ~/.claude: there every spare
+registered in Tomas's Claude session list as an idle peer that other agents could message. A browser `hello` may ask
 for `dry:true`; only 127.0.0.1 is honoured.
 
 Limits in code (`TUNE` in server.py): reads get one 5 s budget from the wake (a prefetch that failed fast is retried
@@ -69,6 +94,13 @@ result; live audio may run at most 1.5 s ahead of real time (`reject{too_fast}`)
 peer (40 for 127.0.0.1), beyond that `reject{busy, limit: "rate"}`; a `state` with `lit:false` or `mic:false`
 drops a turn that is still streaming (`why` dark or mic_off, `by_state: true`); a replaced socket's streaming turn ends and its
 mic interval closes at once, and a dead socket's close handshake waits 2 s. openWakeWord runs on its own thread.
+Opus (spec 16): the call starts as soon as STT ends and never waits for the dashboard: it gets the wake's
+`GET /api/data` only when that is already back (no data: an `answer` becomes none and the rules answer), with at
+most 40 events (whole days only) and 60 open tasks; a cut list says so in its header and a title cut at 120
+characters ends in "...". The call gets VOICE_LLM_TIMEOUT_MS; strip_wake's wake_text and every gate of `decide()` apply after the
+choice (writes on the wake path need the name, completion stays off, dry run holds, reads follow D11), and the new
+read intent `answer` also needs the name in the transcript or a tap. One warm spare: used once, then closed (stdin
+closed, SIGTERM after 2 s, SIGKILL 2 s later) and replaced; replaced anyway after 30 minutes; killed at shutdown.
 `/health` also reports `session_age_s`, `session_state` and `stt_busy_s` (`ok` turns false when one STT call has
 run for more than 60 s).
 
@@ -84,12 +116,13 @@ bash setup_models.sh          # verifies (or fetches) the ONNX files by sha256 a
 
 ```bash
 systemctl --user is-active tablet-voice.service
-curl -s localhost:8766/health                       # "stage", "dry_run", "tablet_connected", "last_hello", "loaded"
+curl -s localhost:8766/health                       # "stage", "dry_run", "tablet_connected", "last_hello", "loaded", "llm"
 curl -s localhost:8766/stats                        # today: mic_open_s, lit_periods, wakes, ptt_turns, runs, rejects
 .venv/bin/python wsprobe.py hello                   # one JSON line, "type": "hello", "v": 1
 .venv/bin/python wsprobe.py hello --origin http://evil.example     # HTTP 403
 .venv/bin/python selftest.py                        # PASS 9/9 (pipeline stage; always dry)
-.venv/bin/python tests/test_intents.py && .venv/bin/python tests/test_actions.py
+.venv/bin/python tests/test_intents.py && .venv/bin/python tests/test_actions.py && .venv/bin/python tests/test_stt_gate.py
+.venv/bin/python tests/test_llm.py                  # the Opus layer against tests/fake_claude.py (no network)
 ```
 
 Offline integration (test ports only, never 8765 or 8766, bounded):

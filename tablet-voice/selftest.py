@@ -8,7 +8,8 @@ allow_complete and read_needs_wake_text from the box hello. Where the table depe
 what is next", the early reject), the check follows the box's own rule on the openWakeWord score the box
 reports. Every endpoint must arrive within 1.0 s of the end of speech and every result within 2.0 s,
 measured as 14d did (from the end of the synthetic clip, which these bounds were calibrated on); the line also
-shows the stricter figure from the last loud sample (flite clips end with 0.08 to 0.20 s of silence). A clip
+shows the stricter figure from the last loud sample (flite clips end with 0.08 to 0.20 s of silence). When the box
+hello says the Opus layer is on (cfg llm "claude", spec 16), the answer bound grows by its llm_timeout_ms. A clip
 whose answer is right but late is streamed once more and both timings are printed (STT spikes from other load
 on the 4-core box are common; a slow box fails both attempts).
 Prints one line per clip and PASS n/9; exit 0 only for 9/9, 1 on a failed clip, 2 on a setup error.
@@ -150,7 +151,7 @@ def expect(n, cfg, r):
     return False, "unknown case"
 
 
-def latency(r, clip_end):
+def latency(r, clip_end, res_max=RES_MAX_S):
     """(ok, text, numbers): endpoint within 1.0 s and the answer within 2.0 s of the end of the clip (14d's
     reference); the strict figures from the last loud sample are reported alongside."""
     t_ep, _ = first(r["msgs"], "endpoint")
@@ -162,7 +163,7 @@ def latency(r, clip_end):
     if t_ans is None:
         return False, f"endpoint +{ep:.2f} s, no answer", {"endpoint_s": round(ep, 3)}
     ans, ans_strict = t_ans - clip_end, t_ans - r["speech_end"]
-    ok = bool(ep <= EP_MAX_S and ans <= RES_MAX_S)
+    ok = bool(ep <= EP_MAX_S and ans <= res_max)
     nums = {"endpoint_s": round(ep, 3), "answer_s": round(ans, 3), "endpoint_strict_s": round(ep_strict, 3), "answer_strict_s": round(ans_strict, 3)}
     return ok, (f"endpoint +{ep:.2f} s, answer +{ans:.2f} s after the clip end "
                 f"(+{ep_strict:.2f} s, +{ans_strict:.2f} s after the last loud sample)"), nums
@@ -176,9 +177,10 @@ async def run(args) -> int:
         print(f"SETUP-FAIL: cannot reach {args.url}: {type(e).__name__}: {e}")
         return 2
     cfg = h.get("cfg") or {}
+    res_max = RES_MAX_S + ((cfg.get("llm_timeout_ms") or 0) / 1000 if cfg.get("llm") == "claude" else 0)
     print(f"box: build {h.get('build')}, stage {h.get('stage')}, dry {h.get('dry')}, stt {h.get('stt')}, "
           f"oww_reject {cfg.get('oww_reject')}, allow_complete {cfg.get('allow_complete')}, "
-          f"read_needs_wake_text {cfg.get('read_needs_wake_text')}")
+          f"read_needs_wake_text {cfg.get('read_needs_wake_text')}, llm {cfg.get('llm')}, answer bound {res_max:.1f} s")
     if h.get("stage") != "pipeline" or not h.get("stt"):
         print("SETUP-FAIL: the box is not in the pipeline stage")
         return 2
@@ -209,12 +211,12 @@ async def run(args) -> int:
             clip_end = lead + len(clip) / RATE - (lead + (wake_at or 0.0 if by == "wake" else 0.0))
             r = await stream_session(args.url, clip, by=by, wake_at=wake_at or 0.0, lead=lead, dry=True, client="selftest", bed=bed)
             ok_out, rule = expect(n, cfg, r)
-            ok_lat, lat, nums = latency(r, clip_end)
+            ok_lat, lat, nums = latency(r, clip_end, res_max)
             retried = None
             if ok_out and not ok_lat:
                 r2 = await stream_session(args.url, clip, by=by, wake_at=wake_at or 0.0, lead=lead, dry=True, client="selftest", bed=bed)
                 ok_out2, _ = expect(n, cfg, r2)
-                ok_lat2, lat2, nums2 = latency(r2, clip_end)
+                ok_lat2, lat2, nums2 = latency(r2, clip_end, res_max)
                 retried = {"first": nums, "retry": nums2}
                 lat = f"{lat}; retried: {lat2}"
                 if ok_out2:
@@ -227,7 +229,7 @@ async def run(args) -> int:
             if not ok_out:
                 line += f" | expected: {rule}"
             if not ok_lat:
-                line += f" | latency over {EP_MAX_S} s / {RES_MAX_S} s"
+                line += f" | latency over {EP_MAX_S} s / {res_max:.1f} s"
             print(line, flush=True)
             results.append({"n": n, "name": name, "ok": ok, "outcome_ok": bool(ok_out), "latency_ok": ok_lat, "rule": rule,
                             "oww": oww, "wake_text": wt, "speech_end": float(r["speech_end"]), "clip_end": float(clip_end),

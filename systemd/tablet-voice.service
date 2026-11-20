@@ -1,5 +1,5 @@
 [Unit]
-Description=tablet-voice: wall-tablet voice backend (wake re-check, VAD, faster-whisper, Tier 0 intents), ws :8766
+Description=tablet-voice: wall-tablet voice backend (wake re-check, VAD, faster-whisper, Opus understanding over Tier 0 rules), ws :8766
 After=network-online.target
 StartLimitIntervalSec=300
 StartLimitBurst=5
@@ -15,20 +15,29 @@ Environment=VOICE_DASH=http://127.0.0.1:8765
 Environment=VOICE_STT_THREADS=4
 # Spec 14 V3 values. V4 changes VOICE_STAGE to pipeline; V12 sets VOICE_DRY_RUN=0 (completion stays off).
 Environment=VOICE_STAGE=pipeline
-Environment=VOICE_DRY_RUN=1
+Environment=VOICE_DRY_RUN=0
 Environment=VOICE_TTS_VIA=auto
 Environment=VOICE_OWW_REJECT=0
 Environment=VOICE_REQUIRE_FULLY_FOR_WAKE=1
 Environment=VOICE_ALLOW_COMPLETE=0
 Environment=VOICE_READ_NEEDS_WAKE_TEXT=0
+# Spec 16: Claude Opus understands every command through the Claude subscription (CLAUDE_CODE_OAUTH_TOKEN comes from
+# the user manager environment, environment.d/60-claude-oauth.conf; never put it here). One warm `claude -p` child
+# lives in this cgroup (about 180 MB). The Tier 0 rules answer on timeout, error, usage-guard pause or VOICE_LLM=off.
+Environment=VOICE_LLM=claude
+Environment=VOICE_LLM_MODEL=claude-opus-5-5
+Environment=VOICE_LLM_EFFORT=low
+Environment=VOICE_LLM_TIMEOUT_MS=3500
 # Optional overrides, outside git, mode 600 (leading dash: may be absent). FULLY_PW belongs here only if
 # D1 were "no"; with page speech (D1 = yes) the box needs no copy of the Fully password.
 EnvironmentFile=-%h/.config/tablet-voice/env
+# Live firewall rule for the tablet on tcp 8766 (box-fw.nft only has 8765; see fw-allow.sh).
+ExecStartPre=-%h/systems/tablet-voice/fw-allow.sh
 ExecStart=%h/systems/tablet-voice/.venv/bin/python server.py
 Restart=on-failure
 RestartSec=5
-MemoryHigh=900M
-MemoryMax=1200M
+MemoryHigh=1300M
+MemoryMax=1700M
 MemorySwapMax=0
 CPUWeight=200
 

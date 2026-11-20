@@ -5,9 +5,10 @@ Spec: ~/personal/tablet-upgrade/research_notes/Lenovo P11 Pro kiosk upgrade/14_v
 section 5) and 14d_box_voice_service.md. The dashboard page runs the microWakeWord stage; after a wake or a
 push-to-talk tap it streams Int16LE mono 16 kHz audio here. This process endpoints it (Silero VAD), re-checks
 the wake (openWakeWord score plus a jarvis-like token in the transcript), transcribes it (faster-whisper
-base.en int8), matches Tier 0 intents, runs them against the dashboard (dry run: GET /api/data only) and
-answers with a result and, when the page asked for speech, a tts_start. Audio lives in RAM for one session
-and is never written anywhere. Transcripts, task titles and reply text go only to the 30-day
+base.en int8), understands it (Claude Opus through the box's subscription when VOICE_LLM=claude, spec 16 and
+llm.py; the Tier 0 rules otherwise and as the fallback), runs the intent against the dashboard (dry run: GET
+/api/data only) and answers with a result and, when the page asked for speech, a tts_start. Audio lives in RAM for
+one session and is never written anywhere. Transcripts, task titles and reply text go only to the 30-day
 logs/sessions-YYYY-MM-DD.jsonl (and only for turns addressed to the box); stdout, which systemd keeps in the
 persistent journal, gets a redacted copy of every line. Config: environment variables, see README.md.
 """
@@ -40,9 +41,10 @@ if str(HERE) not in sys.path:
 
 import actions  # noqa: E402
 import fully  # noqa: E402
+import llm  # noqa: E402
 from intents import READ_INTENTS, WRITE_INTENTS, match, strip_wake  # noqa: E402
 
-BUILD = "2026-11-02.2"
+BUILD = "2026-11-06.2"
 RATE = 16000
 ALLOWED_ORIGIN = "http://localhost:8765"
 LOOPBACK = "127.0.0.1"
@@ -102,18 +104,31 @@ class Cfg:
         self.read_needs_wake_text = _flag("VOICE_READ_NEEDS_WAKE_TEXT", False)  # D11: 0 when unset
         self.dash = (_env("VOICE_DASH", "http://127.0.0.1:8765") or "").rstrip("/")
         self.stt_threads = int(_number("VOICE_STT_THREADS", 4, 1, 16))
+        self.llm = (_env("VOICE_LLM", "off") or "").lower()                   # spec 16: claude | off (rules only)
+        if self.llm not in ("claude", "off"):
+            raise SystemExit(f"tablet-voice: bad VOICE_LLM={self.llm!r} (claude or off)")
+        self.llm_model = _env("VOICE_LLM_MODEL", "claude-opus-5-5")
+        self.llm_effort = (_env("VOICE_LLM_EFFORT", "low") or "").lower()
+        if self.llm_effort not in ("low", "medium", "high", "xhigh", "max"):
+            raise SystemExit(f"tablet-voice: bad VOICE_LLM_EFFORT={self.llm_effort!r}")
+        self.llm_timeout_ms = int(_number("VOICE_LLM_TIMEOUT_MS", 3500, 500, 20000))
+        self.llm_bin = _env("VOICE_LLM_BIN", str(Path.home() / ".local/bin/claude"))
         # test overrides (unset in the unit): log folder, model folder, tablet-ip file, stop on stdin EOF
         self.log_dir = Path(_env("VOICE_LOG_DIR", str(HERE / "logs")))
         self.models_dir = Path(_env("VOICE_MODELS", str(HERE / "models")))
         self.tablet_ip_file = Path(_env("VOICE_TABLET_IP_FILE", str(Path.home() / "systems/.state/tablet-ip")))
         self.exit_on_stdin_eof = _flag("VOICE_EXIT_ON_STDIN_EOF", False)
+        self.llm_pause_file = Path(_env("VOICE_LLM_PAUSE_FILE", str(llm.PAUSE_FILE)))
+        self.llm_config_dir = Path(_env("VOICE_LLM_CONFIG_DIR", str(llm.CONFIG_DIR)))   # the claude child's own
 
     def public(self) -> dict:
         return {"host": self.host, "port": self.port, "stage": self.stage, "dry_run": self.dry_run,
                 "tts_via": self.tts_via, "oww_reject": self.oww_reject,
                 "require_fully_for_wake": self.require_fully_for_wake, "allow_complete": self.allow_complete,
                 "read_needs_wake_text": self.read_needs_wake_text, "dash": self.dash, "stt_threads": self.stt_threads,
-                "fully_rest": fully.available()}
+                "fully_rest": fully.available(), "llm": self.llm, "llm_model": self.llm_model,
+                "llm_effort": self.llm_effort, "llm_timeout_ms": self.llm_timeout_ms, "llm_bin": self.llm_bin,
+                "llm_config_dir": str(self.llm_config_dir)}
 
 
 CFG = Cfg()
@@ -162,7 +177,7 @@ def hello_cfg() -> dict:
             "oww_window_ms": TUNE["oww_extra_ms"], "oww_reject": CFG.oww_reject, "oww_ok": TUNE["oww_ok"],
             "allow_complete": CFG.allow_complete, "read_needs_wake_text": CFG.read_needs_wake_text,
             "require_fully_for_wake": CFG.require_fully_for_wake, "tts_via": CFG.tts_via,
-            "tts_extra_ms": TUNE["tts_extra_ms"]}
+            "tts_extra_ms": TUNE["tts_extra_ms"], "llm": CFG.llm, "llm_timeout_ms": CFG.llm_timeout_ms}
 
 
 def _short(v, n=120):
@@ -231,15 +246,17 @@ JOURNAL_DROP = ("heard", "text", "say")
 def journal_view(ev: dict) -> dict:
     """The copy of a log line that goes to stdout, which systemd keeps in the persistent user journal (no
     MaxRetentionSec on this box: months of history). No transcript, no task title or other intent slot, no
-    reply text and no room loudness profile; the session line keeps heard_len, wake_text, the intent name,
-    the outcome, the scores and the timings. The full line goes only to logs/ (30 days)."""
+    reply text and no room loudness profile; the session line keeps heard_len, wake_text, the intent names (the
+    chosen one, the rules' and Opus'), the outcome, the scores and the timings. The full line goes only to logs/
+    (30 days)."""
     kind = ev.get("ev")
     if kind == "session":
         out = {k: v for k, v in ev.items() if k not in JOURNAL_DROP}
         if isinstance(ev.get("heard"), str):
             out["heard_len"] = len(ev["heard"])
-        if isinstance(ev.get("intent"), dict):
-            out["intent"] = ev["intent"].get("name")
+        for k in ("intent", "rules_intent", "llm_intent"):
+            if isinstance(ev.get(k), dict):
+                out[k] = ev[k].get("name")
         return out
     if kind == "stats" and isinstance(ev.get("page"), dict):
         return {**ev, "page": {k: v for k, v in ev["page"].items() if not str(k).startswith("rms")}}
@@ -406,6 +423,7 @@ class Ledger:
 
 
 LOG: EventLog = None      # set in main()
+LLM: llm.WarmClaude | None = None    # set in amain() when VOICE_LLM=claude and the pipeline runs
 LEDGER = Ledger()
 GATE = LogGate()
 
@@ -673,10 +691,12 @@ def health() -> dict:
             "session_active": act is not None,
             "session_age_s": round(now - act.t_open, 1) if act is not None else None,
             "session_state": act.state if act is not None else None, "stt_busy_s": stt_busy,
+            "llm": LLM.status() if LLM is not None else None,
             "cfg": {"oww_reject": CFG.oww_reject, "allow_complete": CFG.allow_complete,
                     "read_needs_wake_text": CFG.read_needs_wake_text,
                     "require_fully_for_wake": CFG.require_fully_for_wake, "tts_via": CFG.tts_via,
-                    "fully_rest": fully.available()}}
+                    "fully_rest": fully.available(), "llm": CFG.llm, "llm_model": CFG.llm_model,
+                    "llm_timeout_ms": CFG.llm_timeout_ms}}
 
 
 def stats() -> dict:
@@ -1075,7 +1095,8 @@ async def on_end(conn: Conn, m: dict):
 
 
 def decide(by: str, name, wake_text: bool, oww_hi: bool, junk: bool) -> str:
-    """The V4 decision table with section 0 item 11's write rule.
+    """The V4 decision table with section 0 item 11's write rule; an Opus "answer" (spec 16) is a read that also
+    needs the name in the transcript or a tap, so overheard chatter never gets a spoken answer.
     run | sorry | refuse_wake_text | silent_reject | silent_result | junk"""
     if by == "ptt":
         return "run" if name else "sorry"
@@ -1089,7 +1110,7 @@ def decide(by: str, name, wake_text: bool, oww_hi: bool, junk: bool) -> str:
         # expects for "add buy milk ..." sent as a wake
         return "refuse_wake_text" if oww_hi else "silent_reject"
     if name in READ_INTENTS:
-        gate = wake_text if CFG.read_needs_wake_text else (oww_hi or wake_text)
+        gate = wake_text if (CFG.read_needs_wake_text or name == "answer") else (oww_hi or wake_text)
         return "run" if gate else "silent_reject"
     return "sorry" if (oww_hi and wake_text) else "silent_result"
 
@@ -1140,6 +1161,51 @@ def _transcribe(pcm):
         HUB.stt_since = None
 
 
+def _log_intent(it):
+    """An intent as logged: {"name", slots}. An Opus answer keeps only its length: it is built from calendar and
+    task data, which the log holds by length only."""
+    if not isinstance(it, dict):
+        return None
+    out = {"name": it.get("intent"), **{k: v for k, v in it.items() if k != "intent"}}
+    if out["name"] == "answer":
+        out["say_len"] = len(out.pop("say", None) or "")
+    return out
+
+
+async def understand(s: Session, text: str, rest: str, wake_text: bool, oww_hi: bool, junk: bool):
+    """The turn's intent and its log fields (spec 16). The rules always run (the fallback, and V13's second opinion);
+    Opus decides when it answers within VOICE_LLM_TIMEOUT_MS with a valid object. Opus is asked at once: it gets the
+    wake's GET /api/data only when that is already back (it normally is by the end of STT), so a slow or hung
+    dashboard adds no wait before the call (spec 16 review); without data a question becomes none.
+    Opus is not asked ("skip") when nothing can depend on it: junk, nothing after the wake phrase, or a wake with
+    neither the name in the transcript nor openWakeWord behind it (every intent ends silent there, and overheard
+    speech stays on the box)."""
+    rules = {"intent": None} if junk else match(rest)
+    info = {"rules_intent": _log_intent(rules), "llm_intent": None, "llm_used": False, "llm_fallback": None,
+            "llm_ms": None}
+    if LLM is None:
+        info["llm_fallback"] = "off"
+        return rules, info
+    if junk or not rest or (s.by == "wake" and not (wake_text or oww_hi)):
+        info["llm_fallback"] = "skip"
+        return rules, info
+    data, f = None, s.prefetch                # never awaited here: not back yet = Opus hears it is unavailable
+    if f is not None and f.done() and not f.cancelled() and f.exception() is None:
+        res = f.result()
+        data = res.get("data") if isinstance(res, dict) and res.get("ok") else None
+    try:
+        r = await LLM.ask(text, data, CFG.llm_timeout_ms / 1000)
+    except Exception:  # noqa: BLE001  (whatever went wrong, the rules answer)
+        r = {"obj": None, "why": "error", "ms": None}
+    it = None if r.get("why") else llm.to_intent(r.get("obj"))
+    info["llm_ms"] = r.get("ms")
+    if it is None:
+        info["llm_fallback"] = r.get("why") or "invalid"
+        return rules, info
+    info.update(llm_intent=_log_intent(it), llm_used=True)
+    return it, info
+
+
 async def process(s: Session, why: str):
     """Endpoint reached: the turn runs inside one budget (TUNE process_budget_ms, 20 s). On an overrun (a hung
     STT, say) the session is released with an error result, or with the unsure line when a write had started,
@@ -1161,7 +1227,7 @@ async def process(s: Session, why: str):
 
 
 async def _process(s: Session, why: str):
-    """STT, junk gate, wake strip, intent, decision, action, result, speech."""
+    """STT, junk gate, wake strip, intent (Opus or the rules), decision, action, result, speech."""
     conn = s.conn
     loop = asyncio.get_running_loop()
     s.endpoint_why = why
@@ -1186,17 +1252,18 @@ async def _process(s: Session, why: str):
         junk = stt.is_junk(text, no_speech, avg_lp)
         oww_hi = s.oww is not None and s.oww >= TUNE["oww_ok"]
         rest, wake_text = strip_wake(text, wake_audio=(s.by == "ptt" or oww_hi))
-        it = {"intent": None} if junk else match(rest)
+        it, understood = await understand(s, text, rest, wake_text, oww_hi, junk)
         name = it.get("intent")
         slots = {k: v for k, v in it.items() if k != "intent"}
-        kind = decide(s.by, name, wake_text, oww_hi, junk)
+        kind = decide(s.by, name, wake_text, oww_hi, junk)       # every gate applies after the choice
         heard = {"heard": text, "text": rest, "no_speech": round(no_speech, 3), "avg_logprob": round(avg_lp, 3),
-                 "junk": junk, "wake_text": wake_text, "intent": {"name": name, **slots}, "stt_ms": stt_ms}
+                 "junk": junk, "wake_text": wake_text, "intent": _log_intent(it), "stt_ms": stt_ms, **understood}
         if kind in ("silent_reject", "junk") or (kind == "silent_result" and not wake_text):
             # nothing ran, nothing was said, and the name was not heard: most likely speech overheard after a
-            # false wake. Its words are not kept anywhere (length, scores and the intent name only).
+            # false wake. Its words are not kept anywhere (length, scores and the intent names only).
             del heard["heard"], heard["text"]
-            heard.update(intent={"name": name}, heard_len=len(text), transcript="not_kept")
+            heard.update(intent={"name": name}, heard_len=len(text), transcript="not_kept",
+                         **{k: {"name": heard[k]["name"]} for k in ("rules_intent", "llm_intent") if heard.get(k)})
         if kind in ("junk", "silent_reject"):
             await reject_session(s, "no_command" if kind == "junk" else "wake_check", "final",
                                  would=name if kind == "silent_reject" else None, extra=heard)
@@ -1227,7 +1294,8 @@ async def _process(s: Session, why: str):
         msg = {"type": "result", "sid": s.sid, "heard": text, "text": rest, "intent": {"name": name, **slots},
                "ok": bool(res["ok"]), "say": res["say"], "card": res["card"], "do": res["do"], "dry": s.dry,
                "check": {"oww": round(s.oww, 3) if s.oww is not None else None, "wake_text": wake_text},
-               "timing_ms": {"stt": stt_ms, "action": (act or {}).get("ms"), "total": total_ms}}
+               "timing_ms": {"stt": stt_ms, "llm": understood["llm_ms"], "action": (act or {}).get("ms"),
+                             "total": total_ms}}
         if res.get("refused"):
             msg["refused"] = res["refused"]
         delivered = False
@@ -1282,7 +1350,7 @@ async def tick():
 
 
 async def amain() -> int:
-    global np, audio, stt
+    global np, audio, stt, LLM
     loop = asyncio.get_running_loop()
     LOG.write({"ev": "start", "build": BUILD, "pid": os.getpid(), "python": sys.version.split()[0],
                "cfg": CFG.public(), "log_pruned": LOG.pruned})
@@ -1300,7 +1368,8 @@ async def amain() -> int:
         except Exception as e:  # noqa: BLE001  (missing model, hash mismatch, no HF cache: exit, unit fails loudly)
             LOG.write({"ev": "fatal", "where": "load", "err": f"{type(e).__name__}: {_short(e, 300)}"})
             return 1
-        LOG.write({"ev": "ready", "stt": stt.NAME, **HUB.load_info, **_rss_mb(), "replayed_sessions": replayed})
+        LOG.write({"ev": "ready", "stt": stt.NAME, **HUB.load_info, **_rss_mb(), "replayed_sessions": replayed,
+                   "llm": CFG.llm})
     stop = loop.create_future()
 
     def _stop(*_a):
@@ -1319,12 +1388,19 @@ async def amain() -> int:
                          process_request=process_request, max_size=262144, ping_interval=20, ping_timeout=20,
                          close_timeout=TUNE["close_timeout_s"], server_header="tablet-voice"):
             LOG.write({"ev": "listening", "host": CFG.host, "port": CFG.port, "stage": CFG.stage, "dry_run": CFG.dry_run})
+            if CFG.stage == "pipeline" and CFG.llm == "claude":
+                LLM = llm.WarmClaude(CFG.llm_bin, model=CFG.llm_model, effort=CFG.llm_effort,
+                                     config_dir=CFG.llm_config_dir, pause_file=CFG.llm_pause_file, log=LOG.write)
+                LLM.start()
             ticker = asyncio.create_task(tick())
             await stop
             ticker.cancel()
     except OSError as e:
         LOG.write({"ev": "fatal", "where": "bind", "err": f"{type(e).__name__}: {_short(e, 200)}"})
         return 1
+    finally:
+        if LLM is not None:
+            await LLM.close()        # the warm claude child never outlives the service
     cpu = os.times()
     LOG.write({"ev": "stop", "uptime_s": round(time.monotonic() - HUB.t0), "cpu_s": round(cpu.user + cpu.system, 2), **_rss_mb()})
     return 0

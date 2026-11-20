@@ -9,10 +9,10 @@ outcomes: answered (the HTTP status decides), not sent (connection refused or a 
 write may have happened (tablet-dash inserts the task before it waits on its cache lock), so it is never
 reported as a failure: "I'm not sure that went through. Check the list." with a refresh, logged post
 "unknown". Dry run calls nothing but GET /api/data. Completion is refused unless VOICE_ALLOW_COMPLETE=1 (D6).
-"Shopping" is refused until /api/task/add resolves list titles (D7, 14d 7d). Replies stay short (about 200
-characters) and free of symbols, for speech. The log-safe summary of each action never carries an endpoint
-path unless a POST was answered, and never carries dashboard data (calendar or task titles): those replies
-are logged by length only (say_log None).
+"Shopping" is refused until /api/task/add resolves list titles (D7, 14d 7d). "answer" (spec 16) speaks the Opus
+text and calls nothing. Replies stay short (about 200 characters) and free of symbols, for speech. The log-safe
+summary of each action never carries an endpoint path unless a POST was answered, and never carries dashboard data
+(calendar or task titles): those replies are logged by length only (say_log None).
 """
 import datetime as dt
 import http.client
@@ -279,6 +279,10 @@ def run(name, slots, *, dry, dash, data_res, deliverable, allow_complete, read_d
             v = slots.get("value") if slots.get("value") in ("dark", "light", "auto") else "dark"
             say = {"dark": "Dark mode on.", "light": "Light mode on.", "auto": "Auto theme on."}[v]
             out = {"ok": True, "say": say, "do": [{"what": "theme", "value": v}], "action": {"kind": "theme", "value": v}, "say_log": say}
+        elif name == "answer":                 # built from calendar and task data: logged by length only
+            say = _trim(" ".join(str(slots.get("say") or "").split()))
+            out = ({"ok": True, "say": say, "action": {"kind": "answer"}, "say_log": None} if say else
+                   {"ok": False, "say": SORRY, "action": {"kind": "answer", "empty": True}, "say_log": SORRY})
         elif name == "task.add":
             out = _task_add(slots, dry, dash, deliverable, on_write)
         elif name == "task.complete":

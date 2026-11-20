@@ -115,7 +115,8 @@ def start_voice(out_dir, name, env_over=None, limit_s=900, wait=True):
                 "VOICE_LOG_DIR": str(log_dir), "VOICE_EXIT_ON_STDIN_EOF": "1", "HF_HUB_OFFLINE": "1",
                 "PYTHONUNBUFFERED": "1", "VOICE_STAGE": "pipeline", "VOICE_DRY_RUN": "1",
                 "VOICE_TTS_VIA": "auto", "VOICE_OWW_REJECT": "0", "VOICE_REQUIRE_FULLY_FOR_WAKE": "1",
-                "VOICE_ALLOW_COMPLETE": "0", "VOICE_READ_NEEDS_WAKE_TEXT": "0"})
+                "VOICE_ALLOW_COMPLETE": "0", "VOICE_READ_NEEDS_WAKE_TEXT": "0",
+                "VOICE_LLM": "off"})              # spec 16: a test turns Opus on only with the fake claude
     env.update(env_over or {})
     p = Proc([PY, "server.py"], env, Path(out_dir) / f"server-{name}.out", limit_s)
     p.log_dir = log_dir

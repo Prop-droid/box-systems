@@ -496,8 +496,8 @@ async def phase_d(out):
         r = await stream_session(H.VOICE_URL, CLIPS["dark"], by="ptt", client="restpage", dry=False, tts="page", fully=False)
         ts = [m for _, m in r["msgs"] if m.get("type") == "tts_start"]
         rest = [c for c in H.get_json(H.DASH + "/calls")[n0:] if c["path"] == "/?cmd"]
-        check("D6 REST fallback: tts_start via rest, Fully cmd textToSpeech en_US queue 1, no engine",
-              ts and ts[0]["via"] == "rest" and rest and rest[0]["body"]["cmd"] == "textToSpeech" and rest[0]["body"]["locale"] == "en_US"
+        check("D6 REST fallback: tts_start via rest, Fully cmd textToSpeech en_GB queue 1, no engine",
+              ts and ts[0]["via"] == "rest" and rest and rest[0]["body"]["cmd"] == "textToSpeech" and rest[0]["body"]["locale"] == "en_GB"
               and rest[0]["body"]["queue"] == "1" and "engine" not in rest[0]["body"], json.dumps({"tts_start": ts[:1], "rest": rest[:1]}))
         await asyncio.sleep(0.3)
         raw = "\n".join(Path(f).read_text() for f in Path(p.log_dir).glob("*.jsonl")) + (Path(out) / "server-D-live.out").read_text()
