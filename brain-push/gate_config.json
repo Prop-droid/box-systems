@@ -1,0 +1,44 @@
+{
+ "_doc": "brain-push gate config. allow_folders is a true allowlist: a wiki folder that is not listed is never pushed. hold_folders are kept on the box on purpose (unproven work and plans, Tomas 2026-11-12): not pushed, no alert. A folder in neither list is blocked AND alerted to #dev. Change these lists only on Tomas's word.",
+ "company_email_domains": [
+  "@ejam.com",
+  "@eatshameless.com"
+ ],
+ "hold_folders": [
+  "Shameless Snacks/account/plans-and-calendar",
+  "Shameless Snacks/open-loops/hypotheses"
+ ],
+ "allow_folders": [
+  "Creative Strategy",
+  "Creative Strategy/fundamentals",
+  "Creative Strategy/hooks",
+  "Creative Strategy/landing-pages",
+  "Creative Strategy/persuasion",
+  "Creative Strategy/platforms",
+  "Creative Strategy/production",
+  "Creative Strategy/scripts-and-narrative",
+  "Creative Strategy/testing-and-analysis",
+  "Shameless Snacks/account/performance",
+  "Shameless Snacks/account/placements-and-channels",
+  "Shameless Snacks/ai-creative",
+  "Shameless Snacks/brand/category-and-market",
+  "Shameless Snacks/brand/identity-and-positioning",
+  "Shameless Snacks/brand/product-and-website",
+  "Shameless Snacks/brand/rules-and-claims-gates",
+  "Shameless Snacks/brand/visual-vocabulary",
+  "Shameless Snacks/competition/ad-libraries",
+  "Shameless Snacks/competition/customer-language",
+  "Shameless Snacks/competition/tracked-set",
+  "Shameless Snacks/customer/objections-and-anti-language",
+  "Shameless Snacks/customer/personas",
+  "Shameless Snacks/customer/voice-of-customer",
+  "Shameless Snacks/hooks-and-scripts/catalog",
+  "Shameless Snacks/hooks-and-scripts/hooks",
+  "Shameless Snacks/hooks-and-scripts/processes",
+  "Shameless Snacks/hooks-and-scripts/scripts",
+  "Shameless Snacks/open-loops/grading-and-promotion",
+  "Shameless Snacks/open-loops/validations",
+  "Shameless Snacks/strategy/creator-and-talent",
+  "Shameless Snacks/strategy/roadmap-and-messaging"
+ ]
+}
