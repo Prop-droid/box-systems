@@ -47,6 +47,12 @@ DATA:
 ## Concept-level rollup (last wk, spend > $1K, ranked by contribution margin)
 {{CONCEPTS_TABLE}}
 
+## 13. Lead claim (deep-scan tags: the ONE claim in the hook window, offer wins ties; assets under $300 or not yet scanned are "untagged")
+{{LEAD_CLAIM_TABLE}}
+
+## 14. Audience callout (deep-scan tags: explicit callout only; "General / implied X" = no callout, talent and context imply X)
+{{AUDIENCE_TABLE}}
+
 WRITE the report in EXACTLY this structure (markdown, no preamble, no closing remarks):
 
 # Shameless Snacks Weekly Paid-Acquisition Report

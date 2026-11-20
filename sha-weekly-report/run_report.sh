@@ -102,6 +102,11 @@ for q in "$SCRIPT_DIR/queries/"*.sql; do
   run_query "$q"
 done
 
+# Deep-scan tags (lead claim + audience callout) -> 13_lead_claim.txt, 14_audience.txt
+echo ">> deep-scan tables"
+python3 "$HOME/brain/systems/sha-deep-scan/report_tables.py" "$LAST_FROM" "$LAST_TO" "$ROLLING_FROM" "$OUTDIR" \
+  > "$OUTDIR/13_deepscan.log" 2>&1 || echo "WARN: deep-scan tables failed (see 13_deepscan.log); continuing"
+
 # Assemble the prompt + data bundle (Python handles multiline values cleanly)
 PROMPT_TEMPLATE="$SCRIPT_DIR/report_prompt.txt"
 python3 - "$PROMPT_TEMPLATE" "$OUTDIR/_assembled_prompt.txt" \
@@ -110,13 +115,14 @@ python3 - "$PROMPT_TEMPLATE" "$OUTDIR/_assembled_prompt.txt" \
   "$OUTDIR/03_top_spend.txt" "$OUTDIR/04_top_roas.txt" \
   "$OUTDIR/05_losers.txt" "$OUTDIR/06_angles.txt" \
   "$OUTDIR/07_landing_pages.txt" "$OUTDIR/08_funnel.txt" "$OUTDIR/09_creative_funnel.txt" \
-  "$OUTDIR/10_hook_hold.txt" "$OUTDIR/11_fatigue.txt" "$OUTDIR/12_concepts.txt" <<'PY'
+  "$OUTDIR/10_hook_hold.txt" "$OUTDIR/11_fatigue.txt" "$OUTDIR/12_concepts.txt" \
+  "$OUTDIR/13_lead_claim.txt" "$OUTDIR/14_audience.txt" <<'PY'
 import sys, pathlib
 (prompt_tpl, out_prompt,
  lf, lt, pf, pt, rf, rt,
  topline, top_spend, top_roas, losers, angles,
  landing_pages, funnel, creative_funnel,
- hook_hold, fatigue, concepts) = sys.argv[1:]
+ hook_hold, fatigue, concepts, lead_claim, audience) = sys.argv[1:]
 
 def read(p):
     try:
@@ -139,6 +145,8 @@ subs = {
     "{{HOOK_HOLD_TABLE}}": read(hook_hold),
     "{{FATIGUE_TABLE}}": read(fatigue),
     "{{CONCEPTS_TABLE}}": read(concepts),
+    "{{LEAD_CLAIM_TABLE}}": read(lead_claim),
+    "{{AUDIENCE_TABLE}}": read(audience),
 }
 text = pathlib.Path(prompt_tpl).read_text()
 for k, v in subs.items():
