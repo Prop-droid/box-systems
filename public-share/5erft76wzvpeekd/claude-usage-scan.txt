@@ -1,0 +1,240 @@
+CLAUDE CODE USAGE SCAN - instructions
+======================================
+1. Open Claude Code in your terminal (in any project folder you normally use).
+2. Type /clear and press Enter. Then type /model and pick Haiku (or Sonnet). This keeps the scan nearly free.
+3. Copy EVERYTHING below the dashed line and paste it into Claude Code as one message. Approve the one command it asks to run.
+4. It prints a short report. Copy the whole report and send it to Tomas.
+5. Also type /usage, take a screenshot of it, and send that too.
+6. Afterwards type /model and pick the model you normally use (the Haiku choice is saved as your default otherwise).
+The scan is read-only: it counts tokens, sessions and settings on your machine. It does not send or include any of your messages, files, emails or keys.
+
+----------------------------- PASTE EVERYTHING BELOW THIS LINE INTO CLAUDE CODE -----------------------------
+Run a read-only usage scan of my Claude Code history and config, then reply with ONLY the script's output inside one text code block.
+Rules: do not read, open or summarize any transcript or history files yourself; do not analyze; do not suggest fixes; do not change any settings or files.
+Steps:
+1. Save the script below VERBATIM to /tmp/cc_usage_scan.py (do not modify or "improve" it).
+2. Run: python3 /tmp/cc_usage_scan.py 30
+3. If python3 is missing or the system asks to install developer tools: do not install anything, do not use node or another language. Reply with exactly "python3 missing" plus the output of: ls ~/.claude; ls ~/.claude/projects | head -50
+4. Reply with the script output only, in one code block, nothing else.
+
+#!/usr/bin/env python3
+# cc_usage_scan.py  -  read-only scan of Claude Code history + config on this machine.
+# Prints one compact report. No message text, no file contents, no emails, no tokens.
+# Usage: python3 cc_usage_scan.py [days]     (default 30)
+import json, os, sys, re, datetime as dt, collections, platform, statistics
+
+DAYS = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 30
+HOME = os.path.expanduser('~')
+CDIR = os.environ.get('CLAUDE_CONFIG_DIR') or os.path.join(HOME, '.claude')
+NOW = dt.datetime.now(dt.timezone.utc)
+SINCE = NOW - dt.timedelta(days=DAYS)
+LOCAL = dt.datetime.now().astimezone().tzinfo
+
+# approximate API rates, $/MTok: (input, output, cache write, cache read)
+PRICES = [(r'fable|mythos', (10, 50, 12.5, 0.25)), (r'opus-5', (4, 20, 5, 0.2)), (r'opus', (5, 25, 6.25, 0.5)),
+          (r'sonnet-5', (2, 10, 2.5, 0.2)), (r'sonnet', (3, 15, 3.75, 0.3)),
+          (r'haiku-5', (0.1, 0.5, 0.125, 0.01)), (r'haiku', (1, 5, 1.25, 0.1))]
+def price(model):
+    for pat, p in PRICES:
+        if re.search(pat, model): return p
+    return (3, 15, 3.75, 0.3)
+def short(m):
+    m = re.sub(r'^claude-', '', m or 'unknown'); return re.sub(r'-\d{8}$', '', m)
+def k(n): return f'{n/1e6:.1f}M' if n >= 1e6 else (f'{n/1e3:.0f}k' if n >= 1e3 else str(int(n)))
+def mb(n): return f'{n/1e6:.1f}MB'
+def proj(cwd):
+    if not cwd: return '?'
+    if os.path.abspath(cwd) == os.path.abspath(HOME): return '~'
+    return os.path.basename(cwd.rstrip('/')) or cwd
+def pct(a, b): return f'{100*a/b:.0f}%' if b else '-'
+
+# ---------- transcripts ----------
+files = []
+for root, _, fs in os.walk(os.path.join(CDIR, 'projects')):
+    for f in fs:
+        if f.endswith('.jsonl'):
+            p = os.path.join(root, f)
+            try:
+                if os.path.getmtime(p) >= SINCE.timestamp(): files.append(p)
+            except OSError: pass
+
+msgs = {}            # (message id, request id) -> record  (dedupes streamed partial lines)
+tool_name = {}       # tool_use id -> tool name
+tool_bytes = collections.Counter(); img_results = 0; img_bytes = 0
+cost_states = {}     # session -> last cost-state entry
+version = None; vtime = None
+for p in files:
+    try: fh = open(p, encoding='utf-8', errors='ignore')
+    except OSError: continue
+    with fh:
+        for line in fh:
+            if '"usage"' not in line and 'tool_result' not in line and 'cost-state' not in line: continue
+            try: d = json.loads(line)
+            except Exception: continue
+            t = d.get('type'); ts = d.get('timestamp')
+            if t == 'cost-state':
+                cost_states[d.get('sessionId') or p] = d; continue
+            if not ts: continue
+            try: when = dt.datetime.fromisoformat(ts.replace('Z', '+00:00'))
+            except Exception: continue
+            if when < SINCE: continue
+            m = d.get('message') or {}
+            content = m.get('content') if isinstance(m, dict) else None
+            if t == 'assistant':
+                u = m.get('usage')
+                if not isinstance(u, dict): continue
+                if d.get('version') and (vtime is None or when > vtime): version, vtime = d.get('version'), when
+                key = (m.get('id') or d.get('uuid'), d.get('requestId'))
+                ids = set()
+                for c in content or []:
+                    if isinstance(c, dict) and c.get('type') == 'tool_use':
+                        tool_name[c.get('id')] = c.get('name') or '?'; ids.add(c.get('id'))
+                r = msgs.get(key)
+                if r is None:
+                    msgs[key] = dict(when=when, model=short(m.get('model') or d.get('requestedModel')), sid=d.get('sessionId') or p,
+                                     cwd=d.get('cwd'), ep=d.get('entrypoint') or 'cli',
+                                     side=bool(d.get('isSidechain')) or ('/subagents/' in p or '\\subagents\\' in p), u=u, ids=ids)
+                else:
+                    r['u'] = u; r['ids'] |= ids
+            elif t == 'user' and isinstance(content, list):
+                for b in content:
+                    if not (isinstance(b, dict) and b.get('type') == 'tool_result'): continue
+                    name = tool_name.get(b.get('tool_use_id'), '?'); body = b.get('content'); n = 0
+                    if isinstance(body, str): n = len(body)
+                    elif isinstance(body, list):
+                        for x in body:
+                            if not isinstance(x, dict): continue
+                            if x.get('type') == 'image':
+                                sz = len(((x.get('source') or {}).get('data')) or ''); img_results += 1; img_bytes += sz; n += sz
+                            elif x.get('type') == 'text': n += len(x.get('text') or '')
+                    tool_bytes[name] += n
+
+def cost_of(r):
+    u = r['u']; pi, po, pw, pr = price(r['model'])
+    return (u.get('input_tokens', 0) * pi + u.get('output_tokens', 0) * po
+            + u.get('cache_creation_input_tokens', 0) * pw + u.get('cache_read_input_tokens', 0) * pr) / 1e6
+def ctx_of(r):
+    u = r['u']; return u.get('input_tokens', 0) + u.get('cache_creation_input_tokens', 0) + u.get('cache_read_input_tokens', 0)
+
+recs = sorted(msgs.values(), key=lambda r: r['when'])
+main = [r for r in recs if not r['side']]; side = [r for r in recs if r['side']]
+tot_cost = sum(map(cost_of, recs)); side_cost = sum(map(cost_of, side))
+out_tok = sum(r['u'].get('output_tokens', 0) for r in recs)
+cr_tok = sum(r['u'].get('cache_read_input_tokens', 0) for r in recs)
+cw_tok = sum(r['u'].get('cache_creation_input_tokens', 0) for r in recs)
+in_tok = sum(r['u'].get('input_tokens', 0) for r in recs)
+by_model = collections.defaultdict(lambda: [0, 0.0])
+for r in recs:
+    if r['model'].startswith('<'): continue
+    by_model[r['model']][0] += 1; by_model[r['model']][1] += cost_of(r)
+by_ep = collections.Counter(r['ep'] for r in recs)
+tool_calls = collections.Counter(tool_name.get(i, '?') for r in recs for i in r['ids'])
+def grp(n): return 'mcp:' + n.split('__')[1] if n.startswith('mcp__') and n.count('__') >= 2 else n
+g_calls = collections.Counter(); g_bytes = collections.Counter()
+for n, c in tool_calls.items(): g_calls[grp(n)] += c
+for n, b in tool_bytes.items(): g_bytes[grp(n)] += b
+active_days = len({r['when'].astimezone(LOCAL).date() for r in recs})
+
+# sessions
+sess = collections.defaultdict(lambda: dict(turns=0, cost=0.0, maxctx=0, first=None, last=None, cwd=None, models=collections.Counter()))
+for r in main:
+    s = sess[r['sid']]; s['turns'] += 1; s['cost'] += cost_of(r); s['maxctx'] = max(s['maxctx'], ctx_of(r))
+    s['first'] = s['first'] or r['when']; s['last'] = r['when']; s['cwd'] = s['cwd'] or r['cwd']; s['models'][r['model']] += cost_of(r)
+turns_list = sorted(s['turns'] for s in sess.values()) or [0]
+def p90(xs): return xs[min(len(xs) - 1, int(0.9 * len(xs)))]
+ctx_hi = sum(1 for r in main if ctx_of(r) > 100_000); ctx_vhi = sum(1 for r in main if ctx_of(r) > 150_000)
+max_ctx = max((ctx_of(r) for r in main), default=0)
+top_sess = sorted(sess.values(), key=lambda s: -s['cost'])[:3]
+
+# daily, last 14 days
+daily = collections.defaultdict(lambda: dict(cost=0.0, turns=0, maxctx=0, models=collections.Counter()))
+for r in recs:
+    day = r['when'].astimezone(LOCAL).date(); x = daily[day]
+    x['cost'] += cost_of(r); x['turns'] += 1 if not r['side'] else 0; x['maxctx'] = max(x['maxctx'], ctx_of(r)); x['models'][r['model']] += cost_of(r)
+days14 = [NOW.astimezone(LOCAL).date() - dt.timedelta(days=i) for i in range(13, -1, -1)]
+
+# busiest 5h windows (non-overlapping, by $)
+wins = []
+if recs:
+    j = 0; costs = [cost_of(r) for r in recs]
+    for i in range(len(recs)):
+        while recs[i]['when'] - recs[j]['when'] > dt.timedelta(hours=5): j += 1
+        wins.append((sum(costs[j:i + 1]), j, i))
+    wins.sort(reverse=True)
+chosen = []
+for c, j, i in wins:
+    if all(recs[i]['when'] < recs[j2]['when'] or recs[j]['when'] > recs[i2]['when'] for _, j2, i2 in chosen): chosen.append((c, j, i))
+    if len(chosen) == 3: break
+
+# projects
+by_proj = collections.defaultdict(lambda: [0.0, 0, set()])
+for r in main: b = by_proj[proj(r['cwd'])]; b[0] += cost_of(r); b[1] += 1; b[2].add(r['cwd'])
+top_proj = sorted(by_proj.items(), key=lambda kv: -kv[1][0])[:5]
+
+cs_sum = 0.0; cs_n = 0
+for sid, c in cost_states.items():
+    st = c.get('startTime')
+    if st and st / 1000 >= SINCE.timestamp(): cs_sum += c.get('totalCostUSD') or 0; cs_n += 1
+
+# ---------- config ----------
+def jload(p):
+    try: return json.load(open(p, encoding='utf-8'))
+    except Exception: return {}
+def lines(p):
+    try: return sum(1 for _ in open(p, encoding='utf-8', errors='ignore'))
+    except Exception: return None
+cj = jload(os.path.join(HOME, '.claude.json')); oa = cj.get('oauthAccount') or {}
+acct = ' | '.join(f'{kk}={oa.get(kk)}' for kk in ('planDisplayName', 'seatTier', 'organizationType', 'organizationRole', 'userRateLimitTier', 'organizationRateLimitTier', 'hasExtraUsageEnabled', 'billingType') if kk in oa)
+g_mcp = list((cj.get('mcpServers') or {}).keys())
+p_mcp = {proj(k): list((v.get('mcpServers') or {}).keys()) for k, v in (cj.get('projects') or {}).items() if isinstance(v, dict) and v.get('mcpServers')}
+st = jload(os.path.join(CDIR, 'settings.json')); sl = jload(os.path.join(CDIR, 'settings.local.json'))
+hooks = {kk: len(v) for kk, v in (st.get('hooks') or {}).items()}
+env_keys = sorted(set((st.get('env') or {}).keys()) | set((sl.get('env') or {}).keys()))
+def count_dir(p, suffix=None):
+    try: return len([x for x in os.listdir(p) if (suffix is None or x.endswith(suffix)) and not x.startswith('.')])
+    except OSError: return 0
+skills = count_dir(os.path.join(CDIR, 'skills')); cmds = count_dir(os.path.join(CDIR, 'commands'), '.md'); agents = count_dir(os.path.join(CDIR, 'agents'), '.md')
+plugins = jload(os.path.join(CDIR, 'plugins', 'installed_plugins.json')); nplug = len(plugins.get('plugins') or plugins or {}) if isinstance(plugins, dict) else 0
+rules = count_dir(os.path.join(CDIR, 'rules'), '.md')
+gmd = lines(os.path.join(CDIR, 'CLAUDE.md'))
+proj_md = []
+for name, (c, n, cwds) in top_proj:
+    for cwd in list(cwds)[:1]:
+        parts = []
+        for rel in ('CLAUDE.md', '.claude/CLAUDE.md', 'CLAUDE.local.md'):
+            L = lines(os.path.join(cwd, rel));
+            if L: parts.append(f'{rel}={L}')
+        mcpj = jload(os.path.join(cwd, '.mcp.json')).get('mcpServers') or {}
+        if mcpj: parts.append(f'.mcp.json={list(mcpj.keys())}')
+        ph = (jload(os.path.join(cwd, '.claude', 'settings.json')).get('hooks') or {})
+        if ph: parts.append(f'hooks={sum(len(v) for v in ph.values())}')
+        rl = count_dir(os.path.join(cwd, '.claude', 'rules'), '.md')
+        if rl: parts.append(f'rules={rl}')
+        proj_md.append(f'{name}: ' + (', '.join(parts) if parts else 'no CLAUDE.md'))
+try: proj_mb = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(os.path.join(CDIR, 'projects')) for f in fs) / 1e6
+except Exception: proj_mb = 0
+
+# ---------- report ----------
+L = []
+L.append(f'CLAUDE CODE USAGE SCAN | last {DAYS}d to {NOW.astimezone(LOCAL):%Y-%m-%d %H:%M %Z} | Claude Code {version or "?"} | {platform.system()} {platform.release()} | python {platform.python_version()}')
+L.append(f'ACCOUNT: {acct or "no oauthAccount in ~/.claude.json"}')
+L.append(f'TOTALS: {len(main)} turns + {len(side)} subagent turns, {len(sess)} sessions, {active_days} active days | API-rate equivalent ~${tot_cost:,.0f} (~${tot_cost/max(active_days,1):,.1f} per active day) | output {k(out_tok)} | cache read {k(cr_tok)} | cache write {k(cw_tok)} | uncached input {k(in_tok)}')
+if cs_n: L.append(f'  cross-check: Claude Code own cost-state ${cs_sum:,.0f} across {cs_n} sessions that logged it')
+L.append('MODELS (share of $, turns incl. subagents): ' + ' | '.join(f'{m} {pct(v[1], tot_cost)} (${v[1]:,.0f}, {v[0]} turns)' for m, v in sorted(by_model.items(), key=lambda kv: -kv[1][1])))
+L.append('ENTRYPOINTS: ' + ' | '.join(f'{e} {c}' for e, c in by_ep.most_common()) + f' | subagent turns {len(side)} (${side_cost:,.0f}, {pct(side_cost, tot_cost)})')
+L.append(f'SESSIONS: median {statistics.median(turns_list):.0f} turns, p90 {p90(turns_list)}, max {turns_list[-1]} | sessions >50 turns: {sum(1 for t in turns_list if t > 50)} | turns with context >100k: {pct(ctx_hi, len(main))}, >150k: {pct(ctx_vhi, len(main))} | max context {k(max_ctx)}')
+for s in top_sess:
+    L.append(f'  top session: {s["first"].astimezone(LOCAL):%m-%d %H:%M} ${s["cost"]:,.1f} {s["turns"]} turns maxctx {k(s["maxctx"])} {s["models"].most_common(1)[0][0] if s["models"] else "?"} [{proj(s["cwd"])}]')
+dl = [f'{d:%m-%d} ${daily[d]["cost"]:.0f}/{daily[d]["turns"]}t/ctx{k(daily[d]["maxctx"])}' + (f'/{daily[d]["models"].most_common(1)[0][0].split("-")[0]}' if daily[d]['models'] else '') if d in daily else f'{d:%m-%d} -' for d in days14]
+L.append('DAILY (last 14d, $/turns/peak ctx/top model): ' + ' ; '.join(dl[:7]))
+L.append('  ' + ' ; '.join(dl[7:]))
+for c, j, i in chosen:
+    seg = recs[j:i + 1]; mm = collections.Counter(); mx = 0
+    for r in seg: mm[r['model']] += cost_of(r); mx = max(mx, ctx_of(r))
+    L.append(f'BUSIEST 5H: {seg[0]["when"].astimezone(LOCAL):%m-%d %H:%M}-{seg[-1]["when"].astimezone(LOCAL):%H:%M} ${c:,.0f} {len(seg)} turns maxctx {k(mx)} {mm.most_common(1)[0][0]}')
+L.append('TOOLS (calls, result size): ' + ' | '.join(f'{n} {c}x {mb(g_bytes[n])}' for n, c in g_calls.most_common(12)) + f' | image results {img_results} ({mb(img_bytes)})')
+L.append('PROJECTS (by $): ' + ' | '.join(f'{n} ${v[0]:,.0f}/{v[1]}t' for n, v in top_proj))
+L.append(f'CONFIG: model={st.get("model") or sl.get("model") or "default"} effort={st.get("effortLevel") or "default"} outputStyle={st.get("outputStyle") or "default"} | hooks {hooks or "none"} | env {env_keys or "none"} | statusline {"yes" if st.get("statusLine") else "no"} | plugins {nplug} | skills {skills} | commands {cmds} | agents {agents} | rules {rules}')
+L.append(f'MCP: global {g_mcp or "none"} | per-project {p_mcp or "none"} | installMethod={cj.get("installMethod")} | projects dir {proj_mb:,.0f}MB')
+L.append(f'CLAUDE.md: global {gmd if gmd is not None else "none"} lines | ' + (' | '.join(proj_md) if proj_md else 'no project data'))
+print('\n'.join(L))

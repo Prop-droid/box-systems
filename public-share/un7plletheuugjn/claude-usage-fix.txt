@@ -1,0 +1,53 @@
+CLAUDE CODE USAGE FIX - STEP 1 (one habit + one command)
+=========================================================
+Your scan (Nov 10) showed where the 5-hour limit goes: sessions of 900 to 1,800 messages that drag 700k to 960k tokens of history into EVERY message. Claude re-reads that whole pile every time you press Enter. That is what burns the limit, not your questions and not Opus. You keep Opus.
+
+SETUP, ONCE (2 minutes)
+1. In Claude Code type /model and pick Opus (the scan step had switched your default to Haiku).
+2. Type /clear, then copy EVERYTHING below the dashed line and paste it as one message. It lists what it will create and waits for your "go". It adds a /handoff command and a tiny hook that reads the note back after /clear. Nothing else changes.
+3. Restart Claude Code (/exit, start it again).
+
+THE HABIT: new task = /clear first
+- Before /clear, type /handoff. Claude saves a 10-line note (what we are doing, done, next, files) to ~/.claude/handoff.md and answers "Saved. Type /clear."
+- Type /clear. The note comes back by itself in the new session, so you lose nothing.
+- Test for "new task": if my next message would make sense in a brand-new session, /handoff then /clear before sending it.
+- Never resume yesterday's session for today's work. Start fresh; yesterday's note loads automatically if it is less than a day old.
+- Check once a day: type /context. If it shows more than 200k tokens, you did not clear.
+
+We look at the numbers again in a week and decide step 2 together.
+Undo: delete ~/.claude/commands/handoff.md and ~/.claude/handoff-load.sh, and remove the "startup|clear" entry from "hooks" > "SessionStart" in ~/.claude/settings.json.
+
+----------------------------- PASTE EVERYTHING BELOW THIS LINE INTO CLAUDE CODE -----------------------------
+Install a /handoff command and a hook that reads the handoff note back after /clear. Plan first: list the three changes below with the exact paths, then wait for my "go". Change nothing else: do not touch other hooks, MCP servers, plugins, the model setting, or any project files. Keep replies short.
+
+1. Create ~/.claude/commands/handoff.md with exactly the content between the ===BEGIN=== and ===END=== lines (not including those lines):
+===BEGIN===
+---
+description: Save a short handoff note to ~/.claude/handoff.md before /clear
+---
+Overwrite ~/.claude/handoff.md with a plain-text handoff note in exactly this shape, max 12 lines, no markdown:
+HANDOFF <today's date and time>
+Working on: <one line>
+Done: <up to 3 lines>
+Next: <up to 3 lines>
+Files/links: <up to 3 lines of absolute paths or URLs>
+Write nothing else into the file. Then reply with exactly: Saved. Type /clear.
+===END===
+
+2. Create ~/.claude/handoff-load.sh with exactly the content between the markers, then chmod +x it:
+===BEGIN===
+#!/bin/bash
+f="$HOME/.claude/handoff.md"
+[ -f "$f" ] && [ -n "$(find "$f" -mmin -1440 2>/dev/null)" ] || exit 0
+echo "HANDOFF NOTE from the previous session (file: $f). Use it only if my first message continues this work; otherwise ignore it."
+cat "$f"
+===END===
+
+3. In ~/.claude/settings.json, under "hooks" > "SessionStart", APPEND this entry to the existing array (create "hooks" or "SessionStart" if missing; never modify or remove existing entries). Expand ~ to my real home path inside "command":
+{"matcher": "startup|clear", "hooks": [{"type": "command", "command": "~/.claude/handoff-load.sh", "timeout": 5}]}
+
+VERIFY (after my "go")
+- Print the "SessionStart" array from ~/.claude/settings.json.
+- Run: printf 'HANDOFF test\nWorking on: test\n' > ~/.claude/handoff.md && ~/.claude/handoff-load.sh
+  Expected: one "HANDOFF NOTE from the previous session" line, then "HANDOFF test" and "Working on: test".
+- Tell me to restart Claude Code. Do not restart anything yourself.
