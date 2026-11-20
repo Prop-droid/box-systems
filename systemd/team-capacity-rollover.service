@@ -1,0 +1,7 @@
+[Unit]
+Description=team-capacity rollover: unfinished tasks -> this week, estimate minus tracked (Monday 07:10 Vilnius, after the report DM)
+[Service]
+Type=oneshot
+WorkingDirectory=%h/systems/team-capacity
+Environment=PATH=%h/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/python3 %h/systems/team-capacity/rollover.py --auto

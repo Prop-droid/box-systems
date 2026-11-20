@@ -1,0 +1,42 @@
+WEEK SPRINT S45 (Nov 02 – Nov 07)
+
+TOMAS – TOTAL TEAM PERFORMANCE
+
+Days-off
+Leonardo out 1 day(s) (All Saints' Day Holiday)
+Agustina out 2 day(s) (Agustina Sick)
+Paolo out 2 day(s) (All Souls' Day; Paolo Sick)
+Anastasiia out 1 day(s) (All Souls' Day)
+
+VIDEO
+Tasks with activity: 106
+Finished: 28 • started: 30 • hit needs fixing: 18
+Tracked: 191.3h • estimated on finished: 216.0h
+Average revision rounds per finished task: ~0.6
+Output: 87 videos
+Queue now: to do 14 • in progress 5 • cs review 5 • needs fixing 1
+Projection next week: ~7 finished (5 in progress not yet handed off + 7 to-do due next week)
+
+IMAGE
+Tasks with activity: 34
+Finished: 15 • started: 14 • hit needs fixing: 6
+Tracked: 43.5h • estimated on finished: 44.0h
+Average revision rounds per finished task: ~0.5
+Output: 60 images
+Queue now: to do 15 • in progress 2 • needs fixing 2
+Projection next week: ~6 finished (1 in progress not yet handed off + 11 to-do due next week)
+
+TEAM
+Tracked vs capacity: 234.8h / 245h → 96% used
+Finished tasks: 209.0h tracked vs 260.0h estimated → 0.80 actual/estimate
+Hours on tasks not yet finished: 25.8h (carries forward)
+Finished total: 43
+Estimate reverts this week: 0
+
+Per person (video finished / image finished / tracked h of capacity)
+KAR 7 / 0 / 37.4h of 36h • IGN 5 / 0 / 35.0h of 36h • LEO 4 / 0 / 32.8h of 29h • AYC 0 / 12 / 32.8h of 36h • MAR 5 / 1 / 26.8h of 36h • ANA 6 / 2 / 26.6h of 29h • AGU 3 / 0 / 22.0h of 22h • PAO 3 / 0 / 21.4h of 22h
+
+Output counted from Air (no OUTPUT line): SH-21443: no OUTPUT line, Air=0 (HTTP Error 404: Not Found); SH-21413: no OUTPUT line, Air=3; SH-21401: no OUTPUT line, Air=0 (no link); SH-21278: no OUTPUT line, Air=0; SH-21241: no OUTPUT line, Air=0; SH-21240: no OUTPUT line, Air=0 (no link); SH-21182: no OUTPUT line, Air=5; SH-21144: no OUTPUT line, Air=0 (no link); SH-21090: no OUTPUT line, Air=0 (no link); SH-21082: no OUTPUT line, Air=4
+
+INSIGHTS
+Team ran at 96% of capacity despite six person-days off and finished 43 tasks at 0.80 actual vs estimate, so estimates still run heavy. Revisions clustered in video with 18 tasks hitting needs fixing against only 6 for image, and the open needs-fixing items sit with AYC (2 img) and MAR (1 vid). Unfinished work piles up on AYC with 17 open image tasks and ANA with 12 open video tasks (7 to do plus 4 in cs review), while AGU carries 7 open videos despite two sick days. LEO, KAR and IGN are nearly clear (1 to 3 open tasks each) and MAR tracked only 26.8h of 36h, so those four have room for next week's intake.

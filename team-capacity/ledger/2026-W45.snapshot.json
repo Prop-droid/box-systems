@@ -1,0 +1,183 @@
+{
+ "week": "2026-W45",
+ "run": "2026-11-07T06:00:00.425665+02:00",
+ "kinds": {
+  "vid": {
+   "active": 106,
+   "finished": 28,
+   "output": 87,
+   "started": 30,
+   "nf_tasks": 18,
+   "est_h": 216.0,
+   "tracked_h": 191.3,
+   "rev_rounds": 0.6,
+   "proj": 7.0,
+   "proj_parts": {
+    "mid": 5,
+    "todo_due": 7
+   },
+   "queue": {
+    "to do": 14,
+    "in progress": 5,
+    "cs review": 5,
+    "needs fixing": 1
+   }
+  },
+  "img": {
+   "active": 34,
+   "finished": 15,
+   "output": 60,
+   "started": 14,
+   "nf_tasks": 6,
+   "est_h": 44.0,
+   "tracked_h": 43.5,
+   "rev_rounds": 0.5,
+   "proj": 6.0,
+   "proj_parts": {
+    "todo_due": 11,
+    "mid": 1
+   },
+   "queue": {
+    "to do": 15,
+    "in progress": 2,
+    "needs fixing": 2
+   }
+  }
+ },
+ "per": {
+  "ANA": {
+   "tracked": 26.63552305555556,
+   "fin_vid": 6,
+   "est": 43.0,
+   "fin_img": 2
+  },
+  "LEO": {
+   "tracked": 32.8477925,
+   "fin_vid": 4,
+   "est": 31.0
+  },
+  "IGN": {
+   "tracked": 35.0,
+   "fin_vid": 5,
+   "est": 28.0
+  },
+  "KAR": {
+   "tracked": 37.36666666666667,
+   "fin_vid": 7,
+   "est": 48.0
+  },
+  "AYC": {
+   "tracked": 32.76219472222222,
+   "fin_img": 12,
+   "est": 33.0
+  },
+  "PAO": {
+   "tracked": 21.45,
+   "fin_vid": 3,
+   "est": 21.0
+  },
+  "MAR": {
+   "tracked": 26.767629166666666,
+   "fin_vid": 5,
+   "est": 36.0,
+   "fin_img": 1
+  },
+  "AGU": {
+   "tracked": 22.0,
+   "fin_vid": 3,
+   "est": 20.0
+  }
+ },
+ "open": {
+  "AGU": {
+   "vid:to do": 4,
+   "vid:in progress": 2,
+   "vid:cs review": 1
+  },
+  "LEO": {
+   "vid:in progress": 1
+  },
+  "AYC": {
+   "img:to do": 14,
+   "img:needs fixing": 2,
+   "img:in progress": 1
+  },
+  "ANA": {
+   "img:to do": 1,
+   "vid:to do": 7,
+   "vid:cs review": 4,
+   "vid:in progress": 1
+  },
+  "IGN": {
+   "vid:to do": 1,
+   "vid:cs review": 2
+  },
+  "MAR": {
+   "img:in progress": 1,
+   "vid:cs review": 1,
+   "vid:needs fixing": 1
+  },
+  "PAO": {
+   "vid:to do": 2,
+   "vid:cs review": 1
+  },
+  "KAR": {
+   "vid:cs review": 1,
+   "vid:in progress": 1
+  }
+ },
+ "capacity": {
+  "IGN": 36.0,
+  "LEO": 28.8,
+  "AGU": 21.6,
+  "PAO": 21.6,
+  "KAR": 36.0,
+  "MAR": 36.0,
+  "ANA": 28.8,
+  "AYC": 36.0
+ },
+ "days_off": {
+  "IGN": [],
+  "LEO": [
+   [
+    "2026-11-02",
+    7.2,
+    "All Saints' Day Holiday"
+   ]
+  ],
+  "AGU": [
+   [
+    "2026-11-04",
+    7.2,
+    "Agustina Sick"
+   ],
+   [
+    "2026-11-05",
+    7.2,
+    "Agustina Sick"
+   ]
+  ],
+  "PAO": [
+   [
+    "2026-11-02",
+    7.2,
+    "All Souls' Day"
+   ],
+   [
+    "2026-11-04",
+    7.2,
+    "Paolo Sick"
+   ]
+  ],
+  "KAR": [],
+  "MAR": [],
+  "ANA": [
+   [
+    "2026-11-02",
+    7.2,
+    "All Souls' Day"
+   ]
+  ],
+  "AYC": []
+ }
+}

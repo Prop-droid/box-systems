@@ -1,0 +1,42 @@
+WEEK SPRINT S46 (Nov 09 – Nov 14)
+
+TOMAS – TOTAL TEAM PERFORMANCE
+
+Days-off
+Ignacio out 1 day(s) (Papal Visit Holiday)
+Agustina out 1 day(s) (Papal Visit Holiday)
+Karen out 2 day(s) (Karen Sick Day; Papal Visit Holiday)
+Marcos out 1 day(s) (Papal Visit Holiday)
+
+VIDEO
+Tasks with activity: 47
+Finished: 26 • started: 32 • hit needs fixing: 17
+Tracked: 193.6h • estimated on finished: 232.0h
+Average revision rounds per finished task: ~0.8
+Output: 119 videos
+Queue now: to do 6 • in progress 9 • cs review 3 • needs fixing 5
+Projection next week: ~5 finished (7 in progress not yet handed off + 0 to-do due next week)
+
+IMAGE
+Tasks with activity: 29
+Finished: 17 • started: 18 • hit needs fixing: 5
+Tracked: 33.6h • estimated on finished: 43.0h
+Average revision rounds per finished task: ~0.3
+Output: 80 images
+Queue now: to do 11
+Projection next week: ~4 finished (0 in progress not yet handed off + 7 to-do due next week)
+
+TEAM
+Tracked vs capacity: 227.2h / 252h → 90% used
+Finished tasks: 196.1h tracked vs 275.0h estimated → 0.71 actual/estimate
+Hours on tasks not yet finished: 31.0h (carries forward)
+Finished total: 43
+Estimate reverts this week: 0
+
+Per person (video finished / image finished / tracked h of capacity)
+LEO 6 / 0 / 39.5h of 36h • IGN 5 / 0 / 34.0h of 29h • AYC 0 / 16 / 32.4h of 36h • PAO 3 / 0 / 28.4h of 36h • AGU 5 / 0 / 27.0h of 29h • ANA 4 / 0 / 24.0h of 36h • KAR 3 / 0 / 21.4h of 22h • MAR 2 / 1 / 20.4h of 29h
+
+Output counted from Air (no OUTPUT line): SH-21409: no OUTPUT line, Air=0 (no link); SH-21401: no OUTPUT line, Air=6; SH-21266: no OUTPUT line, Air=5; SH-21254: no OUTPUT line, Air=0 (no link); SH-21240: no OUTPUT line, Air=0; SH-21142: no OUTPUT line, Air=5; SH-21098: no OUTPUT line, Air=3; SH-21090: no OUTPUT line, Air=6
+
+INSIGHTS
+Sprint S46 delivered 43 finished tasks (26 video, 17 image) at 90% of capacity with a 0.71 actual-to-estimate ratio, and video work is the main drag since 17 of its 47 active tasks hit needs fixing versus only 5 of 29 on image. Revisions cluster in video, where AGU holds two tasks in needs fixing and LEO, KAR and IGN hold one each, while image stayed clean at about 0.3 rounds per finished task. Unfinished work clusters by person with AYC carrying 10 image to-dos and AGU carrying the heaviest video load (2 in progress, 2 needs fixing, 3 to do, 1 in cs review), followed by ANA with 3 video to-dos; LEO (39.5h of 36h) and IGN (34.0h of 29h) ran over capacity. Free capacity sits with ANA (24.0h of 36h), PAO (28.4h of 36h) and MAR (20.4h of 29h), who have the lightest open queues, so they are the natural pickups for the 6 video to-dos and for backing up AYC on the 11 image to-dos.

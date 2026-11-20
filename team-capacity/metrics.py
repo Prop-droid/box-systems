@@ -42,7 +42,9 @@ def tracked_in(intervals, ws, we):
     for uid, s, e, _ in intervals:
         if uid in C.U2C and ws <= s <= we: per[C.U2C[uid]] += (e - s) / 3.6e6
     return per
-def est_h(t): return (t.get("time_estimate") or 0) / 3.6e6
+def est_h(t):
+    """Original estimate: rollover.py cuts the live estimate each Monday; run_weekly sets _orig_estimate from its ledger."""
+    return (t.get("_orig_estimate") or t.get("time_estimate") or 0) / 3.6e6
 
 def compute(tasks, hist, intervals, ws, we, nws, nwe, air_counter=None):
     """tasks: list; hist: {id: time_in_status}; intervals: {id: [(uid,s,e,src)]}; windows in ms."""

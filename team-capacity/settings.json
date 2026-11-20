@@ -3,5 +3,6 @@
  "post_team": false,
  "doc_id": "1m8PC6fsylcZzL71MaVnOvdryOfjqcGsTRjPNCHo_uyQ",
  "sheet_id": null,
- "dm_channel": "8cj5bz5-227631"
+ "dm_channel": "8cj5bz5-227631",
+ "rollover_writes": true
 }

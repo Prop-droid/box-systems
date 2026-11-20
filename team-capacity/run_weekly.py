@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Weekly job (Saturday 06:00 Vilnius): pull -> metrics -> ledger -> rollover+spread plan -> (apply) -> report -> deliver.
+"""Weekly job (Saturday 06:00 Vilnius): pull -> metrics -> ledger -> spread plan (log only) -> report -> deliver.
+The rollover (due dates -> this week, estimate minus tracked) is rollover.py, Monday 07:10 after the DM (no weekend ClickUp pings).
 Flags: --dry-run (no ClickUp writes, no delivery, print report) --window START END (YYYY-MM-DD, inclusive; replay) --force (rewrite ledger).
-settings.json: writes (apply rollover/spread/field), post_team (Discord #creative vs Tomas-only ops-log), doc_id, sheet_id."""
+settings.json: post_team (Discord #creative vs Tomas-only ops-log), doc_id, sheet_id. (writes = estimate gate only; rollover_writes = rollover.py)"""
 import argparse, json, os, sys, subprocess, time
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import config as C, clickup as CU, weeks as W, metrics as M, capacity as CAP, calendar_pull as CALP, spread as SP, ledger as LG, report as R, outputs as O
+import config as C, clickup as CU, weeks as W, metrics as M, capacity as CAP, calendar_pull as CALP, spread as SP, ledger as LG, report as R, outputs as O, rollover as RO
 TZ = ZoneInfo(C.TZ)
 def alert(title, body):
     subprocess.run([os.path.expanduser("~/systems/lib/tg-notify.sh"), title, body, "high"], capture_output=True, timeout=60)
@@ -33,6 +34,9 @@ def main():
     try:
         tasks = CU.list_tasks(ws - 14 * 86400000)
         tasks = [t for t in tasks if M.people(t)]
+        orig = RO.orig_estimates()   # report keeps the pre-rollover estimate
+        for t in tasks:
+            if t["id"] in orig: t["_orig_estimate"] = orig[t["id"]]
         hist = CU.bulk_time_in_status([t["id"] for t in tasks])
         cand = [t for t in tasks if (t.get("time_spent") or 0) > 0 and int(t.get("date_updated") or 0) >= ws]
         ivs = CU.intervals_for(cand)
@@ -59,7 +63,8 @@ def main():
         wrote = LG.write(label, rows, snapshot, force=a.force)
         if not wrote and not a.force: print(f"ledger {label} exists; skipping (use --force)"); 
         elif S.get("sheet_id"): LG.mirror_sheet(S["sheet_id"], label, rows)
-    # rollover + spread plan for next week
+    # Mon-Fri spread plan for next week: journal only. The old tag/"Remaining h" apply path is gone (no tags on CS tasks);
+    # the real rollover is rollover.py on Monday.
     open_tasks = []
     for t in tasks:
         st = M.status(t)
@@ -69,29 +74,14 @@ def main():
                                "tracked_h": tr_life, "priority": int(((t.get("priority") or {}).get("orderindex") or 9)) if t.get("priority") else 9, "due_ms": int(t.get("due_date") or 0)})
     remaining = {o["id"]: max(0.0, o["est_h"] - o["tracked_h"]) for o in open_tasks if o["status"] == C.S_LIVE}
     plan = SP.plan(open_tasks, remaining, ncap, W.weekdays_1700(nws), nws, nwe)
-    print(f"spread plan: {len(plan)} writes, carried {sum(p['carried'] for p in plan)}, overflow {sum(p['overflow'] for p in plan)}")
+    print(f"spread plan (log only): {len(plan)} tasks, carried {sum(p['carried'] for p in plan)}, overflow {sum(p['overflow'] for p in plan)}")
     for p in plan: print("  ", p["person"], p["custom_id"], W.from_ms(p["due_ms"]).strftime("%a %d"), "carried" if p["carried"] else "todo", f"{p['remaining_h']}h", "OVERFLOW" if p["overflow"] else "")
-    applied = 0
-    if S["writes"] and not a.dry_run and plan:
-        fid = next((f["id"] for f in CU.list_fields() if f["name"] == C.REMAINING_FIELD_NAME), None) or CU.create_number_field(C.REMAINING_FIELD_NAME).get("id")
-        for p in plan:
-            try:
-                CU.update_task(p["id"], {"due_date": p["due_ms"], "due_date_time": True})
-                if p["carried"]:
-                    CU.add_tag(p["id"], "carried")
-                    if fid: CU.set_field(p["id"], fid, p["remaining_h"])
-                if p["overflow"]: CU.add_tag(p["id"], "overflow")
-                applied += 1
-            except Exception as e:
-                print("write failed", p["custom_id"], e)
-        print(f"applied {applied}/{len(plan)}")
     # report
     reverts = gate_reverts_in(ws, we)
     draft = R.render(sprint, hdr_ws, we, m, days, cap, reverts, "(pending)", label)
     ins = (R.claude_insights(draft, m["open"]) if not a.dry_run else None) or R.fallback_insights(m, cap)
     text = R.render(sprint, hdr_ws, we, m, days, cap, reverts, ins, label)
     if not cal_ok: text += "\nNote: calendar feed failed, days-off not applied."
-    if applied: text += f"\nRollover: {applied} tasks re-dated for next week ({sum(p['carried'] for p in plan)} carried)."
     print("\n" + text + "\n")
     if a.dry_run: return
     notes = R.deliver(text, label, S["post_team"], S.get("doc_id"))

@@ -1,0 +1,172 @@
+{
+ "week": "2026-W46",
+ "run": "2026-11-14T06:00:00.414712+02:00",
+ "kinds": {
+  "vid": {
+   "active": 47,
+   "finished": 26,
+   "output": 119,
+   "started": 32,
+   "nf_tasks": 17,
+   "est_h": 232.0,
+   "tracked_h": 193.6,
+   "rev_rounds": 0.8,
+   "proj": 5.0,
+   "proj_parts": {
+    "mid": 7
+   },
+   "queue": {
+    "cs review": 3,
+    "in progress": 9,
+    "needs fixing": 5,
+    "to do": 6
+   }
+  },
+  "img": {
+   "active": 29,
+   "finished": 17,
+   "output": 80,
+   "started": 18,
+   "nf_tasks": 5,
+   "est_h": 43.0,
+   "tracked_h": 33.6,
+   "rev_rounds": 0.3,
+   "proj": 4.0,
+   "proj_parts": {
+    "todo_due": 7
+   },
+   "queue": {
+    "to do": 11
+   }
+  }
+ },
+ "per": {
+  "AGU": {
+   "tracked": 27.0,
+   "fin_vid": 5,
+   "est": 36.0
+  },
+  "ANA": {
+   "fin_vid": 4,
+   "est": 24.0,
+   "tracked": 24.031724722222222
+  },
+  "PAO": {
+   "fin_vid": 3,
+   "est": 32.0,
+   "tracked": 28.366666666666667
+  },
+  "MAR": {
+   "tracked": 20.418591666666664,
+   "fin_vid": 2,
+   "est": 23.0,
+   "fin_img": 1
+  },
+  "LEO": {
+   "tracked": 39.497936111111116,
+   "fin_vid": 6,
+   "est": 48.0
+  },
+  "KAR": {
+   "tracked": 21.416666666666668,
+   "fin_vid": 3,
+   "est": 26.0
+  },
+  "AYC": {
+   "tracked": 32.420809722222224,
+   "fin_img": 16,
+   "est": 40.0
+  },
+  "IGN": {
+   "tracked": 34.0,
+   "fin_vid": 5,
+   "est": 46.0
+  }
+ },
+ "open": {
+  "ANA": {
+   "vid:cs review": 1,
+   "img:to do": 1,
+   "vid:to do": 3,
+   "vid:in progress": 1
+  },
+  "AGU": {
+   "vid:cs review": 1,
+   "vid:in progress": 2,
+   "vid:needs fixing": 2,
+   "vid:to do": 3
+  },
+  "MAR": {
+   "vid:in progress": 2
+  },
+  "AYC": {
+   "img:to do": 10
+  },
+  "LEO": {
+   "vid:cs review": 1,
+   "vid:needs fixing": 1,
+   "vid:in progress": 1
+  },
+  "KAR": {
+   "vid:needs fixing": 1,
+   "vid:in progress": 1,
+   "vid:cs review": 1
+  },
+  "IGN": {
+   "vid:in progress": 1,
+   "vid:needs fixing": 1
+  },
+  "PAO": {
+   "vid:in progress": 1
+  }
+ },
+ "capacity": {
+  "IGN": 28.8,
+  "LEO": 36.0,
+  "AGU": 28.8,
+  "PAO": 36.0,
+  "KAR": 21.6,
+  "MAR": 28.8,
+  "ANA": 36.0,
+  "AYC": 36.0
+ },
+ "days_off": {
+  "IGN": [
+   [
+    "2026-11-09",
+    7.2,
+    "Papal Visit Holiday"
+   ]
+  ],
+  "LEO": [],
+  "AGU": [
+   [
+    "2026-11-09",
+    7.2,
+    "Papal Visit Holiday"
+   ]
+  ],
+  "PAO": [],
+  "KAR": [
+   [
+    "2026-11-09",
+    7.2,
+    "Papal Visit Holiday"
+   ],
+   [
+    "2026-11-13",
+    7.2,
+    "Karen Sick Day"
+   ]
+  ],
+  "MAR": [
+   [
+    "2026-11-09",
+    7.2,
+    "Papal Visit Holiday"
+   ]
+  ],
+  "ANA": [],
+  "AYC": []
+ }
+}
