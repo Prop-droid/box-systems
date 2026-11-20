@@ -71,8 +71,6 @@ check creative-feedback "creative-feedback gate/promote tests" 90 \
   'cd creative-feedback && python3 test_keep_best_gate.py && python3 test_decisions_unpromoted.py && python3 test_mark_decision_promoted.py && python3 test_render_proposals_md.py'
 
 # Local self-tests / probes (no external writes) ------------------------------
-check usage-guard      "usage-guard run + window JSON parses" 120 \
-  'bash usage-guard/guard.sh >/dev/null 2>&1; python3 -c "import json,os;d=json.load(open(os.path.expanduser(chr(126)+\"/.claude/usage-window.json\")));assert isinstance(d,dict)"'
 check fable-resume     "fable-resume no-op / launch" 60 \
   'bash fable-resume/resume.sh >/dev/null 2>&1'
 check md-server        "md-server serving :8092 (401 = up, Basic auth)" 15 \

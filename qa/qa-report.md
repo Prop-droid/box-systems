@@ -1,14 +1,8 @@
 # ~/systems QA smoke report
 
-- Run: 2026-11-01 08:00:00 EET
+- Run: 2026-11-15 08:00:00 EET
 - Host: tomas-agent-box
-- Checks: 9 pass, 1 fail, 16 gaps (no safe dry-run)
-
-## FAIL — subsystem findings (report, not auto-fixed)
-
-- **iteration-sugg** — iteration-suggestions DRY_RUN (no post) (rc=124)
-  - `TIMEOUT after 240s. `
-  - log: `qa/logs/iteration-sugg.log`
+- Checks: 10 pass, 0 fail, 16 gaps (no safe dry-run)
 
 ## PASS
 
@@ -20,6 +14,7 @@
 - md-server — md-server serving :8092 (401 = up, Basic auth)
 - bq-clickup-perf — bq-clickup-perf PERF_DRY_RUN (writes nothing)
 - launch-autofill — launch-autofill convention lint (reads only)
+- iteration-sugg — iteration-suggestions DRY_RUN (no post)
 - research-deepdive — research-agent deepdive --dry-run
 
 ## Gaps — no safe dry-run mode (not run)

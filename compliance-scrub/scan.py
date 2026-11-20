@@ -38,6 +38,16 @@ WINDOW_H = float(os.environ.get("SCRUB_WINDOW_HOURS", "73" if WEEKDAY == 0 else 
 ROOTS = [Path(p).expanduser() for p in os.environ.get(
     "SCRUB_ROOTS", "~/brain/wiki:~/brain/projects").split(":")]
 
+# Path substrings (lowercased) that are NOT shippable copy. Shared with the
+# brain-push gate (~/systems/brain-push/gate.py) so both use one list.
+EXCLUDE_SUBSTR = (
+    "/raw/", "legal", ".bak", "/log.md", "/index.md", "/meta/",
+    "competitor", "competitive", "atria", "weekly-report",
+    "substantiation", "research", "swipe", "/performance/",
+    # Customer data (VOC verbatims, survey, personas) is real
+    # data, never rewritten (Tomas 2026-10-08).
+    "voice-of-customer", "/personas/", "survey")
+
 
 def load_policy():
     p = json.loads(POLICY.read_text())
@@ -79,13 +89,7 @@ def main():
             continue
         for p in root.rglob("*.md"):
             s = str(p).lower()
-            if any(x in s for x in (
-                    "/raw/", "legal", ".bak", "/log.md", "/index.md", "/meta/",
-                    "competitor", "competitive", "atria", "weekly-report",
-                    "substantiation", "research", "swipe", "/performance/",
-                    # Customer data (VOC verbatims, survey, personas) is real
-                    # data, never rewritten (Tomas 2026-10-08).
-                    "voice-of-customer", "/personas/", "survey")):
+            if any(x in s for x in EXCLUDE_SUBSTR):
                 continue
             try:
                 if p.stat().st_mtime >= cutoff:

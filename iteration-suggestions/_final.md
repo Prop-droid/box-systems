@@ -1,33 +1,33 @@
-🔁 **Iteration Suggestions — wk Oct 26–Nov 1** *(auto-generated)*
+🔁 **Iteration Suggestions — wk Nov 9–15** *(auto-generated)*
 
 Reply "go <n>" (optionally with edits) to brief one. Nothing is created without your go.
 
 **VIDEO**
 
-**1. {{SH-20948-5}} (40Bag LizardMeme) — HOOK_SWAP** 🟢
-ROAS 1.40 at $1,569; hold 6.2% proves the body earns for anyone who stays — hook 24.1% is the only gate. No prior iteration on this task. → New hook only; body locked. Metric to beat: hook > 40%, ROAS > 1.6.
+**1. {{SH-21438-3}} (RockersOffer BOF) — CTA_VARIANT** 🟢
+Hook 56.5%, hold 22.0% at $949 — hook and body both earning; LENGTH_VARIANT briefed Nov 17. The offer close is the last untested variable before this scales. → Rewrite final CTA frame only; hook and body locked. Metric to beat: ROAS > 1.3 at $2k+.
 
-**2. [SH-16192](https://app.clickup.com/t/868jzp21h) (QVC Proven) — HOOK_SWAP** 🟢
-$9,768 Facebook at ROAS 0.84; CTR -20.4% w/w sharpest fatigue in the set; hook 24.5%, hold 1.2%. INTRO_SWAP actioned Oct-27 — bridge work alone can't fix a 24% open rate. → New hook only; bridge and body locked. Metric to beat: hook > 38%, ROAS > 1.0.
+**2. {{SH-21443-6}} (RockersOffer BOF) — LENGTH_VARIANT** 🟡
+Hold 9.7% at $733 — second-best hold in account; HOOK_SWAP briefed Nov 17. Brief a condensed cut in parallel while the hook test runs: the body earns for everyone who makes it through. → Condense to 15–20s around strongest proof moments; hook version locked separately. Metric to beat: hold > 9%, ROAS > 1.2 at $1.5k+.
 
-**3. {{SH-19842-2}} (BrookeTreadway WL) — HOOK_SWAP** 🟡
-Hold 6.9% — highest in the mapped set — but hook 18.5% starves a body that earns. $735, virgin on all axes. → New hook only; body locked. Metric to beat: hook > 35%, ROAS > 1.0 at $1k+.
+**3. {{SH-21466-5}} (WaitDidNotExpect BOF) — INTRO_SWAP** 🟡
+ROAS 1.2 in top-10; hook 48.5% strong open, hold collapses to 6.6% — the bridge is where the room exits. No prior iterations on any axis. → Replace 4–7s bridge only; hook and body locked. Metric to beat: hold > 12%, ROAS > 1.3 at $1.5k+.
 
 **IMAGE**
 
-**4. {{SH-19523-4}} (OfferFirst Retro) — headline variants** 🟢
-ROAS 2.2 at $646; concept CM ROAS 1.01 — only profitable concept in the account this week. Virgin on all axes. → 3 headlines; visual locked. Metric to beat: ROAS > 2.0 at $1.5k+.
+**4. {{SH-21434-3}} (HolidaySale BOF) — headline variants** 🟢
+ROAS 1.23, 90 orders, $6,268 — biggest image winner not yet iterated. CTR -5.4% early signal; test headline axis before the BF window closes. → 3 headlines; visual locked. Metric to beat: ROAS > 1.3 at $7k+.
 
-**5. {{SH-16313-2}} (S24 BRPK Retro) — visual refresh** 🟢
-ROAS 2.0 at $580; headline variants done Oct-22. Visual is the clean remaining lever on the second-best mapped image. → New product or lifestyle scene; headline locked. Metric to beat: ROAS > 1.8 at $1k+.
+**5. {{SH-21421-1}} (40BagHaul 1350 format) — scale + variants** 🟢
+ROAS 1.45 at $613 — second-best ROAS in account this week on a 1:35:1 format sibling; {{SH-21421-6}} (1:1) got visual refresh Nov 17. The taller format outperforms; underfunded. → Scale + 2–3 variants; test 1350 as primary format. Metric to beat: ROAS > 1.4 at $2k+.
 
-**6. {{SH-19523-5}} (OfferFirst Retro B) — layout variant** 🟡
-ROAS 1.08 at $929; same winning concept as #4, different axis to capture parallel signal. → One layout treatment; visual and headline locked. Metric to beat: ROAS > 1.3 at $1.5k+.
+**6. {{SH-16814-1}} (GLP Retro) — headline variants** 🟢
+ROAS 1.31 at $793; visual refresh briefed Nov 12. Headline axis never touched on this variant — SH-16814-2 got headlines Nov 10, this one is clean. → 3 headlines; visual locked. Metric to beat: ROAS > 1.4 at $1.5k+.
 
-**7. {{SH-18044-5}} (BundleKit Retro) — headline variants** 🟡
-ROAS 1.04 at $7,088; CTR -11.3%; layout variant (Oct-22) and visual refresh (Oct-27) both spent. Headline is the last lever before margin. → 3 headlines; visual locked. Metric to beat: CTR stabilizes, ROAS > 1.1.
+**7. {{SH-21477-5}} (BlackFriday Candy) — headline variants** 🟡
+ROAS 1.15 at $2,308, 26 orders; no prior iterations. BF window still live — test headline axis before spend shifts off. → 3 headlines; visual locked. Metric to beat: ROAS > 1.2 at $3k+.
 
-**8. {{SH-18046-3}} (S35 LifetimeWinner) — layout variant** 🟡
-ROAS 1.44 at $678; visual refresh (Oct-27) and headline variants (Oct-29) both actioned. Layout is the remaining clean axis. → One layout treatment; visual and headline locked. Metric to beat: ROAS > 1.3 at $1k+.
+**8. {{SH-21434-5}} (HolidaySale variant) — visual refresh** 🟡
+ROAS 1.2 at $1,488; CTR -41.3% — sharpest CTR collapse in the image set this week. Visual is the lever on a still-converting asset. → New visual; headline locked. Metric to beat: CTR stabilizes, ROAS > 1.2 at $2k+.
 
-**Watchlist ⚠️:** {{SH-16192-2}} — $11,161 AppLovin at ROAS 0.53; hook 0.2% on the Facebook retro signals placement/format mismatch, not a creative gap — pause and reallocate. {{SH-16975-3}} — ROAS improved 0.57→0.75 but concept CM ROAS 0.50 and three prior watchlist calls; one more week under 1.0 = kill.
+**Watchlist ⚠️:** {{SH-16975-3}} — $22,388 at ROAS 0.57, four consecutive watchlist entries, no margin path; pause call overdue. SH-1302 — zero revenue at $1,766 this week, flagged for immediate pause Nov 17; confirm it's stopped.
