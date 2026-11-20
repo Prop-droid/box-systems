@@ -16,6 +16,12 @@ from vtt_common import load_watchlist, relevant, write_merged, write_receipts, t
 TW = os.path.expanduser("~/.local/bin/tw")
 PER_TERM = 25
 MIN_OK_TERMS = 5
+# X allows about 25 of these searches per 15-minute window. The watchlist is
+# longer than that, so the tail of the list got HTTP 429 every night and never
+# had data (10 of 35 terms, found 2026-11-13). Rate-limited terms wait for the
+# window to reset and then run once more.
+RATE_WINDOW_S = 15 * 60 + 30
+RATE_LIMITED = "rate_limited"
 
 
 def heat(term):
@@ -27,7 +33,11 @@ def heat(term):
         print(f"FAIL {term}: {e}", file=sys.stderr)
         return None
     if not data.get("ok"):
-        print(f"FAIL {term}: tw not ok", file=sys.stderr)
+        err = data.get("error") or {}
+        code = err.get("code") if isinstance(err, dict) else None
+        if code == RATE_LIMITED:
+            return RATE_LIMITED
+        print(f"FAIL {term}: tw not ok ({code or str(err)[:120]})", file=sys.stderr)
         return None
     total, kept, posts = 0, 0, []
     for tw in data.get("data", []):
@@ -46,18 +56,35 @@ def heat(term):
 def main():
     rows, receipts, ok = [], [], 0
     today = date.today().isoformat()
-    for t in load_watchlist():
-        h = heat(t)
-        if h is None:
-            continue
-        value, posts, kept = h
-        rows.append({"date": today, "source": "x", "platform": "x",
-                     "term": t, "value": value, "posts": posts})
-        receipts.extend(top_receipts("x", "x", t, kept))
-        if posts > 0:
-            ok += 1
-        print(f"{t}: heat={value} ({posts} tweets)", file=sys.stderr)
-        time.sleep(1)
+    pending, started = load_watchlist(), time.time()
+    for attempt in (1, 2, 3):
+        deferred = []
+        for i, t in enumerate(pending):
+            h = heat(t)
+            if h == RATE_LIMITED:
+                deferred = pending[i:]  # the window is spent; more calls only burn 40s each
+                break
+            if h is None:
+                continue
+            value, posts, kept = h
+            rows.append({"date": today, "source": "x", "platform": "x",
+                         "term": t, "value": value, "posts": posts})
+            receipts.extend(top_receipts("x", "x", t, kept))
+            if posts > 0:
+                ok += 1
+            print(f"{t}: heat={value} ({posts} tweets)", file=sys.stderr)
+            time.sleep(1)
+        if not deferred:
+            break
+        if attempt == 3:
+            print(f"FAIL {len(deferred)} terms still rate limited after two waits: "
+                  f"{', '.join(deferred)}", file=sys.stderr)
+            break
+        wait = max(0, RATE_WINDOW_S - (time.time() - started))
+        print(f"rate limited at '{deferred[0]}': {len(deferred)} terms wait {wait:.0f}s "
+              f"for the window to reset", file=sys.stderr)
+        time.sleep(wait)
+        pending, started = deferred, time.time()
     write_merged("x", "x", rows, ok)
     write_receipts("x", "x", receipts)
     if ok < MIN_OK_TERMS:

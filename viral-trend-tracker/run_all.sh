@@ -16,7 +16,9 @@ lanes="ingest_tiktok ingest_reddit ingest_x ingest_youtube ingest_ads ingest_tre
 total=$(echo $lanes | wc -w)
 for lane in $lanes; do
   echo "== $lane =="
-  if timeout 900 python3 "$lane.py"; then
+  # ingest_x waits out one X rate-limit window (15 min) to reach the whole watchlist.
+  limit=900; [ "$lane" = ingest_x ] && limit=3000
+  if timeout "$limit" python3 "$lane.py"; then
     ok=$((ok + 1))
   else
     echo "$lane FAILED (rc=$?)"
