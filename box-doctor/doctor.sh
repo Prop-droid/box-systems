@@ -2,8 +2,8 @@
 # box-doctor — daily self-diagnostic for the agent box (task 51, wave-5).
 # Checks known failure modes across the estate; ntfy digest ONLY when something
 # is wrong (silent when green); writes reports/YYYY-MM-DD.md + doctor-report.md.
-# Auto-fixes ONLY: dead hermes skill symlinks (skill-sync pattern) and a stale
-# usage-window.json (reruns usage-guard once). Everything else is report-only.
+# Auto-fixes ONLY: dead hermes skill symlinks (skill-sync pattern). Everything
+# else is report-only.
 set -uo pipefail
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 export PATH="$HOME/.local/bin:/usr/local/bin:/usr/bin:/bin:$PATH"
@@ -17,8 +17,6 @@ HERMES_SKILLS="$HOME/.hermes/skills"
 MAC_TS_IP="100.68.166.21"
 DISK_WARN=80; DISK_FAIL=90
 MEM_AVAIL_WARN_MB=1024
-USAGE_WINDOW_MAX_MIN=30            # guard writes every 5 min; >30 min = broken
-PPLX_TOKEN_WARN_DAYS=25            # session token expires ~30d
 IGNORE_FAILED_UNITS='xdg-desktop-portal'  # known headless-box noise
 GIT_REPOS="$HOME/systems $HOME/brain $HOME/creative-command-center"
 
@@ -103,19 +101,18 @@ if ! timeout 15 tailscale status >/dev/null 2>&1; then
   fail "tailscale DOWN"
 elif timeout 15 tailscale status 2>/dev/null | grep "^$MAC_TS_IP" | grep -q offline; then
   # Tomas turns the Mac off intentionally — log only, never alert (2026-08-11)
-  info "Mac tailscale peer offline (usage-guard blind to Mac spend while off)"
+  info "Mac tailscale peer offline"
 fi
 
 # --- 8. expired-token telltales -------------------------------------------------
-# Perplexity: session token lives in ~/.hermes/config.yaml, expires ~30d; the
-# live telltale is the gateway logging anonymous-mode searches.
-hc="$HOME/.hermes/config.yaml"
-if [ -f "$hc" ]; then
-  age_d=$(( ($(date +%s) - $(stat -c %Y "$hc")) / 86400 ))
-  [ "$age_d" -ge "$PPLX_TOKEN_WARN_DAYS" ] && warn "perplexity session token likely expiring: hermes config.yaml untouched ${age_d}d (~30d limit)"
+# Apify: the VTT TikTok lane and the apify tool server share ~/.config/apify/token.
+# A revoked token returned 401 for six nights before anyone looked (2026-11-08..13).
+# (The Perplexity check that was here went with the Hermes gateway, 2026-11-13.)
+at="$HOME/.config/apify/token"
+if [ -s "$at" ]; then
+  code="$(curl -s -o /dev/null -m 15 -w '%{http_code}' -H "Authorization: Bearer $(cat "$at")" https://api.apify.com/v2/users/me || true)"
+  [ "$code" = "401" ] && fail "apify token rejected (HTTP 401) — new token: https://console.apify.com/settings/integrations -> ~/.config/apify/token + the apify entry in ~/.claude.json"
 fi
-anon="$(timeout 15 journalctl --user -u hermes-gateway --since "24 hours ago" --no-pager 2>/dev/null | grep -ci 'anonymous' || true)"
-[ -n "$anon" ] && [ "$anon" -gt 0 ] && warn "perplexity in anonymous mode ($anon hits in gateway log 24h) — session token expired, re-copy from Mac Chrome"
 # Google: gws token cache (work account) — token_valid from auth status.
 if [ -x "$HOME/.local/bin/gws-work" ]; then
   tv="$(timeout 20 "$HOME/.local/bin/gws-work" auth status 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("token_valid"))' 2>/dev/null || echo err)"
@@ -126,19 +123,7 @@ while IFS= read -r l; do
   case "$l" in FAIL:*) fail "${l#FAIL: }" ;; WARN:*) warn "${l#WARN: }" ;; esac
 done < <(bash "$DOC_DIR/claude-auth-check.sh" 2>/dev/null)
 
-# --- 9. usage-guard state freshness (AUTO-FIX: rerun guard once) ----------------
-uw="$HOME/.claude/usage-window.json"
-uw_age_min() { echo $(( ($(date +%s) - $(stat -c %Y "$uw" 2>/dev/null || echo 0)) / 60 )); }
-if [ ! -f "$uw" ] || [ "$(uw_age_min)" -gt "$USAGE_WINDOW_MAX_MIN" ]; then
-  timeout 300 bash "$HOME/systems/usage-guard/guard.sh" >/dev/null 2>&1 || true
-  if [ -f "$uw" ] && [ "$(uw_age_min)" -le "$USAGE_WINDOW_MAX_MIN" ]; then
-    fix "usage-window.json was stale — guard.sh rerun, now fresh"
-  else
-    fail "usage-window.json stale (>${USAGE_WINDOW_MAX_MIN}min) and guard.sh rerun did not refresh it"
-  fi
-fi
-
-# --- 10. git repos: uncommitted / unpushed --------------------------------------
+# --- 9. git repos: uncommitted / unpushed --------------------------------------
 for r in $GIT_REPOS; do
   n="$(basename "$r")"
   git -C "$r" rev-parse --git-dir >/dev/null 2>&1 || { info "$n: not a git repo, skipped"; continue; }
@@ -151,7 +136,7 @@ for r in $GIT_REPOS; do
   [ -n "$msg" ] && warn "git $n: $msg"
 done
 
-# --- 11. stale cron outputs ------------------------------------------------------
+# --- 10. stale cron outputs ------------------------------------------------------
 while IFS='|' read -r glob hours label; do
   [ -n "$glob" ] || continue
   glob="${glob/\$HOME/$HOME}"
@@ -176,7 +161,7 @@ n_bad=$(( ${#fails[@]} + ${#warns[@]} ))
   [ ${#fixed[@]} -gt 0 ] && { echo; echo "## Auto-fixed"; printf -- "- 🔧 %s\n" "${fixed[@]}"; }
   [ ${#infos[@]} -gt 0 ] && { echo; echo "## Notes"; printf -- "- %s\n" "${infos[@]}"; }
   echo
-  echo "Checks: failed-units, timers, disk, memory/earlyoom, syncthing+conflicts, skill-symlinks, tailscale, tokens (pplx/google/claude), usage-guard, git repos, stale-outputs"
+  echo "Checks: failed-units, timers, disk, memory/earlyoom, syncthing+conflicts, skill-symlinks, tailscale, tokens (apify/google/claude), git repos, stale-outputs"
 } > "$REPORT"
 ln -sf "$REPORT" "$DOC_DIR/doctor-report.md"
 

@@ -139,11 +139,6 @@ command to prove a change works before the timer fires.
   `reports/latest.md`, ntfy summary. `run_watchdog.sh [--weekly]` runs the
   modular `checks/*.sh` against `jobs.conf`. Both safe to run manually.
   When you ADD a timer, add it to `box-watchdog.sh` TIMERS and `jobs.conf`.
-- **usage-guard/** — every 5 min: ccusage over box+Mac transcripts; at ≥90% of the
-  5h Claude window during 08:00–23:00 it creates `~/.claude/PAUSE_CLAUDE_BG` +
-  `~/fable-window/PAUSE_90`, ntfy-alerts tablet+phone; clears + resumes on window
-  reset. Entry: `guard.sh`; tunables in `config`. Manual run is safe.
-  `statusline.sh` composes `· 5h:NN%` around the ORIGINAL statusline — never replace it.
 - **fable-resume/** — every 15 min: relaunches the fable-window driver when tasks
   are pending and nothing is running (see cgroup gotcha below). Entry: `resume.sh`.
   Manual run is safe (exits early on STOP/PAUSE/no-pending).
@@ -158,6 +153,14 @@ command to prove a change works before the timer fires.
   (`rules.json`). `guard.py hook` = the box Claude PreToolUse hook (cross-side
   MCP writes, cred bypass). Timers have no `~/.local/bin` on PATH, so call
   `~/.local/bin/gws-work` by absolute path. Test: `python3 account-firewall/test_guard.py`.
+- **brain-push/** — Tue 08:30 wiki -> eJam Company Brain sync behind a hard gate
+  (Tomas 2026-11-12). `gate.py` stops pages with keys, non-company emails,
+  personal markers, local paths, box hosts, ClickUp user IDs, named-person
+  exits, or a folder outside `gate_config.json`; `direct_write_guard.py` is the
+  PreToolUse hook that blocks direct `mcp__brain__*` writes. Blocked page or
+  failed run -> Discord #dev; 401 -> re-auth unit + sign-in URL. Rules:
+  `brain-push/README.md`. Dry report: `python3 brain-push/gate.py`.
+  Test: `python3 brain-push/test_gate.py`.
 - **transcript-janitor/** — gzip+archive Claude transcripts >30d (never deletes,
   never touches memory/*.md). Called by agents-weekly; manual: `run_janitor.sh`.
 - **laya/** — always-on local Jev clone (Laya, CPU) on 127.0.0.1:8095,
@@ -214,8 +217,8 @@ command to prove a change works before the timer fires.
   (copies to `~/.config/systemd/user/`, daemon-reload, `enable --now` every
   timer). Idempotent. NEVER hand-edit only the live copy — it gets clobbered.
 - **Repo vs live drift:** `systemd/` here holds only this suite's units. Live
-  `~/.config/systemd/user/` also has units owned elsewhere (usage-guard,
-  fable-resume, iteration-suggestions, raw-ingest-scan, qrevo-watch, coach-*,
+  `~/.config/systemd/user/` also has units owned elsewhere (fable-resume,
+  iteration-suggestions, raw-ingest-scan, qrevo-watch, coach-*,
   tablet-brief, hermes-gateway, camofox, creative-command-center, tablet-dash,
   agentic-bots, litellm, visionclaw-shim). Check `systemctl --user list-timers
   --all` for ground truth, not the README table (e.g. research-deepdive.service
@@ -241,8 +244,8 @@ command to prove a change works before the timer fires.
 ## Headless claude conventions
 
 - Invoke via the wrapper `/usr/local/bin/claude-max` (root-owned; sudo to edit).
-  It: exits 0 early if `~/.claude/PAUSE_CLAUDE_BG` exists (usage-guard pause —
-  ALL headless claude crons obey it), unsets ANTHROPIC_API_KEY (Max OAuth
+  It: exits 0 early if `~/.claude/PAUSE_CLAUDE_BG` exists (manual pause flag —
+  ALL headless claude crons obey it; usage-guard, which set it, was removed 2026-11-17), unsets ANTHROPIC_API_KEY (Max OAuth
   subscription, no per-token cost), sets CLAUDE_CONFIG_DIR, and prepends
   `~/.local/bin` to PATH (claude is a native user-local install; the root npm
   global was removed 2026-06-18).
@@ -260,7 +263,7 @@ command to prove a change works before the timer fires.
   atria-weekly's python diff), and/or `lib/hermes_fallback.sh`.
 - Model discipline: Sonnet (`claude-sonnet-4-6`) for cron agents/reports (cap
   discipline); bigger models only where a human queued the task (fable driver).
-- Usage windows are 5h rolling; usage-guard owns the 90% pause. Limit-hit runs
+- No usage guard runs (removed 2026-11-17; the account has no 5h window now). Limit-hit runs
   exit nonzero with "usage limit" in output — treat as transient (retry/sleep),
   not as failure. A `claude -p` run that emits ZERO output with rc 0 is the
   known silent failure mode — that's what the validate-retry loop is for.
@@ -274,6 +277,12 @@ command to prove a change works before the timer fires.
   expiry warning, hard ~30d cliff). Runs 21:30 via `claude-auth-check.timer`
   (alerts #ops-log ahead of the night batch) and inside box-doctor. Dead auth
   fix = ssh the box, `claude /login`.
+- Headless auth since 2026-11-06: a 1-year `claude setup-token` token
+  (CLAUDE_CODE_OAUTH_TOKEN) sits in `~/.config/environment.d/60-claude-oauth.conf`
+  and the user manager env, so every user service/timer uses it instead of the
+  ~30d login (services started earlier need a restart). Headless only: interactive
+  claude with it set hits the onboarding screen. Renew before ~2027-11-06; details in
+  memory reference_box_claude_long_lived_token.
 - One-shot headless runs must finish synchronously — never background a child
   and "wait for a notification" (there is none; two fable agents died this way).
 - Hook opt-out for crons where relevant: `export RTK_HOOK_OFF=1`.
@@ -285,8 +294,8 @@ command to prove a change works before the timer fires.
 Full manual = the `fleet-control` skill. Load-bearing subset for this repo:
 
 - **Tailscale IPs, not mDNS.** From the box, `mac`/`*.local` do NOT resolve.
-  Mac = `100.68.166.21` (ssh key `~/.ssh/id_ed25519_mac`, user tomas) — used by
-  usage-guard rsync/scp. This box = `100.107.26.69` / MagicDNS `tomas-agent-box`.
+  Mac = `100.68.166.21` (ssh key `~/.ssh/id_ed25519_mac`, user tomas).
+  This box = `100.107.26.69` / MagicDNS `tomas-agent-box`.
   Always `-o BatchMode=yes -o ConnectTimeout=5` + `timeout N` around ssh/rsync
   in cron paths, `|| true` if best-effort.
 - **Per-host ssh keys/aliases** live in `~/.ssh/config` — use the alias
@@ -299,7 +308,7 @@ Full manual = the `fleet-control` skill. Load-bearing subset for this repo:
   owning bot's channel via `~/systems/lib/discord-post.sh <channel-id> <TOKEN_VAR>
   [file]`. `tg-notify.sh` and `tg-post.sh` are now shims to these, so old callers
   keep working; do not add new Telegram callers. ntfy remains only for phone
-  topics (usage-guard `tomas-usage-guard-7c31`, `tomas-ph-1ea8ac8e`).
+  topics (`tomas-ph-1ea8ac8e`).
 - **No creative-strategy pings Sat/Sun (Tomas 2026-10-10):** any job posting
   Shameless/creative signal (#creative, Creative Feed, ClickUp/phone pushes) must
   stay silent on weekends and let Monday's run catch up. Precedents:
@@ -345,7 +354,6 @@ bash ~/systems/research-agent/bin/deepdive.sh --dry-run
 node --test ~/systems/research-agent/lanes/score.test.mjs ~/systems/research-agent/lanes/tag.test.mjs
 python3 ~/systems/compliance-eval/test_scorer.py
 cd ~/systems/creative-feedback && python3 test_keep_best_gate.py && python3 test_decisions_unpromoted.py
-bash ~/systems/usage-guard/guard.sh && cat ~/.claude/usage-window.json
 bash ~/systems/fable-resume/resume.sh; echo "rc=$? (0 = no-op or launched)"
 curl -s localhost:8092 >/dev/null && echo md-server OK
 

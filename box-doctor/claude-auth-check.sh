@@ -35,8 +35,23 @@ fi
 rte="$(python3 -I -c 'import json,sys; print(json.load(open(sys.argv[1]))["claudeAiOauth"].get("refreshTokenExpiresAt") or "")' "$CRED" 2>/dev/null)"
 if [ -n "$rte" ]; then
   days=$(( (rte / 1000 - $(date +%s)) / 86400 ))
-  [ "$days" -le "$REFRESH_WARN_DAYS" ] && \
-    out+=("WARN: claude refresh token expires in ${days}d ($(date -d "@$((rte / 1000))" '+%m-%d %H:%M')) — run claude /login on the box before then")
+  if [ "$days" -le "$REFRESH_WARN_DAYS" ]; then
+    if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then   # headless jobs ride the 1-year token (section 3); only interactive/Remote Control use this login
+      out+=("WARN: interactive claude login (ssh sessions, Remote Control) expires in ${days}d ($(date -d "@$((rte / 1000))" '+%m-%d %H:%M')); headless jobs are fine on the 1-year token. Renew with claude auth login")
+    else
+      out+=("WARN: claude refresh token expires in ${days}d ($(date -d "@$((rte / 1000))" '+%m-%d %H:%M')) — run claude /login on the box before then")
+    fi
+  fi
+fi
+
+# 3. long-lived token (claude setup-token, 2026-11-06): CLAUDE_CODE_OAUTH_TOKEN comes from
+# ~/.config/environment.d/60-claude-oauth.conf (user manager env); it is valid for 1 year from its creation date.
+created="$(cat "$HOME/.config/claude-box/oauth-token.created" 2>/dev/null)"
+if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ] && [ -n "$created" ]; then
+  left=$(( ( $(date -d "$created +365 days" +%s) - $(date +%s) ) / 86400 ))
+  [ "$left" -le 30 ] && out+=("WARN: the 1-year claude token for headless jobs expires in ${left}d; run claude setup-token and replace ~/.config/claude-box/oauth-token + environment.d/60-claude-oauth.conf")
+elif [ -n "$created" ]; then
+  out+=("WARN: CLAUDE_CODE_OAUTH_TOKEN is not in this job's environment; headless jobs fall back to the expiring login (systemctl --user show-environment)")
 fi
 
 [ ${#out[@]} -eq 0 ] && exit 0

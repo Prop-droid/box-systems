@@ -19,30 +19,25 @@ fails or warns. Report always lands at `reports/YYYY-MM-DD.md`, with
 4. MemAvailable < 1GB (warn) + earlyoom kills in last 24h (system journal).
 5. Syncthing service active + `*sync-conflict*` files in the unified memory dir.
 6. Dead symlinks in `~/.claude/skills`.
-7. Tailscale up (fail) + Mac peer online (warn — usage-guard goes blind to Mac
-   spend when it's offline).
+7. Tailscale up (fail) + Mac peer online (note only).
 8. Token telltales: perplexity session token (~30d expiry — warns at 25d of
    `~/.hermes/config.yaml` mtime, fails hard on "anonymous" hits in the
    hermes-gateway journal), google work token (`gws auth status` token_valid).
-9. `~/.claude/usage-window.json` freshness (guard writes every 5 min; >30 min
-   stale = broken).
-10. Git repos with uncommitted/unpushed work: `~/systems`, `~/brain`,
+9. Git repos with uncommitted/unpushed work: `~/systems`, `~/brain`,
     `~/creative-command-center` (non-repos and missing upstreams are noted,
     not warned — `~/brain` is not a git repo as of 2026-07).
-11. Stale cron outputs — newest artifact older than the schedule implies
+10. Stale cron outputs — newest artifact older than the schedule implies
     (list in `STALE_OUTPUTS` inside `doctor.sh`). comments-digest is
     deliberately NOT listed: its upstream feed is dead and it exits 0 on no
     data by design.
 
-## Auto-fixes (the ONLY two; everything else is report-only)
+## Auto-fixes (the ONLY one; everything else is report-only)
 
 - Dead skill symlinks pointing into `~/.hermes/skills` — skill-sync pattern:
   relink to the skill's current home (live category dir first, `.archive/`
   fallback), prune if gone. Non-hermes dead links are warned, never touched.
-- Stale `usage-window.json` — reruns `~/systems/usage-guard/guard.sh` once and
-  rechecks.
 
-Both are recorded under "Auto-fixed" in the report.
+It is recorded under "Auto-fixed" in the report.
 
 ## Overlap with box-watchdog
 
