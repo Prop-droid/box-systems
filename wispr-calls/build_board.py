@@ -225,13 +225,20 @@ def main():
 
     # Same focus split as data. The CCC /calls page reads this file.
     slim = lambda v: [{"key": i["key"], "text": i["text"], "owners": i["owners"],
-                       "call": i["call_title"], "date": i["date"]} for i in v]
+                       "call": i["call_title"], "date": i["date"], "callId": i["call_id"]} for i in v]
     data = {"built": datetime.datetime.now().astimezone().isoformat(timespec="seconds"),
             "calls": len(ok), "minutes": mins, "mine": slim(mine), "owed": slim(owed),
             "team": slim(pod), "rest": slim(rest), "decisions": slim(dec)}
     jout = os.path.join(BASE, "board", "board.json")
     json.dump(data, open(jout + ".tmp", "w", encoding="utf-8"), ensure_ascii=False)
     os.replace(jout + ".tmp", jout)
+    # Context of each call (lead, people, topic sections). CCC shows it when an item is opened.
+    notes = {c["id"]: {"title": c["title"], "date": c["date"], "minutes": c["minutes"],
+                       "participants": c["participants"], "lead": c["lead"],
+                       "sections": c.get("sections", [])} for c in ok}
+    nout = os.path.join(BASE, "board", "notes.json")
+    json.dump(notes, open(nout + ".tmp", "w", encoding="utf-8"), ensure_ascii=False)
+    os.replace(nout + ".tmp", nout)
     print(f"wrote {out} bytes={len(page.encode())} mine={len(mine)} owed={len(owed)} team={len(pod)} "
           f"not_in_focus={len(rest)} decisions={len(dec)} calls={len(calls)}")
     return 0

@@ -28,6 +28,8 @@ else
 fi
 
 python3 "$HERE/extract.py" && python3 "$HERE/build_board.py" || { log "extract or build FAILED"; exit 1; }
+# Next calls from the work calendar, for the prep block. It never fails the run.
+log "$(python3 "$HERE/upcoming.py" 2>&1 | tail -1)"
 
 last="$(cat "$OK" 2>/dev/null || echo 0)"
 age_h=$(( ( $(date +%s) - last ) / 3600 ))

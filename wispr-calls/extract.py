@@ -113,6 +113,33 @@ def parse_summary(summary, names):
     return items
 
 
+def parse_sections(summary, names):
+    """Topic sections of the summary (all headings except next steps and decisions).
+
+    The CCC /calls page shows them as the context of one item. Sub-bullets stay
+    under their parent bullet.
+    """
+    out, cur, skip = [], None, False
+    for line in (summary or "").splitlines():
+        h = HEAD.match(line)
+        if h:
+            t = h.group(1)
+            skip = bool(re.search(r"\b(next steps?|action items?|follow[- ]ups?|decisions?)\b", t.lower()))
+            cur = None if skip else {"title": resolve(t, names), "lines": []}
+            if cur:
+                out.append(cur)
+            continue
+        b = BULLET.match(line)
+        if not (cur and b):
+            continue
+        indent, body = len(b.group(1)), resolve(b.group(2), names)
+        if indent >= 2 and cur["lines"]:
+            cur["lines"][-1]["sub"].append(body)
+        else:
+            cur["lines"].append({"t": body, "sub": []})
+    return [s for s in out if s["lines"]]
+
+
 def canonical(owner, known):
     """Short name ("Agus") -> full name, only when exactly one known person fits."""
     if owner in known or owner == "Everyone" or owner.startswith("Speaker "):
@@ -122,7 +149,7 @@ def canonical(owner, known):
 
 
 def main():
-    calls, items = [], []
+    calls, items, transcripts = [], [], {}
     raws = [json.load(open(f, encoding="utf-8"))
             for f in glob.glob(os.path.join(BASE, "raw", "*.json"))]
     known = sorted({n for m in raws for n in participants(m.get("speakerMap"))})
@@ -143,8 +170,19 @@ def main():
                 "date": (m.get("createdAt") or "")[:10], "start_utc": (m.get("createdAt") or "")[:16],
                 "minutes": (m.get("recordedMs") or 0) // 60000, "words": words,
                 "participants": ppl, "state": state,
-                "lead": ((m.get("summary") or "").strip().split("\n\n")[0])[:400],
+                "lead": resolve((m.get("summary") or "").strip().split("\n\n")[0], names)[:400],
+                "sections": parse_sections(m.get("summary"), names),
                 "next": 0, "decisions": 0}
+        # Full transcript with speaker names, for the CCC transcript page and search.
+        transcripts[m["id"]] = {
+            "id": m["id"], "title": call["title"], "date": call["date"], "minutes": call["minutes"],
+            "participants": ppl, "state": state, "lead": call["lead"], "sections": call["sections"],
+            "next": [{"text": p["text"], "owners": [canonical(o, known) for o in p["owners"]]}
+                     for p in parsed if p["kind"] == "next"],
+            "decisions": [p["text"] for p in parsed if p["kind"] == "decision"],
+            "turns": [{"t": t.get("t") or "", "who": t.get("n") or names.get(str(t.get("s")), f"Speaker {t.get('s')}"),
+                       "x": t.get("x") or ""} for t in m.get("turns") or [] if (t.get("x") or "").strip()],
+        }
         if state == "ok":
             for i, it in enumerate(parsed):
                 it.update({"call_id": m["id"], "call_title": call["title"],
@@ -172,6 +210,15 @@ def main():
     os.makedirs(os.path.dirname(out), exist_ok=True)
     json.dump({"calls": calls, "items": items}, open(out, "w", encoding="utf-8"),
               ensure_ascii=False, indent=1)
+    tdir = os.path.join(BASE, "board", "transcripts")
+    os.makedirs(tdir, exist_ok=True)
+    for cid, t in transcripts.items():
+        tmp = os.path.join(tdir, cid + ".json.tmp")
+        json.dump(t, open(tmp, "w", encoding="utf-8"), ensure_ascii=False)
+        os.replace(tmp, os.path.join(tdir, cid + ".json"))
+    for f in glob.glob(os.path.join(tdir, "*.json")):  # a call that is gone from raw/
+        if os.path.basename(f)[:-5] not in transcripts:
+            os.remove(f)
     by = {}
     for it in items:
         by[it["bucket"]] = by.get(it["bucket"], 0) + 1
