@@ -63,7 +63,8 @@ EXCLUDE_NAME = re.compile(
 # 40-bag cuts whose ONLY gap is the LP are on hold: Tomas is waiting on the new
 # 40-bag LP URL and keeps LP empty on purpose (2026-10-16, restated 10-23). They
 # go in a one-line "held" note, not the missing count. Set to None to un-hold.
-HOLD_LP_ONLY = re.compile(r"40[\s_-]*bag", re.I)
+# _HT_ = Holiday Toast LTE: no LP yet, LP left empty on purpose (Tomas 2026-11-18).
+HOLD_LP_ONLY = re.compile(r"40[\s_-]*bag|_HT_", re.I)
 
 
 def log(msg):
@@ -162,7 +163,7 @@ def main():
         lines.append(f"- **{x['custom_id']}** ({x['status']}, {kind}) "
                      f"[{x['name']}]({x['url']}) — missing: {', '.join(x['missing'])}")
     if held:
-        lines += ["", f"Held, 40-bag waiting on LP URL ({len(held)}): "
+        lines += ["", f"Held, waiting on LP URL (40-bag + HT) ({len(held)}): "
                   + ", ".join(sorted(held))]
     report = "\n".join(lines) + "\n"
     if not DRY:

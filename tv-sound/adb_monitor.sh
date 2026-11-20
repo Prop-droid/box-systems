@@ -21,7 +21,7 @@ while true; do
     printf '%s\n' "$line" >> "$DIR/logcat-$(date +%F).log"
     if printf '%s' "$line" | grep -q -E 'System Audio Mode|SystemAudio|eARC|EARC|eArc|Initiate ARC|Terminate ARC|Request ARC|Report ARC|communication|setSoundSettings|TV speaker|Set Osd|Active Source|Routing Change|Standby'; then
       now=$(date +%s); if (( now - ${last_snap:-0} > 20 )); then
-        { echo "===== $(date -Is) trigger: ${line:0:160}"; adb -s "$TV" shell dumpsys hdmi_control 2>/dev/null | grep -i -E 'arc|system audio|mSystemAudio|eARC|device|logical|power|active' | head -60; } >> "$DIR/hdmi-snap.log"
+        { echo "===== $(date -Is) trigger: ${line:0:160}"; adb -s "$TV" shell dumpsys hdmi_control 2>/dev/null | grep -m 60 -i -E 'arc|system audio|mSystemAudio|eARC|device|logical|power|active'; } >> "$DIR/hdmi-snap.log"
         last_snap=$now
       fi
     fi
